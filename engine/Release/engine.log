@@ -1,0 +1,101 @@
+﻿  main.cpp
+D:\code_C++\engine\source\main.cpp(128,23): warning C4018: “<”: 有符号/无符号不匹配
+D:\code_C++\engine\source\main.cpp(171,23): warning C4018: “<”: 有符号/无符号不匹配
+D:\code_C++\engine\source\main.cpp(252,23): warning C4018: “<”: 有符号/无符号不匹配
+D:\code_C++\engine\source\main.cpp(443,27): warning C4018: “<”: 有符号/无符号不匹配
+D:\code_C++\engine\source\main.cpp(458,9): error C2665: “outtextxy”: 没有重载函数可以转换所有参数类型
+      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\VS\include\easyx.h(226,6):
+      可能是“void outtextxy(int,int,TCHAR)”
+          D:\code_C++\engine\source\main.cpp(458,9):
+          “void outtextxy(int,int,TCHAR)”: 无法将参数 3 从“const char *”转换为“TCHAR”
+              D:\code_C++\engine\source\main.cpp(458,25):
+              没有使该转换得以执行的上下文
+      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\VS\include\easyx.h(225,6):
+      或    “void outtextxy(int,int,LPCTSTR)”
+          D:\code_C++\engine\source\main.cpp(458,9):
+          “void outtextxy(int,int,LPCTSTR)”: 无法将参数 3 从“const char *”转换为“LPCTSTR”
+              D:\code_C++\engine\source\main.cpp(458,25):
+              指向的类型不相关; 转换需要 reinterpret_cast、C 样式强制转换或带圆括号的函数样式强制转换
+      D:\code_C++\engine\source\main.cpp(458,9):
+      尝试匹配参数列表“(int, int, const char *)”时
+  
+D:\code_C++\engine\source\main.cpp(459,22): error C2665: “textheight”: 没有重载函数可以转换所有参数类型
+      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\VS\include\easyx.h(230,5):
+      可能是“int textheight(TCHAR)”
+          D:\code_C++\engine\source\main.cpp(459,22):
+          “int textheight(TCHAR)”: 无法将参数 1 从“const char *”转换为“TCHAR”
+              D:\code_C++\engine\source\main.cpp(459,33):
+              没有使该转换得以执行的上下文
+      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\VS\include\easyx.h(229,5):
+      或    “int textheight(LPCTSTR)”
+          D:\code_C++\engine\source\main.cpp(459,22):
+          “int textheight(LPCTSTR)”: 无法将参数 1 从“const char *”转换为“LPCTSTR”
+              D:\code_C++\engine\source\main.cpp(459,33):
+              指向的类型不相关; 转换需要 reinterpret_cast、C 样式强制转换或带圆括号的函数样式强制转换
+      D:\code_C++\engine\source\main.cpp(459,22):
+      尝试匹配参数列表“(const char *)”时
+  
+D:\code_C++\engine\source\main.cpp(459,9): error C2665: “outtextxy”: 没有重载函数可以转换所有参数类型
+      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\VS\include\easyx.h(226,6):
+      可能是“void outtextxy(int,int,TCHAR)”
+          D:\code_C++\engine\source\main.cpp(459,9):
+          “void outtextxy(int,int,TCHAR)”: 无法将参数 3 从“const char *”转换为“TCHAR”
+              D:\code_C++\engine\source\main.cpp(459,43):
+              没有使该转换得以执行的上下文
+      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\VS\include\easyx.h(225,6):
+      或    “void outtextxy(int,int,LPCTSTR)”
+          D:\code_C++\engine\source\main.cpp(459,9):
+          “void outtextxy(int,int,LPCTSTR)”: 无法将参数 3 从“const char *”转换为“LPCTSTR”
+              D:\code_C++\engine\source\main.cpp(459,43):
+              指向的类型不相关; 转换需要 reinterpret_cast、C 样式强制转换或带圆括号的函数样式强制转换
+      D:\code_C++\engine\source\main.cpp(459,9):
+      尝试匹配参数列表“(int, int, const char *)”时
+  
+D:\code_C++\engine\source\main.cpp(460,22): error C2665: “textheight”: 没有重载函数可以转换所有参数类型
+      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\VS\include\easyx.h(230,5):
+      可能是“int textheight(TCHAR)”
+          D:\code_C++\engine\source\main.cpp(460,22):
+          “int textheight(TCHAR)”: 无法将参数 1 从“const char *”转换为“TCHAR”
+              D:\code_C++\engine\source\main.cpp(460,33):
+              没有使该转换得以执行的上下文
+      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\VS\include\easyx.h(229,5):
+      或    “int textheight(LPCTSTR)”
+          D:\code_C++\engine\source\main.cpp(460,22):
+          “int textheight(LPCTSTR)”: 无法将参数 1 从“const char *”转换为“LPCTSTR”
+              D:\code_C++\engine\source\main.cpp(460,33):
+              指向的类型不相关; 转换需要 reinterpret_cast、C 样式强制转换或带圆括号的函数样式强制转换
+      D:\code_C++\engine\source\main.cpp(460,22):
+      尝试匹配参数列表“(const char *)”时
+  
+D:\code_C++\engine\source\main.cpp(460,41): error C2665: “textheight”: 没有重载函数可以转换所有参数类型
+      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\VS\include\easyx.h(230,5):
+      可能是“int textheight(TCHAR)”
+          D:\code_C++\engine\source\main.cpp(460,41):
+          “int textheight(TCHAR)”: 无法将参数 1 从“const char *”转换为“TCHAR”
+              D:\code_C++\engine\source\main.cpp(460,52):
+              没有使该转换得以执行的上下文
+      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\VS\include\easyx.h(229,5):
+      或    “int textheight(LPCTSTR)”
+          D:\code_C++\engine\source\main.cpp(460,41):
+          “int textheight(LPCTSTR)”: 无法将参数 1 从“const char *”转换为“LPCTSTR”
+              D:\code_C++\engine\source\main.cpp(460,52):
+              指向的类型不相关; 转换需要 reinterpret_cast、C 样式强制转换或带圆括号的函数样式强制转换
+      D:\code_C++\engine\source\main.cpp(460,41):
+      尝试匹配参数列表“(const char *)”时
+  
+D:\code_C++\engine\source\main.cpp(460,9): error C2665: “outtextxy”: 没有重载函数可以转换所有参数类型
+      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\VS\include\easyx.h(226,6):
+      可能是“void outtextxy(int,int,TCHAR)”
+          D:\code_C++\engine\source\main.cpp(460,9):
+          “void outtextxy(int,int,TCHAR)”: 无法将参数 3 从“const char [5]”转换为“TCHAR”
+              D:\code_C++\engine\source\main.cpp(460,70):
+              没有使该转换得以执行的上下文
+      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\VS\include\easyx.h(225,6):
+      或    “void outtextxy(int,int,LPCTSTR)”
+          D:\code_C++\engine\source\main.cpp(460,9):
+          “void outtextxy(int,int,LPCTSTR)”: 无法将参数 3 从“const char [5]”转换为“LPCTSTR”
+              D:\code_C++\engine\source\main.cpp(460,70):
+              指向的类型不相关; 转换需要 reinterpret_cast、C 样式强制转换或带圆括号的函数样式强制转换
+      D:\code_C++\engine\source\main.cpp(460,9):
+      尝试匹配参数列表“(int, int, const char [5])”时
+  

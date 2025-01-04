@@ -1,0 +1,2159 @@
+{
+  "version": "2.1.0",
+  "$schema": "https://schemastore.azurewebsites.net/schemas/json/sarif-2.1.0-rtm.5.json",
+  "runs": [
+    {
+      "results": [
+        {
+          "ruleId": "C6001",
+          "message": {
+            "text": "使用未初始化的内存“previous”。"
+          },
+          "analysisTarget": {
+            "uri": "file:///d:/code_c++/engine/source/main.cpp"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                },
+                "region": {
+                  "startLine": 479,
+                  "startColumn": 60
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "Render_New",
+                  "decoratedName": "?Render_New@@YAXAEBUCamera_data@@AEAUMmesh@@1@Z",
+                  "kind": "function"
+                }
+              ]
+            }
+          ],
+          "codeFlows": [
+            {
+              "threadFlows": [
+                {
+                  "locations": [
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 383,
+                            "startColumn": 24
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 383,
+                            "startColumn": 31
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 385,
+                            "startColumn": 26
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 387,
+                            "startColumn": 25
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 388,
+                            "startColumn": 42
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 425,
+                            "startColumn": 14
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 425,
+                            "startColumn": 23
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 427,
+                            "startColumn": 16
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 429,
+                            "startColumn": 123
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 429,
+                            "startColumn": 170
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 431,
+                            "startColumn": 135
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 431,
+                            "startColumn": 122
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 431,
+                            "startColumn": 84
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 431,
+                            "startColumn": 46
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 431,
+                            "startColumn": 124
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 458,
+                            "startColumn": 26
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 460,
+                            "startColumn": 195
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 460,
+                            "startColumn": 136
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 460,
+                            "startColumn": 77
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 460,
+                            "startColumn": 17
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 461,
+                            "startColumn": 21
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 462,
+                            "startColumn": 18
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 464,
+                            "startColumn": 26
+                          }
+                        },
+                        "message": {
+                          "text": "未初始化“previous”"
+                        }
+                      },
+                      "kinds": [
+                        "declaration"
+                      ],
+                      "importance": "essential"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 464,
+                            "startColumn": 36
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 464,
+                            "startColumn": 42
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 466,
+                            "startColumn": 20
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 466,
+                            "startColumn": 31
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 468,
+                            "startColumn": 22
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 468,
+                            "startColumn": 31
+                          }
+                        },
+                        "message": {
+                          "text": "进入此循环(假定“e<3”)"
+                        }
+                      },
+                      "kinds": [
+                        "branch"
+                      ]
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 469,
+                            "startColumn": 65
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 469,
+                            "startColumn": 30
+                          }
+                        },
+                        "message": {
+                          "text": "跳过此分支(假定“<分支条件>”为 false)"
+                        }
+                      },
+                      "kinds": [
+                        "branch"
+                      ]
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 468,
+                            "startColumn": 37
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 468,
+                            "startColumn": 31
+                          }
+                        },
+                        "message": {
+                          "text": "进入此循环(假定“e<3”)"
+                        }
+                      },
+                      "kinds": [
+                        "branch"
+                      ]
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 469,
+                            "startColumn": 65
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 469,
+                            "startColumn": 30
+                          }
+                        },
+                        "message": {
+                          "text": "跳过此分支(假定“<分支条件>”为 false)"
+                        }
+                      },
+                      "kinds": [
+                        "branch"
+                      ]
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 468,
+                            "startColumn": 37
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 468,
+                            "startColumn": 31
+                          }
+                        },
+                        "message": {
+                          "text": "继续此循环(假定“e<3”)"
+                        }
+                      },
+                      "kinds": [
+                        "branch"
+                      ]
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 478,
+                            "startColumn": 17
+                          }
+                        },
+                        "message": {
+                          "text": "进入此分支(假定“num_bool”)"
+                        }
+                      },
+                      "kinds": [
+                        "branch"
+                      ]
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 479,
+                            "startColumn": 44
+                          }
+                        },
+                        "message": {
+                          "text": "“previous”是“std::vector<Mpoint,std::allocator<Mpoint> >::[]”的输入/输出参数(在 c:\\program files\\microsoft visual studio\\2022\\community\\vc\\tools\\msvc\\14.42.34433\\include\\vector:1885 处声明)"
+                        }
+                      },
+                      "kinds": [
+                        "declaration"
+                      ]
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 480,
+                            "startColumn": 44
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 481,
+                            "startColumn": 44
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 483,
+                            "startColumn": 44
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 484,
+                            "startColumn": 44
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 485,
+                            "startColumn": 44
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 479,
+                            "startColumn": 60
+                          }
+                        },
+                        "message": {
+                          "text": "已使用“previous”，但可能尚未将其初始化"
+                        }
+                      },
+                      "kinds": [
+                        "usage"
+                      ],
+                      "importance": "essential"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ruleId": "C6001",
+          "message": {
+            "text": "使用未初始化的内存“next”。"
+          },
+          "analysisTarget": {
+            "uri": "file:///d:/code_c++/engine/source/main.cpp"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                },
+                "region": {
+                  "startLine": 484,
+                  "startColumn": 60
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "Render_New",
+                  "decoratedName": "?Render_New@@YAXAEBUCamera_data@@AEAUMmesh@@1@Z",
+                  "kind": "function"
+                }
+              ]
+            }
+          ],
+          "codeFlows": [
+            {
+              "threadFlows": [
+                {
+                  "locations": [
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 383,
+                            "startColumn": 24
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 383,
+                            "startColumn": 31
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 385,
+                            "startColumn": 26
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 387,
+                            "startColumn": 25
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 388,
+                            "startColumn": 42
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 425,
+                            "startColumn": 14
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 425,
+                            "startColumn": 23
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 427,
+                            "startColumn": 16
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 429,
+                            "startColumn": 123
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 429,
+                            "startColumn": 170
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 431,
+                            "startColumn": 135
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 431,
+                            "startColumn": 122
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 431,
+                            "startColumn": 84
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 431,
+                            "startColumn": 46
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 431,
+                            "startColumn": 124
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 458,
+                            "startColumn": 26
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 460,
+                            "startColumn": 195
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 460,
+                            "startColumn": 136
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 460,
+                            "startColumn": 77
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 460,
+                            "startColumn": 17
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 461,
+                            "startColumn": 21
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 462,
+                            "startColumn": 18
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 464,
+                            "startColumn": 26
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 464,
+                            "startColumn": 36
+                          }
+                        },
+                        "message": {
+                          "text": "未初始化“next”"
+                        }
+                      },
+                      "kinds": [
+                        "declaration"
+                      ],
+                      "importance": "essential"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 464,
+                            "startColumn": 42
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 466,
+                            "startColumn": 20
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 466,
+                            "startColumn": 31
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 468,
+                            "startColumn": 22
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 468,
+                            "startColumn": 31
+                          }
+                        },
+                        "message": {
+                          "text": "进入此循环(假定“e<3”)"
+                        }
+                      },
+                      "kinds": [
+                        "branch"
+                      ]
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 469,
+                            "startColumn": 65
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 469,
+                            "startColumn": 30
+                          }
+                        },
+                        "message": {
+                          "text": "跳过此分支(假定“<分支条件>”为 false)"
+                        }
+                      },
+                      "kinds": [
+                        "branch"
+                      ]
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 468,
+                            "startColumn": 37
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 468,
+                            "startColumn": 31
+                          }
+                        },
+                        "message": {
+                          "text": "进入此循环(假定“e<3”)"
+                        }
+                      },
+                      "kinds": [
+                        "branch"
+                      ]
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 469,
+                            "startColumn": 65
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 469,
+                            "startColumn": 30
+                          }
+                        },
+                        "message": {
+                          "text": "跳过此分支(假定“<分支条件>”为 false)"
+                        }
+                      },
+                      "kinds": [
+                        "branch"
+                      ]
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 468,
+                            "startColumn": 37
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 468,
+                            "startColumn": 31
+                          }
+                        },
+                        "message": {
+                          "text": "继续此循环(假定“e<3”)"
+                        }
+                      },
+                      "kinds": [
+                        "branch"
+                      ]
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 478,
+                            "startColumn": 17
+                          }
+                        },
+                        "message": {
+                          "text": "进入此分支(假定“num_bool”)"
+                        }
+                      },
+                      "kinds": [
+                        "branch"
+                      ]
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 479,
+                            "startColumn": 44
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 480,
+                            "startColumn": 44
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 481,
+                            "startColumn": 44
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 483,
+                            "startColumn": 44
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 484,
+                            "startColumn": 44
+                          }
+                        },
+                        "message": {
+                          "text": "“next”是“std::vector<Mpoint,std::allocator<Mpoint> >::[]”的输入/输出参数(在 c:\\program files\\microsoft visual studio\\2022\\community\\vc\\tools\\msvc\\14.42.34433\\include\\vector:1885 处声明)"
+                        }
+                      },
+                      "kinds": [
+                        "declaration"
+                      ]
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 485,
+                            "startColumn": 44
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 484,
+                            "startColumn": 60
+                          }
+                        },
+                        "message": {
+                          "text": "已使用“next”，但可能尚未将其初始化"
+                        }
+                      },
+                      "kinds": [
+                        "usage"
+                      ],
+                      "importance": "essential"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ruleId": "C6001",
+          "message": {
+            "text": "使用未初始化的内存“medium”。"
+          },
+          "analysisTarget": {
+            "uri": "file:///d:/code_c++/engine/source/main.cpp"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                },
+                "region": {
+                  "startLine": 489,
+                  "startColumn": 60
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "Render_New",
+                  "decoratedName": "?Render_New@@YAXAEBUCamera_data@@AEAUMmesh@@1@Z",
+                  "kind": "function"
+                }
+              ]
+            }
+          ],
+          "codeFlows": [
+            {
+              "threadFlows": [
+                {
+                  "locations": [
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 383,
+                            "startColumn": 24
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 383,
+                            "startColumn": 31
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 385,
+                            "startColumn": 26
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 387,
+                            "startColumn": 25
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 388,
+                            "startColumn": 42
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 425,
+                            "startColumn": 14
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 425,
+                            "startColumn": 23
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 427,
+                            "startColumn": 16
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 429,
+                            "startColumn": 123
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 429,
+                            "startColumn": 170
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 431,
+                            "startColumn": 135
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 431,
+                            "startColumn": 122
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 431,
+                            "startColumn": 84
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 431,
+                            "startColumn": 46
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 431,
+                            "startColumn": 124
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 458,
+                            "startColumn": 26
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 460,
+                            "startColumn": 195
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 460,
+                            "startColumn": 136
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 460,
+                            "startColumn": 77
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 460,
+                            "startColumn": 17
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 461,
+                            "startColumn": 21
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 462,
+                            "startColumn": 18
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 464,
+                            "startColumn": 26
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 464,
+                            "startColumn": 36
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 464,
+                            "startColumn": 42
+                          }
+                        },
+                        "message": {
+                          "text": "未初始化“medium”"
+                        }
+                      },
+                      "kinds": [
+                        "declaration"
+                      ],
+                      "importance": "essential"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 466,
+                            "startColumn": 20
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 466,
+                            "startColumn": 31
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 468,
+                            "startColumn": 22
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 468,
+                            "startColumn": 31
+                          }
+                        },
+                        "message": {
+                          "text": "进入此循环(假定“e<3”)"
+                        }
+                      },
+                      "kinds": [
+                        "branch"
+                      ]
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 469,
+                            "startColumn": 65
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 469,
+                            "startColumn": 30
+                          }
+                        },
+                        "message": {
+                          "text": "跳过此分支(假定“<分支条件>”为 false)"
+                        }
+                      },
+                      "kinds": [
+                        "branch"
+                      ]
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 468,
+                            "startColumn": 37
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 468,
+                            "startColumn": 31
+                          }
+                        },
+                        "message": {
+                          "text": "进入此循环(假定“e<3”)"
+                        }
+                      },
+                      "kinds": [
+                        "branch"
+                      ]
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 469,
+                            "startColumn": 65
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 469,
+                            "startColumn": 30
+                          }
+                        },
+                        "message": {
+                          "text": "跳过此分支(假定“<分支条件>”为 false)"
+                        }
+                      },
+                      "kinds": [
+                        "branch"
+                      ]
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 468,
+                            "startColumn": 37
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 468,
+                            "startColumn": 31
+                          }
+                        },
+                        "message": {
+                          "text": "继续此循环(假定“e<3”)"
+                        }
+                      },
+                      "kinds": [
+                        "branch"
+                      ]
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 478,
+                            "startColumn": 17
+                          }
+                        },
+                        "message": {
+                          "text": "跳过此分支(假定“num_bool”为 false)"
+                        }
+                      },
+                      "kinds": [
+                        "branch"
+                      ]
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 488,
+                            "startColumn": 44
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 489,
+                            "startColumn": 44
+                          }
+                        },
+                        "message": {
+                          "text": "“medium”是“std::vector<Mpoint,std::allocator<Mpoint> >::[]”的输入/输出参数(在 c:\\program files\\microsoft visual studio\\2022\\community\\vc\\tools\\msvc\\14.42.34433\\include\\vector:1885 处声明)"
+                        }
+                      },
+                      "kinds": [
+                        "declaration"
+                      ]
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 490,
+                            "startColumn": 44
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///D:/code_C++/engine/source/main.cpp"
+                          },
+                          "region": {
+                            "startLine": 489,
+                            "startColumn": 60
+                          }
+                        },
+                        "message": {
+                          "text": "已使用“medium”，但可能尚未将其初始化"
+                        }
+                      },
+                      "kinds": [
+                        "usage"
+                      ],
+                      "importance": "essential"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "tool": {
+        "driver": {
+          "name": "PREfast",
+          "fullName": "PREfast Code Analysis",
+          "version": "14.42.34435.0",
+          "informationUri": "https://aka.ms/cpp/ca"
+        }
+      },
+      "invocations": [
+        {
+          "executionSuccessful": true
+        }
+      ],
+      "artifacts": [
+        {
+          "location": {
+            "uri": "file:///d:/code_c++/engine/source/main.cpp"
+          },
+          "roles": [
+            "analysisTarget",
+            "resultFile"
+          ],
+          "hashes": {
+            "sha-256": "a22bbe27f38b4b794b1bb2c5be0748fcd35ed15e6949036acd2b90192371a2f9"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/program files/microsoft visual studio/2022/community/vc/auxiliary/vs/include/graphics.h"
+          },
+          "hashes": {
+            "sha-256": "af66dacd9304395a6a92986e00ef4be4e21864d5663cd0d4adff77a9c1790d0e"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/program files/microsoft visual studio/2022/community/vc/auxiliary/vs/include/easyx.h"
+          },
+          "hashes": {
+            "sha-256": "8996bfc4776f8839289aac38bfc1b75276c16f126f566ff7933b634a9c290cc3"
+          }
+        }
+      ]
+    }
+  ]
+}

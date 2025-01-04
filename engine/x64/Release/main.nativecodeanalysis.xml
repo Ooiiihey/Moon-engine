@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DEFECTS>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>D:\code_C++\engine\source\</FILEPATH>
+      <FILENAME>main.cpp</FILENAME>
+      <LINE>33</LINE>
+      <COLUMN>0</COLUMN>
+    </SFA>
+    <DEFECTCODE>26495</DEFECTCODE>
+    <DESCRIPTION>未初始化变量 Camera_data::front_current。始终初始化成员变量(type.6)。</DESCRIPTION>
+    <FUNCTION>Camera_data::{ctor}</FUNCTION>
+    <DECORATED>??0Camera_data@@QEAA@XZ</DECORATED>
+    <FUNCLINE>33</FUNCLINE>
+    <ADDITIONALINFO>
+      <targetSymbol>Camera_data::front_current</targetSymbol>
+    </ADDITIONALINFO>
+    <PATH></PATH>
+  </DEFECT>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>D:\code_C++\engine\source\</FILEPATH>
+      <FILENAME>main.cpp</FILENAME>
+      <LINE>33</LINE>
+      <COLUMN>0</COLUMN>
+    </SFA>
+    <DEFECTCODE>26495</DEFECTCODE>
+    <DESCRIPTION>未初始化变量 Camera_data::y_current。始终初始化成员变量(type.6)。</DESCRIPTION>
+    <FUNCTION>Camera_data::{ctor}</FUNCTION>
+    <DECORATED>??0Camera_data@@QEAA@XZ</DECORATED>
+    <FUNCLINE>33</FUNCLINE>
+    <ADDITIONALINFO>
+      <targetSymbol>Camera_data::y_current</targetSymbol>
+    </ADDITIONALINFO>
+    <PATH></PATH>
+  </DEFECT>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>D:\code_C++\engine\source\</FILEPATH>
+      <FILENAME>main.cpp</FILENAME>
+      <LINE>33</LINE>
+      <COLUMN>0</COLUMN>
+    </SFA>
+    <DEFECTCODE>26495</DEFECTCODE>
+    <DESCRIPTION>未初始化变量 Camera_data::z_current。始终初始化成员变量(type.6)。</DESCRIPTION>
+    <FUNCTION>Camera_data::{ctor}</FUNCTION>
+    <DECORATED>??0Camera_data@@QEAA@XZ</DECORATED>
+    <FUNCLINE>33</FUNCLINE>
+    <ADDITIONALINFO>
+      <targetSymbol>Camera_data::z_current</targetSymbol>
+    </ADDITIONALINFO>
+    <PATH></PATH>
+  </DEFECT>
+</DEFECTS>
