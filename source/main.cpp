@@ -6,7 +6,6 @@
 #include <string>
 #include <shared_mutex>
 #include <emmintrin.h> // 包含SSE2指令集的头文件
-#include <random>
 
 #include "all.h"
 #define PI 3.14159265358979
@@ -16,7 +15,7 @@
 //分辨率
 unsigned int screen_1[] = { 960, 540 };
 unsigned int screen_2[] = {1280, 720};
-unsigned int* pScreen = screen_2;
+unsigned int* pScreen = screen_1;
 //初始化
 
 //计算用数据类型
@@ -24,7 +23,7 @@ struct Mpoint {
     double x = 0, y = 0, z = 0;
 };
 struct Mface {
-    unsigned int sequnce[3] = { 0,0,0 };
+    unsigned int sequence[3] = { 0,0,0 };
 };
 struct Mmesh {
     std::vector <Mpoint> vertices = {};
@@ -98,7 +97,7 @@ inline double KQsqrt(double number) {
     return 1 / y;
 }
 
-//选择哪种平方根函数
+//选择平方根函数
 double (*Qsqrt)(double) = KQsqrt;
 
 
@@ -120,8 +119,8 @@ class Main_function {
 public:
 
 
-//计算线在近平面的交点坐标new                相机                            一个点                         另一个点                           输出(屏幕上坐标)
-inline void Get_CrossPoint(const Camera_data& Rc,unsigned const int screen[2], const Mpoint& origin, const Mpoint& process_point, Mpoint& output) {
+//计算线在近平面的交点坐标new                相机                                                                    一个点                         另一个点                           输出(屏幕上坐标)
+inline void Get_CrossPoint(const Camera_data& Rc,unsigned const int screen_in[2], const Mpoint& origin, const Mpoint& process_point, Mpoint& output) {
     //待处理点和camera的front点的向量
     double nL1[] = { Rc.Forward_vec[0] - process_point.x + Rc.Camera[0],
                              Rc.Forward_vec[1] - process_point.y + Rc.Camera[1],
@@ -151,8 +150,8 @@ inline void Get_CrossPoint(const Camera_data& Rc,unsigned const int screen[2], c
         n_plane[1] = Tmp[1] - Rc.Forward_vec[1] - Rc.Camera[1];
         n_plane[2] = Tmp[2] - Rc.Forward_vec[2] - Rc.Camera[2];
     };
-    output.x = (screen[0] / 2) + (Rc.F * (screen[0] / 2) * (Rc.Y_vec[0] * n_plane[0] + Rc.Y_vec[1] * n_plane[1] + Rc.Y_vec[2] * n_plane[2]) / (tan(Rc.Horizen) * Rc.R * Qsqrt(Rc.Y_vec[0] * Rc.Y_vec[0] + Rc.Y_vec[1] * Rc.Y_vec[1] + Rc.Y_vec[2] * Rc.Y_vec[2])));
-    output.y = (screen[1] / 2) - (Rc.F * (screen[0] / 2) * (Rc.Z_vec[0] * n_plane[0] + Rc.Z_vec[1] * n_plane[1] + Rc.Z_vec[2] * n_plane[2]) / (tan(Rc.Horizen) * Rc.R * Qsqrt(Rc.Z_vec[0] * Rc.Z_vec[0] + Rc.Z_vec[1] * Rc.Z_vec[1] + Rc.Z_vec[2] * Rc.Z_vec[2])));
+    output.x = (screen_in[0] / 2) + (Rc.F * (screen_in[0] / 2) * (Rc.Y_vec[0] * n_plane[0] + Rc.Y_vec[1] * n_plane[1] + Rc.Y_vec[2] * n_plane[2]) / (tan(Rc.Horizen) * Rc.R * Qsqrt(Rc.Y_vec[0] * Rc.Y_vec[0] + Rc.Y_vec[1] * Rc.Y_vec[1] + Rc.Y_vec[2] * Rc.Y_vec[2])));
+    output.y = (screen_in[1] / 2) - (Rc.F * (screen_in[0] / 2) * (Rc.Z_vec[0] * n_plane[0] + Rc.Z_vec[1] * n_plane[1] + Rc.Z_vec[2] * n_plane[2]) / (tan(Rc.Horizen) * Rc.R * Qsqrt(Rc.Z_vec[0] * Rc.Z_vec[0] + Rc.Z_vec[1] * Rc.Z_vec[1] + Rc.Z_vec[2] * Rc.Z_vec[2])));
     output.z = 0;
 }
 
@@ -160,13 +159,13 @@ inline void Get_CrossPoint(const Camera_data& Rc,unsigned const int screen[2], c
 inline void Get_NormalVector(Mmesh &cMesh) {
     Mpoint normal_vectors;
     for (Mface &each_face : cMesh.faces) {
-        double n_a[3] = {cMesh.vertices[each_face.sequnce[1]].x -cMesh.vertices[each_face.sequnce[0]].x ,
-                                    cMesh.vertices[each_face.sequnce[1]].y - cMesh.vertices[each_face.sequnce[0]].y,
-                                    cMesh.vertices[each_face.sequnce[1]].z - cMesh.vertices[each_face.sequnce[0]].z
+        double n_a[3] = {cMesh.vertices[each_face.sequence[1]].x -cMesh.vertices[each_face.sequence[0]].x ,
+                                    cMesh.vertices[each_face.sequence[1]].y - cMesh.vertices[each_face.sequence[0]].y,
+                                    cMesh.vertices[each_face.sequence[1]].z - cMesh.vertices[each_face.sequence[0]].z
          };
-        double n_b[3] = { cMesh.vertices[each_face.sequnce[2]].x - cMesh.vertices[each_face.sequnce[1]].x,
-                                    cMesh.vertices[each_face.sequnce[2]].y - cMesh.vertices[each_face.sequnce[1]].y,
-                                    cMesh.vertices[each_face.sequnce[2]].z - cMesh.vertices[each_face.sequnce[1]].z
+        double n_b[3] = { cMesh.vertices[each_face.sequence[2]].x - cMesh.vertices[each_face.sequence[1]].x,
+                                    cMesh.vertices[each_face.sequence[2]].y - cMesh.vertices[each_face.sequence[1]].y,
+                                    cMesh.vertices[each_face.sequence[2]].z - cMesh.vertices[each_face.sequence[1]].z
         };
         double n_V[3] = { (n_b[1] * n_a[2] - n_b[2] * n_a[1]), (n_b[2] * n_a[0] - n_b[0] * n_a[2]), (n_b[0] * n_a[1] - n_b[1] * n_a[0]) };
         double Length = Qsqrt(n_V[0] * n_V[0] + n_V[1] * n_V[1] + n_V[2] * n_V[2]);//法向量的模
@@ -178,11 +177,11 @@ inline void Get_NormalVector(Mmesh &cMesh) {
 }
 
 // New render       摄像机结构体                          mesh                    输出数组mesh
-void Render(const Camera_data& Rc, unsigned const int screen[2], Mmesh& cMesh, Mmesh& out_mesh) {
+void Render(const Camera_data& Rc, unsigned const int screen_in[2], Mmesh& cMesh, Mmesh& out_mesh) {
     //点的可见性检查数组//面的正面性检查数组
     std::vector <bool> Pinfo, FTinfo;
     //转化到平面坐标轴上的顶点的临时数组
-    std::vector <Mpoint> Transform_vertices;
+    std::vector <Mpoint> Transformed_vertices;
     //计算法向量
     cMesh.normal_vectors.clear();
     Get_NormalVector(cMesh);
@@ -197,7 +196,7 @@ void Render(const Camera_data& Rc, unsigned const int screen[2], Mmesh& cMesh, M
         //与摄像机重合的情况
         if (Length == 0) {
             Pinfo.push_back(FALSE);
-            Transform_vertices.push_back(TmpP);
+            Transformed_vertices.push_back(TmpP);
             continue;
         } else {//cos 值
             cosV = (Rc.Forward_vec[0] * n_P.x + Rc.Forward_vec[1] * n_P.y + Rc.Forward_vec[2] * n_P.z) / (Qsqrt(Rc.Forward_vec[0] * Rc.Forward_vec[0] + Rc.Forward_vec[1] * Rc.Forward_vec[1] + Rc.Forward_vec[2] * Rc.Forward_vec[2]) * Length);
@@ -211,32 +210,32 @@ void Render(const Camera_data& Rc, unsigned const int screen[2], Mmesh& cMesh, M
             TmpP.z = (n_P.z * Rc.R) / (Length * cosV);
             //映射到近平面的坐标点和方向点的向量
             double n_plane[] = { TmpP.x - Rc.Forward_vec[0], TmpP.y - Rc.Forward_vec[1], TmpP.z - Rc.Forward_vec[2] };
-            outP.x = (screen[0] / 2) + (Rc.F * (screen[0] / 2) * (Rc.Y_vec[0] * n_plane[0] + Rc.Y_vec[1] * n_plane[1] + Rc.Y_vec[2] * n_plane[2]) / (tan(Rc.Horizen) * Rc.R * Qsqrt(Rc.Y_vec[0] * Rc.Y_vec[0] + Rc.Y_vec[1] * Rc.Y_vec[1] + Rc.Y_vec[2] * Rc.Y_vec[2])));
-            outP.y = (screen[1] / 2) - (Rc.F * (screen[0] / 2) * (Rc.Z_vec[0] * n_plane[0] + Rc.Z_vec[1] * n_plane[1] + Rc.Z_vec[2] * n_plane[2]) / (tan(Rc.Horizen) * Rc.R * Qsqrt(Rc.Z_vec[0] * Rc.Z_vec[0] + Rc.Z_vec[1] * Rc.Z_vec[1] + Rc.Z_vec[2] * Rc.Z_vec[2])));
+            outP.x = (screen_in[0] / 2) + (Rc.F * (screen_in[0] / 2) * (Rc.Y_vec[0] * n_plane[0] + Rc.Y_vec[1] * n_plane[1] + Rc.Y_vec[2] * n_plane[2]) / (tan(Rc.Horizen) * Rc.R * Qsqrt(Rc.Y_vec[0] * Rc.Y_vec[0] + Rc.Y_vec[1] * Rc.Y_vec[1] + Rc.Y_vec[2] * Rc.Y_vec[2])));
+            outP.y = (screen_in[1] / 2) - (Rc.F * (screen_in[0] / 2) * (Rc.Z_vec[0] * n_plane[0] + Rc.Z_vec[1] * n_plane[1] + Rc.Z_vec[2] * n_plane[2]) / (tan(Rc.Horizen) * Rc.R * Qsqrt(Rc.Z_vec[0] * Rc.Z_vec[0] + Rc.Z_vec[1] * Rc.Z_vec[1] + Rc.Z_vec[2] * Rc.Z_vec[2])));
             outP.z = Length * cosV - Rc.R;   //z值用来存储Deepth方便后面制作Dbuffer用
-            Transform_vertices.push_back(outP);
+            Transformed_vertices.push_back(outP);
             //平面坐标轴映射，                                                                           坐标已适配direcX坐标系
         } else {            //不可见点情况处理(位于近平面之后)
             Pinfo.push_back(FALSE);
-            Transform_vertices.push_back(outP);//即使不可见也要占位
+            Transformed_vertices.push_back(outP);//即使不可见也要占位
             continue;
         }
     }
     //以面为单位将每个面的坐标信息提取，并二次分割处理有不可见点的平面（一个点不可见的情况；两个点不可见的情况*(unfinish)；三个点都不可见的情况）
     for (int i = 0; i < cMesh.faces.size(); ++i) {
         //测试正面用向量
-        double nTest[3] = { cMesh.vertices[ cMesh.faces[i].sequnce[0] ].x - Rc.Camera[0], cMesh.vertices[ cMesh.faces[i].sequnce[0]].y - Rc.Camera[1], cMesh.vertices[ cMesh.faces[i].sequnce[0] ].z - Rc.Camera[2]};
+        double nTest[3] = { cMesh.vertices[ cMesh.faces[i].sequence[0] ].x - Rc.Camera[0], cMesh.vertices[ cMesh.faces[i].sequence[0]].y - Rc.Camera[1], cMesh.vertices[ cMesh.faces[i].sequence[0] ].z - Rc.Camera[2]};
         //储存面的正面性信息(后面剔除背面)
         (nTest[0] * cMesh.normal_vectors[i].x + nTest[1] * cMesh.normal_vectors[i].y + nTest[2] * cMesh.normal_vectors[i].z) < 0 ? FTinfo.push_back(TRUE) : FTinfo.push_back(FALSE);
         //面全可见的情况（主要)
-        if (Pinfo[ cMesh.faces[i].sequnce[0] ] && Pinfo[ cMesh.faces[i].sequnce[1] ] && Pinfo[ cMesh.faces[i].sequnce[2] ] && FTinfo[i]) {
-            out_mesh.vertices.push_back(Transform_vertices[cMesh.faces[i].sequnce[0]]);
-            out_mesh.vertices.push_back(Transform_vertices[cMesh.faces[i].sequnce[1]]);
-            out_mesh.vertices.push_back(Transform_vertices[cMesh.faces[i].sequnce[2]]);
+        if (Pinfo[ cMesh.faces[i].sequence[0] ] && Pinfo[ cMesh.faces[i].sequence[1] ] && Pinfo[ cMesh.faces[i].sequence[2] ] && FTinfo[i]) {
+            out_mesh.vertices.push_back(Transformed_vertices[cMesh.faces[i].sequence[0]]);
+            out_mesh.vertices.push_back(Transformed_vertices[cMesh.faces[i].sequence[1]]);
+            out_mesh.vertices.push_back(Transformed_vertices[cMesh.faces[i].sequence[2]]);
         }
         else if (FTinfo[i]) {
             //不完整面处理(仍然检查总体面正面可见性)
-            int num = static_cast<int>(not Pinfo[ cMesh.faces[i].sequnce[0] ]) + static_cast<int>(not Pinfo[ cMesh.faces[i].sequnce[1] ]) + static_cast<int>(not Pinfo[ cMesh.faces[i].sequnce[2] ]);
+            int num = static_cast<int>(not Pinfo[ cMesh.faces[i].sequence[0] ]) + static_cast<int>(not Pinfo[ cMesh.faces[i].sequence[1] ]) + static_cast<int>(not Pinfo[ cMesh.faces[i].sequence[2] ]);
             if (num == 3) continue; //排除完全不可见
             bool num_bool = (num == 1) ? TRUE : FALSE;
             //          前顶点        后顶点      中间点   (看情况各自分配是不可见点还是可见点)
@@ -245,27 +244,27 @@ void Render(const Camera_data& Rc, unsigned const int screen[2], Mmesh& cMesh, M
             Mpoint ClipOut_1, ClipOut_2;
             //for循环分辨情况//这样做是为了最后生成的点的数组仍然是正面顺时针的顺序
             for (int e = 0; e < 3; e++) {
-                if (num_bool ^ Pinfo[ cMesh.faces[i].sequnce[e] ]) {//获得待处理点            //此处的异或运算可以分辨是1情况还是2情况
-                    medium = cMesh.faces[i].sequnce[ e ];
-                    previous = cMesh.faces[i].sequnce[(e + 5) % 3];
-                    next = cMesh.faces[i].sequnce[(e + 7) % 3];
-                    Get_CrossPoint(Rc, screen, cMesh.vertices[previous], cMesh.vertices[medium], ClipOut_1);
-                    Get_CrossPoint(Rc, screen, cMesh.vertices[next], cMesh.vertices[medium], ClipOut_2);
+                if (num_bool ^ Pinfo[ cMesh.faces[i].sequence[e] ]) {//获得待处理点            //此处的异或运算可以分辨是1情况还是2情况
+                    medium = cMesh.faces[i].sequence[ e ];
+                    previous = cMesh.faces[i].sequence[(e + 5) % 3];
+                    next = cMesh.faces[i].sequence[(e + 7) % 3];
+                    Get_CrossPoint(Rc, screen_in, cMesh.vertices[previous], cMesh.vertices[medium], ClipOut_1);
+                    Get_CrossPoint(Rc, screen_in, cMesh.vertices[next], cMesh.vertices[medium], ClipOut_2);
                     break;
                 }
             }
             if (num_bool) {
-                out_mesh.vertices.push_back(Transform_vertices[ previous ]);
+                out_mesh.vertices.push_back(Transformed_vertices[ previous ]);
                 out_mesh.vertices.push_back(ClipOut_1);
                 out_mesh.vertices.push_back(ClipOut_2);
                 //此处一个不可见点输出两个三角面
                 out_mesh.vertices.push_back(ClipOut_2);
-                out_mesh.vertices.push_back(Transform_vertices[next]);
-                out_mesh.vertices.push_back(Transform_vertices[previous]);
+                out_mesh.vertices.push_back(Transformed_vertices[next]);
+                out_mesh.vertices.push_back(Transformed_vertices[previous]);
                 //后续光栅化加入纹理映射时，记得在这加纹理坐标转换！
             }else{
                 out_mesh.vertices.push_back(ClipOut_1);
-                out_mesh.vertices.push_back(Transform_vertices[medium]);
+                out_mesh.vertices.push_back(Transformed_vertices[medium]);
                 out_mesh.vertices.push_back(ClipOut_2);
             }
         };
@@ -392,7 +391,6 @@ void camera_set( Camera_data &Tc, double incline_angle, double revolve_hori, dou
 }
 
 
-
 };
 Main_function Mainfunc;
 
@@ -410,7 +408,7 @@ struct cube {
 cube cubeData;
 
 
-void draw_thread_New() {
+void Render_thread() {
     initgraph(pScreen[0], pScreen[1]);
     setbkcolor(BLACK); // 背景色
     settextcolor(GREEN);//文字颜色
@@ -418,29 +416,21 @@ void draw_thread_New() {
     setfillcolor(RGB(128, 128, 128));
 
     std::vector <Mmesh> mesh_list;
-    
-        // 创建随机数生成器
-    std::random_device rd;  // 非确定性随机数生成器，用于初始化
-    std::mt19937 gen(rd()); // Mersenne Twister 19937 生成器
-
-    // 创建一个均匀分布的随机数生成器
-    std::uniform_int_distribution<> dis(-10, 10);
     //cube test压力测试
     for (int t = -20; t < 20; t += 2) {
         for (int w = -20; w < 20;w +=2) {
             Mmesh cube_mesh;
             for (int i = 0; i < sizeof(cubeData.Cpoint) / sizeof(cubeData.Cpoint[0]); i += 1) {
                 Mpoint& each_point = cube_mesh.vertices.emplace_back();
-                const int random_number = dis(gen);
                 each_point.x = cubeData.Cpoint[i][0] + t;
                 each_point.y = cubeData.Cpoint[i][1] + w;
                 each_point.z = cubeData.Cpoint[i][2]  ;
             }
             for (int i = 0; i < sizeof(cubeData.Ctriangle) / sizeof(cubeData.Ctriangle[0]); i += 1) {
                 Mface& each_face = cube_mesh.faces.emplace_back();
-                each_face.sequnce[0] = cubeData.Ctriangle[i][0];
-                each_face.sequnce[1] = cubeData.Ctriangle[i][1];
-                each_face.sequnce[2] = cubeData.Ctriangle[i][2];
+                each_face.sequence[0] = cubeData.Ctriangle[i][0];
+                each_face.sequence[1] = cubeData.Ctriangle[i][1];
+                each_face.sequence[2] = cubeData.Ctriangle[i][2];
             }
 
             mesh_list.push_back(cube_mesh);
@@ -457,9 +447,8 @@ void draw_thread_New() {
         BeginBatchDraw();
         cleardevice(); // 清空屏幕
         for (Mmesh &each_mesh : mesh_list) {
-            
-
             Mmesh out;
+
             camera_Remain.lock();
             Mainfunc.Render(Camera_1,pScreen ,each_mesh, out);
             camera_Remain.unlock();
@@ -473,11 +462,9 @@ void draw_thread_New() {
             
         }
 
-
         auto end = std::chrono::high_resolution_clock::now();    //测帧
         std::chrono::duration<double> elapsed_seconds = end - start;
         Frames = 1 / elapsed_seconds.count();
-
 
         std::string title_str = "MOON_Engine_Build_version_0.4.1  Compilation_Date:";
         title_str.append(__DATE__);
@@ -504,7 +491,7 @@ void control_thread()
     BOOL firstTime = TRUE;
 
     double angleCurrent[] = { 0,0 };
-    double CS[] = {0,0,0,0,0,0};
+    double Control[] = {0,0,0,0,0,0};
     double speed = 0.03;
 
     Camera_1.Camera[2] = 1;//更改camera初始位置示范
@@ -528,18 +515,18 @@ void control_thread()
 
             if (angleCurrent[0] > 360) {
                 angleCurrent[0] = angleCurrent[0] - 360;
-            }else if (angleCurrent[0] < -360) {
+            }if (angleCurrent[0] < -360) {
                 angleCurrent[0] = angleCurrent[0] + 360;
             }
             if (angleCurrent[1] > 90) {
                 angleCurrent[1] = 90;
-            }else if(angleCurrent[1] < -90) {
+            }if(angleCurrent[1] < -90) {
                 angleCurrent[1] = -90;
             }
 
             //处理camera镜头方向
-            CS[1] = angleCurrent[0] * PI / 180;
-            CS[2] = angleCurrent[1] * PI / 180;
+            Control[1] = angleCurrent[0] * PI / 180;
+            Control[2] = angleCurrent[1] * PI / 180;
         }
         //把鼠标移到中心
         MoveMouseToCenter();
@@ -553,29 +540,29 @@ void control_thread()
         }
 
         if (GetAsyncKeyState('W') & 0x8000){
-            CS[3] = speed;
+            Control[3] = speed;
         }
         else if (GetAsyncKeyState('S') & 0x8000) {
-            CS[3] = -speed;
+            Control[3] = -speed;
         }else{
-            CS[3] = 0;
+            Control[3] = 0;
         }
         if (GetAsyncKeyState('A') & 0x8000){
-            CS[4] = -speed;
-            //CS[0] = -1 * PI / 180;
+            Control[4] = -speed;
+            //Control[0] = -1 * PI / 180;
         }else if (GetAsyncKeyState('D') & 0x8000){
-            CS[4] = speed;
-            //CS[0] = 1 * PI / 180;
+            Control[4] = speed;
+            //Control[0] = 1 * PI / 180;
         }else{
-            CS[4] = 0;
-            //CS[0] = 0;
+            Control[4] = 0;
+            //Control[0] = 0;
         }
         if (GetKeyState(VK_LSHIFT) & 0x8000){
-            CS[5] = -speed;
+            Control[5] = -speed;
         }else if (GetAsyncKeyState(VK_SPACE) & 0x8000){
-            CS[5] = speed;
+            Control[5] = speed;
         }else{
-            CS[5] = 0;
+            Control[5] = 0;
         }
 
         camera_Remain.lock();
@@ -589,7 +576,7 @@ void control_thread()
         if (GetAsyncKeyState('X') & 0x8000) {
             Camera_1.F = 1;
         }
-        Mainfunc.camera_set(Camera_1,CS[0], CS[1], CS[2], CS[3], CS[4], CS[5]);
+        Mainfunc.camera_set(Camera_1,Control[0], Control[1], Control[2], Control[3], Control[4], Control[5]);
         camera_Remain.unlock();
 
         
@@ -602,8 +589,9 @@ int main() {
 
     Rasterization_function test;
     test.Rasterizer();
+    test.DrawTriangle();
 
-    std::thread draw(draw_thread_New);
+    std::thread draw(Render_thread);
     std::thread control(control_thread);
 
     draw.join();
