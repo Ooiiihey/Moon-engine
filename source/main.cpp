@@ -182,9 +182,11 @@ void Render(const Camera_data& Rc, unsigned const int screen_in[2], Mmesh& cMesh
     std::vector <bool> Pinfo, FTinfo;
     //转化到平面坐标轴上的顶点的临时数组
     std::vector <Mpoint> Transformed_vertices;
+
     //计算法向量
     cMesh.normal_vectors.clear();
     Get_NormalVector(cMesh);
+
     for (const Mpoint &each_point : cMesh.vertices) {
         //临时值
         Mpoint TmpP, n_P, outP;
@@ -417,8 +419,8 @@ void Render_thread() {
 
     std::vector <Mmesh> mesh_list;
     //cube test压力测试
-    for (int t = -20; t < 20; t += 2) {
-        for (int w = -20; w < 20;w +=2) {
+    for (int t = -100; t < 100; t += 2) {
+        for (int w = -100; w < 100;w +=2) {
             Mmesh cube_mesh;
             for (int i = 0; i < sizeof(cubeData.Cpoint) / sizeof(cubeData.Cpoint[0]); i += 1) {
                 Mpoint& each_point = cube_mesh.vertices.emplace_back();
@@ -436,6 +438,7 @@ void Render_thread() {
             mesh_list.push_back(cube_mesh);
         }
     }
+
     while (TRUE) {
         if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) {
             return;
@@ -446,22 +449,21 @@ void Render_thread() {
         auto start = std::chrono::high_resolution_clock::now();   //测帧
         BeginBatchDraw();
         cleardevice(); // 清空屏幕
-        for (Mmesh &each_mesh : mesh_list) {
-            Mmesh out;
 
-            camera_Remain.lock();
-            Mainfunc.Render(Camera_1,pScreen ,each_mesh, out);
-            camera_Remain.unlock();
-
+        Mmesh out;
+        camera_Remain.lock();
+        for (Mmesh& each_mesh : mesh_list) {
+            Mainfunc.Render(Camera_1, pScreen, each_mesh, out);
             //此时的out_mesh中vertices按顺序以三个点为一个面，不使用成员faces
-            for (unsigned int k = 0; k < out.vertices.size(); k +=3) {
-                POINT p[] = { static_cast<long>(out.vertices[k].x) , static_cast<long>(out.vertices[k].y) ,static_cast<long>(out.vertices[k+1].x) , static_cast<long>(out.vertices[k+1].y) , static_cast<long>(out.vertices[k+2].x) , static_cast<long>(out.vertices[k+2].y) };
-                fillpolygon(p, 3);
-                ++faces_num;
-            }
-            
         }
-
+        camera_Remain.unlock();
+        //临时实现光栅化
+        for (unsigned int k = 0; k < out.vertices.size(); k += 3) {
+            POINT p[] = { static_cast<long>(out.vertices[k].x) , static_cast<long>(out.vertices[k].y) ,static_cast<long>(out.vertices[k + 1].x) , static_cast<long>(out.vertices[k + 1].y) , static_cast<long>(out.vertices[k + 2].x) , static_cast<long>(out.vertices[k + 2].y) };
+            fillpolygon(p, 3);
+            ++faces_num;
+        }
+        
         auto end = std::chrono::high_resolution_clock::now();    //测帧
         std::chrono::duration<double> elapsed_seconds = end - start;
         Frames = 1 / elapsed_seconds.count();
