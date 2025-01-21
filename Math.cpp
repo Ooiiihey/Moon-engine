@@ -1,6 +1,7 @@
 #include "moon.h"
-#include <emmintrin.h> // 包含SSE2指令集的头文件
 
+#if 0
+#include <emmintrin.h> // 包含SSE2指令集头文件
 //使用SSE2指令集的快速平方根
 double SSE2Qsqrt(double number) {
     __m128d vec;
@@ -9,6 +10,7 @@ double SSE2Qsqrt(double number) {
     _mm_store_sd(&number, vec); // 将结果存储回double变量
     return number;
 }
+#endif
 
 //卡马克之魂快速平方根
 double KQsqrt(double number) {
@@ -29,15 +31,15 @@ double KQsqrt(double number) {
 
 
 
-double vectorMath::GetLength(const Point& vec) {
+double vectorMath::GetLength(const vertix& vec) {
     return KQsqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
 };
 double vectorMath::GetLength(const double vec[3]) {
     return KQsqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]);
 };
-double vectorMath::dot(const Point& vec1, const Point& vec2) {
+double vectorMath::dot(const vertix& vec1, const vertix& vec2) {
     return (vec1.x * vec2.x + vec1.y * vec2.y + vec1.z * vec2.z);
 };
-void vectorMath::cross(const Point& vec1, const Point& vec2, Point &vec_cross) {
+void vectorMath::cross(const vertix& vec1, const vertix& vec2, vertix &vec_cross) {
     vec_cross = { (vec2.y * vec1.z - vec2.z * vec1.y), (vec2.z * vec1.x - vec2.x * vec1.z), (vec2.x * vec1.y - vec2.y * vec1.x) };
 };
