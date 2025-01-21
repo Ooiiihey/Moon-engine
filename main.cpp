@@ -359,8 +359,8 @@ void Render_thread() {
     std::vector <Mmesh> mesh_list;
     //cube test—π¡¶≤‚ ‘
     for (int h = -2; h < 0;h +=2) {
-    for (int t = -2; t < 0; t += 2) {
-        for (int w = -2; w < 0;w +=2) {
+    for (int t = -20; t < 20; t += 2) {
+        for (int w = -20; w < 20;w +=2) {
             Mmesh cube_mesh;
             for (int i = 0; i < sizeof(cubeData.Cpoint) / sizeof(cubeData.Cpoint[0]); i += 1) {
                 vertix& each_point = cube_mesh.vertices.emplace_back();
@@ -406,7 +406,9 @@ void Render_thread() {
 
         auto PSTcosttime_1 = std::chrono::high_resolution_clock::now();
 
+        /*
         
+
          //new test
         Graphic_func.CleanBuffer();
         
@@ -417,7 +419,7 @@ void Render_thread() {
 
         }
         
-        
+                */
 
         //here is a bug
         
