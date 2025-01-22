@@ -65,22 +65,53 @@ Color Graphic::GetPixelColor(const long x, const long y) {
 
 
 
-void Graphic::DrawFlatTopTriangle(const vertix_tf& v0, const vertix_tf& v1, const vertix_tf& v2, const Color& c) {
+void Graphic::DrawFlatTopTriangle(const vertix& v0, const vertix& v1, const vertix& v2, const Color& c) {
 	//斜率倒数
 	double m0 = (v2.x - v0.x) / (v2.y - v0.y);
 	double m1 = (v2.x - v1.x) / (v2.y - v1.y);
 
 	//起始扫描线
-	int yStart = (int)ceil(v0.y - 0.5f);
-	int yEnd = (int)ceil(v2.y - 0.5f);
+	int yStart = (int)ceil(v0.y);
+	int yEnd = (int)ceil(v2.y);
+
+	if (yStart < 0) {
+		yStart = 0;
+	}
+	else if (yStart > Buffer_size[1]) {
+		yStart = Buffer_size[1] - 1;
+
+	}
+	if (yEnd < 0) {
+		yEnd = 0;
+	}
+	else if (yEnd > Buffer_size[1]) {
+		yEnd = Buffer_size[1] - 1;
+
+	}
+
 	//这里需要加入一个阻止绘制超界的三角形的代码
 
 	for (int y = yStart; y < yEnd; y++) {
 		const double px0 = m0 * (y + 0.5f - v0.y) + v0.x;
 		const double px1 = m1 * (y + 0.5f - v1.y) + v1.x;
 
-		const int xStart = (int)ceil(px0 - 0.5f);
-		const int xEnd = (int)ceil(px1 - 0.5f);
+		int xStart = (int)ceil(px0);
+		int xEnd = (int)ceil(px1);
+
+		if (xStart < 0) {
+			xStart = 0;
+		}
+		else if (yStart > Buffer_size[0]) {
+			xStart = Buffer_size[0];
+
+		}
+		if (xEnd < 0) {
+			xEnd = 0;
+		}
+		else if (xEnd > Buffer_size[0]) {
+			xEnd = Buffer_size[0];
+
+		}
 
 		for (int x = xStart; x < xEnd; x++) {
 			PutPixel(x, y, 0, c);
@@ -89,21 +120,51 @@ void Graphic::DrawFlatTopTriangle(const vertix_tf& v0, const vertix_tf& v1, cons
 	}
 };
 
-void Graphic::DrawFlatBottomTriangle(const vertix_tf& v0, const vertix_tf& v1, const vertix_tf& v2, const Color& c) {
+void Graphic::DrawFlatBottomTriangle(const vertix& v0, const vertix& v1, const vertix& v2, const Color& c) {
 	//斜率倒数
 	double m0 = (v1.x - v0.x) / (v1.y - v0.y);
 	double m1 = (v2.x - v0.x) / (v2.y - v0.y);
 
 	//起始扫描线
-	const int yStart = (int)ceil(v0.y - 0.5f);
-	const int yEnd = (int)ceil(v2.y - 0.5f);
+	int yStart = (int)ceil(v0.y);
+	int yEnd = (int)ceil(v2.y);
+
+	if (yStart < 0) {
+		yStart = 0;
+	} else if (yStart > Buffer_size[1]) {
+		yStart = Buffer_size[1];
+
+	}
+	if (yEnd < 0) {
+		yEnd = 0;
+	}
+	else if (yEnd > Buffer_size[1]) {
+		yEnd = Buffer_size[1];
+
+	}
+
 
 	for (int y = yStart; y < yEnd; y++) {
 		const double px0 = m0 * (y + 0.5f - v0.y) + v0.x;
 		const double px1 = m1 * (y + 0.5f - v0.y) + v0.x;
 
-		const int xStart = (int)ceil(px0 - 0.5f);
-		const int xEnd = (int)ceil(px1 - 0.5f);
+		int xStart = (int)ceil(px0);
+		int xEnd = (int)ceil(px1);
+
+		if (xStart < 0) {
+			xStart = 0;
+		}
+		else if (yStart > Buffer_size[0]) {
+			xStart = Buffer_size[0];
+
+		}
+		if (xEnd < 0) {
+			xEnd = 0;
+		}
+		else if (xEnd > Buffer_size[0]) {
+			xEnd = Buffer_size[0];
+
+		}
 
 		for (int x = xStart; x < xEnd; x++) {
 			PutPixel(x, y, 0, c);
@@ -112,10 +173,10 @@ void Graphic::DrawFlatBottomTriangle(const vertix_tf& v0, const vertix_tf& v1, c
 	}
 };
 
-void Graphic::DrawTriangle(const vertix_tf& v0, const vertix_tf& v1, const vertix_tf& v2, Color& c) {
-	const vertix_tf* pv0 = &v0;
-	const vertix_tf* pv1 = &v1;
-	const vertix_tf* pv2 = &v2;
+void Graphic::DrawTriangle(const vertix& v0, const vertix& v1, const vertix& v2, Color& c) {
+	const vertix* pv0 = &v0;
+	const vertix* pv1 = &v1;
+	const vertix* pv2 = &v2;
 
 	//交换上下顺序
 	if (pv1->y < pv0->y)  std::swap(pv0, pv1);
@@ -124,18 +185,18 @@ void Graphic::DrawTriangle(const vertix_tf& v0, const vertix_tf& v1, const verti
 
 	//自然平顶三角形
 	if (pv1->y == pv0->y) {
-		if (pv1->x == pv0->x) std::swap(pv0, pv1);
+		if (pv1->x < pv0->x) std::swap(pv0, pv1);
 		DrawFlatTopTriangle(*pv0, *pv1, *pv2, c);
 	}
 	else if (pv1->y == pv2->y) {
-		if (pv1->x == pv2->x) std::swap(pv2, pv1);
+		if (pv1->x > pv2->x) std::swap(pv2, pv1);
 		DrawFlatBottomTriangle(*pv0, *pv1, *pv2, c);
 	}
 	else {
 		const double alphaSplit = (pv1->y - pv0->y) / (pv2->y - pv0->y);
-		const vertix_tf vi = { pv0->x + (pv2->x - pv0->x) * alphaSplit,
-									pv0->y + (pv2->y - pv0->y) * alphaSplit,
-									pv0->depth + (pv2->depth - pv0->depth) * alphaSplit };
+		const vertix vi = {	std::ceil(pv0->x + (pv2->x - pv0->x) * alphaSplit),
+									pv1->y,
+									pv0->z + (pv2->z - pv0->z) * alphaSplit };
 
 		if (pv1->x < vi.x) {
 			//major right

@@ -7,11 +7,6 @@ struct vertix {
     double x = 0, y = 0, z = 0;
 };
 
-struct vertix_tf {
-    long x = 0, y = 0;
-    double depth = 0;
-};
-
 struct Face {
     unsigned int index[3] = { 0,0,0 };
 };
@@ -26,7 +21,7 @@ struct Mmesh {
 
 //用来存转换后的mesh
 struct mesh_tf {
-    std::vector <vertix_tf> vertices = {};
+    std::vector <vertix> vertices = {};
     std::vector <vertix> normal_vectors = {};
     std::vector <vertix> textures_uv = {};
 };
@@ -78,16 +73,20 @@ private:
     static std::vector<double> BlueBuffer;
 
     static std::vector<double> DepthBuffer;
+
 public:
+
+
+
     void SetBuffer(unsigned long width, unsigned long height);
     void CleanBuffer();
 
     void PutPixel(long x, long y, double deepth, Color c);
     Color GetPixelColor(const long x, const long y);
 
-	void DrawFlatTopTriangle(const vertix_tf& v0, const vertix_tf& v1, const vertix_tf& v2, const Color& c);
-    void DrawFlatBottomTriangle(const vertix_tf& v0, const vertix_tf& v1, const vertix_tf& v2, const Color& c);
-	void DrawTriangle(const vertix_tf& v1, const vertix_tf& v2, const vertix_tf& v3, Color& c);
+	void DrawFlatTopTriangle(const vertix& v0, const vertix& v1, const vertix& v2, const Color& c);
+    void DrawFlatBottomTriangle(const vertix& v0, const vertix& v1, const vertix& v2, const Color& c);
+	void DrawTriangle(const vertix& v1, const vertix& v2, const vertix& v3, Color& c);
 
 
 };

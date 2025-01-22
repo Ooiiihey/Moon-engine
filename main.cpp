@@ -43,7 +43,7 @@ class Transform {
 
 private:
 //计算线在近平面的交点坐标new                相机                                                                                 一个点                         另一个点            输出(屏幕上坐标)
-inline void Get_CrossPoint(const Camera_data& Receive_camera,unsigned const long screen_in[2], const vertix& origin_1, const vertix& origin_2, vertix_tf& output) {
+inline void Get_CrossPoint(const Camera_data& Receive_camera,unsigned const long screen_in[2], const vertix& origin_1, const vertix& origin_2, vertix& output) {
     //待处理点和camera的front点的向量
     vertix vec1 = { Receive_camera.Forward_vec.x - origin_2.x + Receive_camera.Camera[0],
                              Receive_camera.Forward_vec.y - origin_2.y + Receive_camera.Camera[1],
@@ -71,9 +71,9 @@ inline void Get_CrossPoint(const Camera_data& Receive_camera,unsigned const long
         plane_vec.y = vec2.y * a+ origin_2.y - Receive_camera.Forward_vec.y - Receive_camera.Camera[1];
         plane_vec.z = vec2.z * a + origin_2.z - Receive_camera.Forward_vec.z - Receive_camera.Camera[2];
     };
-    output.x = static_cast<long>( (screen_in[0] >>1) + (Receive_camera.F * (screen_in[0] >> 1) * vecMath.dot(Receive_camera.Y_vec, plane_vec) / (tan(Receive_camera.FOV) * Receive_camera.nearPlane * vecMath.GetLength(Receive_camera.Y_vec) )) );
-    output.y = static_cast<long>( (screen_in[1] >>1) - (Receive_camera.F * (screen_in[0] >> 1) * vecMath.dot(Receive_camera.Z_vec, plane_vec) / (tan(Receive_camera.FOV) * Receive_camera.nearPlane * vecMath.GetLength(Receive_camera.Z_vec) )) );
-    output.depth = 0;
+    output.x = std::ceil( (screen_in[0] >>1) + (Receive_camera.F * (screen_in[0] >> 1) * vecMath.dot(Receive_camera.Y_vec, plane_vec) / (tan(Receive_camera.FOV) * Receive_camera.nearPlane * vecMath.GetLength(Receive_camera.Y_vec) )) );
+    output.y = std::ceil( (screen_in[1] >>1) - (Receive_camera.F * (screen_in[0] >> 1) * vecMath.dot(Receive_camera.Z_vec, plane_vec) / (tan(Receive_camera.FOV) * Receive_camera.nearPlane * vecMath.GetLength(Receive_camera.Z_vec) )) );
+    output.z = 0;
     return;
 }
 
@@ -104,7 +104,7 @@ inline void Get_NormalVector(Mmesh &cMesh) {
 // New                              摄像机                                                    分辨率                                     mesh                     输出数组mesh
 void Perspective(const Camera_data& Receive_camera, unsigned const long screen_in[2], Mmesh& TargetMesh, mesh_tf& out_mesh) {
     std::vector <bool> Pinfo, FTinfo;//点的可见性检查数组    //面的正面检查数组
-    std::vector <vertix_tf> Transformed_vertices;//转化到平面坐标轴上的顶点的临时数组
+    std::vector <vertix> Transformed_vertices;//转化到平面坐标轴上的顶点的临时数组
     //计算法向量
     TargetMesh.normal_vectors.clear();
     TargetMesh.normal_vectors.reserve(TargetMesh.faces.size());
@@ -113,7 +113,7 @@ void Perspective(const Camera_data& Receive_camera, unsigned const long screen_i
     for (const vertix& each_point : TargetMesh.vertices) {
         //临时值
         vertix  vec_P;
-        vertix_tf Transformed_P;
+        vertix Transformed_P;
         vec_P.x = each_point.x - Receive_camera.Camera[0];
         vec_P.y = each_point.y - Receive_camera.Camera[1];
         vec_P.z = each_point.z - Receive_camera.Camera[2];
@@ -132,9 +132,9 @@ void Perspective(const Camera_data& Receive_camera, unsigned const long screen_i
             vertix VecPlane = { vec_P.x * a - Receive_camera.Forward_vec.x,
                                            vec_P.y * a - Receive_camera.Forward_vec.y,
                                            vec_P.z * a - Receive_camera.Forward_vec.z };
-            Transformed_P.x = static_cast<long>((screen_in[0] >> 1) + (Receive_camera.F * (screen_in[0] >> 1) * vecMath.dot(Receive_camera.Y_vec, VecPlane) / (tan(Receive_camera.FOV) * Receive_camera.nearPlane * vecMath.GetLength(Receive_camera.Y_vec))));
-            Transformed_P.y = static_cast<long>((screen_in[1] >> 1) - (Receive_camera.F * (screen_in[0] >> 1) * vecMath.dot(Receive_camera.Z_vec, VecPlane) / (tan(Receive_camera.FOV) * Receive_camera.nearPlane * vecMath.GetLength(Receive_camera.Z_vec))));
-            Transformed_P.depth = depth - Receive_camera.nearPlane;   //用来存储Depth后面制作Dbuffer用
+            Transformed_P.x = std::ceil( (screen_in[0] >> 1) + (Receive_camera.F * (screen_in[0] >> 1) * vecMath.dot(Receive_camera.Y_vec, VecPlane) / (tan(Receive_camera.FOV) * Receive_camera.nearPlane * vecMath.GetLength(Receive_camera.Y_vec))) );
+            Transformed_P.y = std::ceil( (screen_in[1] >> 1) - (Receive_camera.F * (screen_in[0] >> 1) * vecMath.dot(Receive_camera.Z_vec, VecPlane) / (tan(Receive_camera.FOV) * Receive_camera.nearPlane * vecMath.GetLength(Receive_camera.Z_vec))) );
+            Transformed_P.z = depth - Receive_camera.nearPlane;   //用来存储Depth后面制作Dbuffer用
             Transformed_vertices.emplace_back(Transformed_P);
             //平面坐标轴映射，                                                                           坐标已适配direcX坐标系
         }
@@ -168,7 +168,7 @@ void Perspective(const Camera_data& Receive_camera, unsigned const long screen_i
             if (num == 3) continue; //排除完全不可见
             bool num_bool = (num == 1) ? TRUE : FALSE;
             unsigned int previous{}, next{}, medium{};//          前顶点        后顶点      中间点   (看情况各自分配是不可见点还是可见点)(索引值)
-            vertix_tf ClipOut_1, ClipOut_2;            //          切点1        切点2
+            vertix ClipOut_1, ClipOut_2;            //          切点1        切点2
             //for循环分辨情况//这样做是为了最后生成的点的数组仍然是正面顺时针的顺序
             for (int e = 0; e < 3; e++) {
                 if (num_bool ^ Pinfo[TargetMesh.faces[i].index[e]]) {//获得待处理点            //此处的异或运算分辨是1情况还是2情况
@@ -406,33 +406,43 @@ void Render_thread() {
 
         auto PSTcosttime_1 = std::chrono::high_resolution_clock::now();
 
-        /*
+
         
 
          //new test
         Graphic_func.CleanBuffer();
-        
-            for (unsigned int k = 0; k < out.vertices.size(); k+=3) {
-            Color c = {0.1, 0.1, 0.1};
+                
+        for (unsigned int k = 0; k < out.vertices.size(); k+=3) {
+            Color c = {0.5, 0.5, 0.5};
 
             Graphic_func.DrawTriangle(out.vertices[k], out.vertices[k+1], out.vertices[k+2], c);
 
         }
         
-                */
-
-        //here is a bug
         
 
+        for (unsigned int y = 0; y < ptrScreen[1]; ++y) {
+            for (unsigned int x = 0; x < ptrScreen[0]; ++x) {
+               Color p = Graphic_func.GetPixelColor(x,y);
+               if (p.R == 0 && p.G == 0 && p.B == 0) continue;
+               COLORREF color = RGB(p.R * 255, p.G * 255, p.B * 255);
+               putpixel(x,y, color);
+               
+               //plz重写此处读取帧缓存
+            }
+        }
 
-
+        auto end = std::chrono::high_resolution_clock::now();    //测帧
+        
+        
+#if 0
         //临时实现光栅化
         for (unsigned int k = 0; k < out.vertices.size(); k += 3) {
-            POINT triangle[] = { out.vertices[k].x , out.vertices[k].y ,out.vertices[k + 1].x , out.vertices[k + 1].y , out.vertices[k + 2].x , out.vertices[k + 2].y };
+            POINT triangle[] = { static_cast<long>(out.vertices[k].x) , static_cast<long>(out.vertices[k].y) ,static_cast<long>(out.vertices[k + 1].x) , static_cast<long>(out.vertices[k + 1].y) , static_cast<long>(out.vertices[k + 2].x) , static_cast<long>(out.vertices[k + 2].y) };
             fillpolygon(triangle, 3);
         }
-        
-        auto end = std::chrono::high_resolution_clock::now();    //测帧
+#endif
+
         std::chrono::duration<double> elapsed_seconds = end - start;
         Frames = 1/elapsed_seconds.count();
         faces_num = out.vertices.size() / 3;
@@ -441,7 +451,7 @@ void Render_thread() {
         double PSTcosttime_process = 1/PSTcosttime.count();
 
 
-        std::string title_str = "MOON_Engine_Build_version_0.4.3  Compilation_Date:";
+        std::string title_str = "MOON_Engine_Alpha_0.4.4  Compilation_Date:";
         title_str.append(__DATE__);
         std::string info = "FPS: " + std::to_string(Frames);
         std::string info2 = ("  PST_origin_FPS:" + std::to_string(PSTcosttime_process));
@@ -454,6 +464,7 @@ void Render_thread() {
         outtextxy(4, 4, title);
         outtextxy(4, textheight(title) + 4, Frames_char);
         outtextxy(4, textheight(title) + textheight(Frames_char) + 4, "By_H  press ESC to close this program!");
+
         fillcircle(ptrScreen[0] / 2, ptrScreen[1] / 2, 2);
 
         EndBatchDraw();
