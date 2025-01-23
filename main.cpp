@@ -2,21 +2,21 @@
 
 #include <algorithm>
 #include<graphics.h>  //EasyX图形库
-#include <iostream>
 #include <shared_mutex>
 #include <string>
 #include <thread>
 
 #include <windows.h>
 
-Graphics Graphic_func;
+Graphics Graphics_func;
+Transform Tf_func;
 //moon-engine
 
 //分辨率
 long screen_1[] = { 960, 540 };
 long screen_2[] = {1280, 720};
 long screen_3[] = { 640, 480 };
-long* ptrScreen = screen_1;
+long* ptrScreen = screen_3;
 //初始化
 
 //创建一个相机
@@ -39,7 +39,7 @@ void printA(T const(&arr)[n])
 }
 #endif
 
-Transform Tf_func;
+
 
 // 函数用于将鼠标移动到屏幕中央
 void MoveMouseToCenter() {
@@ -65,7 +65,7 @@ void camera_set( Camera_data &Target_camera, double revolve_incline, double revo
     
     //合并过来的移动代码
     if (moveF != 0) {
-        double a_front = 1 - (moveF / Target_camera.nearPlane);
+        double a_front = 1 - (moveF / Target_camera.NearPlane);
 
         Target_camera.Camera[0] = Target_camera.Camera[0] - Target_camera.Forward_vec.x * a_front + Target_camera.Forward_vec.x;
         Target_camera.Camera[1] = Target_camera.Camera[1] -Target_camera.Forward_vec.y * a_front + Target_camera.Forward_vec.y;
@@ -175,6 +175,8 @@ struct cube {
 
     int Ctriangle[12][3] = {
         {0,5,1},{4,5,0},{7,2,3} ,{2,7,6} ,{7,5,6}, {5,4,6} ,{3,2,1} ,{2,0,1} ,{7,3,1},{5,7,1},{0,6,4},{0,2,6} };
+
+    double Ccolor[12][3] = {{0.1, 0.1, 0.1},   {0.1, 0.1, 0.1},  {0.7, 0.7, 0.7},   {0.7, 0.7, 0.7}, {0.4, 0.4, 0.4},  {0.4, 0.4, 0.4},  {0.1, 0.1, 0.1},  {0.1, 0.1, 0.1}, {0.3, 0.3, 0.3}, {0.3, 0.3, 0.3}, {0.1, 0.1, 0.1},  {0.1, 0.1, 0.1}};
 };
 cube cubeData;
 
@@ -207,13 +209,19 @@ void Render_thread() {
                 each_face.index[2] = cubeData.Ctriangle[i][2];
             }
 
+            for (int c = 0; c < sizeof(cubeData.Ccolor) / sizeof(cubeData.Ccolor[0]); ++c) {
+                Color& each_color = cube_mesh.color.emplace_back();
+                each_color.R = cubeData.Ccolor[c][0] ;
+                each_color.G = cubeData.Ccolor[c][1];
+                each_color.B = cubeData.Ccolor[c][2];
+            }
             mesh_list.emplace_back(cube_mesh);
         }
     }
     }
 
     //帧缓存设置
-    Graphic_func.SetBuffer(ptrScreen[0], ptrScreen[1]);
+    Graphics_func.SetBuffer(ptrScreen[0], ptrScreen[1]);
 
     while (TRUE) {
         if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) {
@@ -226,7 +234,7 @@ void Render_thread() {
         BeginBatchDraw();
         cleardevice(); // 清空屏幕
 
-        auto PSTcosttime_0 = std::chrono::high_resolution_clock::now();
+        auto tech_start = std::chrono::high_resolution_clock::now();
 
         mesh_tf out;
         CameraData_Remain.lock();
@@ -235,29 +243,20 @@ void Render_thread() {
         }
         CameraData_Remain.unlock();
 
-        auto PSTcosttime_1 = std::chrono::high_resolution_clock::now();
 
-
-        
-
-         //new test
-        Graphic_func.CleanBuffer();
-                
-        for (unsigned int k = 0; k < out.vertices.size(); k+=3) {
-            Color c = {0.5, 0.5, 0.5};
-
-            Graphic_func.DrawTriangle(out.vertices[k], out.vertices[k+1], out.vertices[k+2], c);
-
+        Graphics_func.CleanBuffer();
+        for (unsigned int k = 0; k < out.vertices_2d.size(); k+=3) {
+            Color c = out.color[k / 3];
+            Graphics_func.DrawTriangle(out.vertices_2d[k], out.vertices_2d[k+1], out.vertices_2d[k+2], c);
         }
-        
-        
-        
-        
-       
-       
+
+        auto tech_end = std::chrono::high_resolution_clock::now();
+
+
+        //此处io性能瓶颈
         for (int y = 0; y < ptrScreen[1]; ++y) {
             for (int x = 0; x < ptrScreen[0]; ++x) {
-               Color p = Graphic_func.GetPixelColor(x,y);
+               Color p = Graphics_func.GetPixelColor(x,y);
                if (p.R == 0 && p.G == 0 && p.B == 0) continue;
                COLORREF color = RGB(p.R * 255, p.G * 255, p.B * 255);
                putpixel(x,y, color);
@@ -266,14 +265,11 @@ void Render_thread() {
             }
         }
         
-        
-        
-        
-        
+          
         /*
         //临时实现光栅化
-        for (unsigned int k = 0; k < out.vertices.size(); k += 3) {
-            POINT triangle[] = { static_cast<long>(out.vertices[k].x) , static_cast<long>(out.vertices[k].y) ,static_cast<long>(out.vertices[k + 1].x) , static_cast<long>(out.vertices[k + 1].y) , static_cast<long>(out.vertices[k + 2].x) , static_cast<long>(out.vertices[k + 2].y) };
+        for (unsigned int k = 0; k < out.vertices_2d.size(); k += 3) {
+            POINT triangle[] = { static_cast<long>(out.vertices_2d[k].x) , static_cast<long>(out.vertices_2d[k].y) ,static_cast<long>(out.vertices_2d[k + 1].x) , static_cast<long>(out.vertices_2d[k + 1].y) , static_cast<long>(out.vertices_2d[k + 2].x) , static_cast<long>(out.vertices_2d[k + 2].y) };
             fillpolygon(triangle, 3);
         }
         */
@@ -282,16 +278,16 @@ void Render_thread() {
         auto end = std::chrono::high_resolution_clock::now();    //测帧
         std::chrono::duration<double> elapsed_seconds = end - start;
         Frames = 1/elapsed_seconds.count();
-        faces_num = out.vertices.size() / 3;
+        faces_num = out.vertices_2d.size() / 3;
 
-        std::chrono::duration<double> PSTcosttime = PSTcosttime_1 - PSTcosttime_0;
+        std::chrono::duration<double> PSTcosttime = tech_end - tech_start;
         double PSTcosttime_process = 1/PSTcosttime.count();
 
 
-        std::string title_str = "MOON_Engine_Alpha_0.4.4  Compilation_Date:";
+        std::string title_str = "MOON_Engine_Alpha_0.4.5  Compilation_Date:";
         title_str.append(__DATE__);
         std::string info = "FPS: " + std::to_string(Frames);
-        std::string info2 = ("  PST_origin_FPS:" + std::to_string(PSTcosttime_process));
+        std::string info2 = ("  Theoretical_FPS:" + std::to_string(PSTcosttime_process));
         std::string Faces_number = "  Faces: " + std::to_string(faces_num);
         info.append(info2);
         info.append(Faces_number);

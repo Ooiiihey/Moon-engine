@@ -8,6 +8,9 @@ std::vector<double> Graphics::GreenBuffer;
 std::vector<double> Graphics::BlueBuffer;
 std::vector<double> Graphics::DepthBuffer;
 
+ inline double Graphics::To_unLineDepth(Camera_data& Rec_camera, double& depth){
+	return Rec_camera.FarPlane * ( depth - Rec_camera.NearPlane ) / (depth * ( Rec_camera.FarPlane - Rec_camera.NearPlane));
+}
 
 void Graphics::SetBuffer(long width, long height) {
 	if (width == 0 || height == 0) {

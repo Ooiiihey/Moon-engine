@@ -43,3 +43,7 @@ double dot(const vertex& vec1, const vertex& vec2) {
 void cross(const vertex& vec1, const vertex& vec2, vertex &vec_cross) {
     vec_cross = { (vec2.y * vec1.z - vec2.z * vec1.y), (vec2.z * vec1.x - vec2.x * vec1.z), (vec2.x * vec1.y - vec2.y * vec1.x) };
 };
+
+void rotate() {
+
+}
