@@ -1,11 +1,5 @@
 #include "moon.h"
 
-long Buffer::Buffer_size[2];
-std::vector<double> Buffer::RedBuffer;
-std::vector<double> Buffer::GreenBuffer;
-std::vector<double> Buffer::BlueBuffer;
-std::vector<double> Buffer::DepthBuffer;
-
 
 void Buffer::SetBuffer(long width, long height) {
 	if (width < 0 || height <= 0) {

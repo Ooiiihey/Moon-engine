@@ -1,7 +1,5 @@
 #include "moon.h"
 
-double Graphics::coeffs_[15];
-double Graphics::area_triangle;
 
 
 inline double Graphics::To_unLineDepth(const Camera_data& Rec_camera, double depth) {

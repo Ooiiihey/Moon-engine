@@ -10,7 +10,7 @@ void Render(const Camera_data& Receive_camera, Buffer &FrameBuffer, const long s
 
 	Tf_func.Perspective(Receive_camera, screen_in, TargetMesh, TransformOut);
 
-    //Rasterize
+    //temporary Rasterize
     for (unsigned int k = 0; k < TransformOut.vertices_2d.size(); k += 3) {
         Color c = TransformOut.color[k / 3];
         Graphics_func.DrawTriangle(Receive_camera, FrameBuffer, TransformOut.vertices_2d[k], TransformOut.vertices_2d[k + 1], TransformOut.vertices_2d[k + 2], c);

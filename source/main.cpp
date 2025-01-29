@@ -1,7 +1,5 @@
 #include "moon.h"
 
-//#include<graphics.h>  //EasyX图形库
-
 #include <string>
 #include <thread>
 #include <iostream>
@@ -15,11 +13,17 @@ long screen_1[] = { 960, 540 };
 long screen_2[] = {1280, 720};
 long screen_3[] = { 640, 480 };
 long screen_4[] = { 2560, 1600 };
+long screen_5[] = { 192, 108 };
+
 long* ptrScreen = screen_1;
+long* ptrScreenTEST = screen_5;
 //初始化
 
-//创建一个相机
+//创建相机
 Camera_data Camera_1;
+
+Camera_data Camera_2;
+
 
 Camera_data sharedStruct;
 std::mutex CameraData_Remain;
@@ -67,23 +71,23 @@ void camera_set( Camera_data &Target_camera, double revolve_incline, double revo
     if (moveF != 0) {
         double a_front = 1 - (moveF / Target_camera.NearPlane);
 
-        Target_camera.Camera[0] = Target_camera.Camera[0] - Target_camera.Forward_vec.x * a_front + Target_camera.Forward_vec.x;
-        Target_camera.Camera[1] = Target_camera.Camera[1] -Target_camera.Forward_vec.y * a_front + Target_camera.Forward_vec.y;
-        Target_camera.Camera[2] = Target_camera.Camera[2] -Target_camera.Forward_vec.z * a_front + Target_camera.Forward_vec.z;
+        Target_camera.CameraPos[0] = Target_camera.CameraPos[0] - Target_camera.Forward_vec.x * a_front + Target_camera.Forward_vec.x;
+        Target_camera.CameraPos[1] = Target_camera.CameraPos[1] -Target_camera.Forward_vec.y * a_front + Target_camera.Forward_vec.y;
+        Target_camera.CameraPos[2] = Target_camera.CameraPos[2] -Target_camera.Forward_vec.z * a_front + Target_camera.Forward_vec.z;
     }//前向
 
     if (moveH != 0) {
-        Vertex horizon_vec = { Target_camera.Camera[0] - Target_camera.move_vec.x, Target_camera.Camera[1] - Target_camera.move_vec.y };
+        Vertex horizon_vec = { Target_camera.CameraPos[0] - Target_camera.move_vec.x, Target_camera.CameraPos[1] - Target_camera.move_vec.y };
         double a_horizon = 1 - (moveH / GetLength(horizon_vec));
 
-        Target_camera.Camera[0] = horizon_vec.x * a_horizon + Target_camera.move_vec.x;
-        Target_camera.Camera[1] = horizon_vec.y * a_horizon + Target_camera.move_vec.y;
-        Target_camera.move_vec.x = Target_camera.move_vec.x + Target_camera.Camera[0];
-        Target_camera.move_vec.y = Target_camera.move_vec.y + Target_camera.Camera[1];
+        Target_camera.CameraPos[0] = horizon_vec.x * a_horizon + Target_camera.move_vec.x;
+        Target_camera.CameraPos[1] = horizon_vec.y * a_horizon + Target_camera.move_vec.y;
+        Target_camera.move_vec.x = Target_camera.move_vec.x + Target_camera.CameraPos[0];
+        Target_camera.move_vec.y = Target_camera.move_vec.y + Target_camera.CameraPos[1];
     }//横向
 
     if (moveZ != 0) {
-        Target_camera.Camera[2] += moveZ;
+        Target_camera.CameraPos[2] += moveZ;
     }//纵向
 
     //相机倾斜
@@ -143,11 +147,11 @@ void camera_set( Camera_data &Target_camera, double revolve_incline, double revo
         //移动用的辅助点旋转
         Target_camera.move_vec.y = Target_camera.move[1] * cosV + Target_camera.move[0] * sinV;
         Target_camera.move_vec.x = Target_camera.move[0] * cosV - Target_camera.move[1] * sinV;
-        Target_camera.move_vec.x = Target_camera.move_vec.x + Target_camera.Camera[0];
-        Target_camera.move_vec.y = Target_camera.move_vec.y + Target_camera.Camera[1];
+        Target_camera.move_vec.x = Target_camera.move_vec.x + Target_camera.CameraPos[0];
+        Target_camera.move_vec.y = Target_camera.move_vec.y + Target_camera.CameraPos[1];
     } else {
-        Target_camera.move_vec.x = Target_camera.move[0] + Target_camera.Camera[0];
-        Target_camera.move_vec.y = Target_camera.move[1] + Target_camera.Camera[1];
+        Target_camera.move_vec.x = Target_camera.move[0] + Target_camera.CameraPos[0];
+        Target_camera.move_vec.y = Target_camera.move[1] + Target_camera.CameraPos[1];
     }
 
 
@@ -182,149 +186,20 @@ cube cubeData;
 
 
 
-//old
-#if 0 
-void Render_thread() {
-    initgraph(ptrScreen[0], ptrScreen[1]);
-    setbkcolor(BLACK);
-    settextcolor(GREEN);//文字颜色
-    setlinecolor(RGB(255, 255, 255)); // 线框颜色
-    setfillcolor(RGB(128, 128, 128));
-
-    std::vector <Mmesh> mesh_list;
-    //cube test压力测试
-    for (int h = -2; h < 0;h +=2) {
-    for (int t = -20; t < 20; t += 2) {
-        for (int w = -20; w < 20;w +=2) {
-            Mmesh cube_mesh;
-            for (int i = 0; i < sizeof(cubeData.Cpoint) / sizeof(cubeData.Cpoint[0]); i += 1) {
-                vertex& each_point = cube_mesh.vertices.emplace_back();
-                each_point.x = cubeData.Cpoint[i][0] + t;
-                each_point.y = cubeData.Cpoint[i][1] + w;
-                each_point.z = cubeData.Cpoint[i][2] + h ;
-            }
-            for (int i = 0; i < sizeof(cubeData.Ctriangle) / sizeof(cubeData.Ctriangle[0]); i += 1) {
-                Face& each_face = cube_mesh.faces.emplace_back();
-                each_face.index[0] = cubeData.Ctriangle[i][0];
-                each_face.index[1] = cubeData.Ctriangle[i][1];
-                each_face.index[2] = cubeData.Ctriangle[i][2];
-            }
-
-            for (int c = 0; c < sizeof(cubeData.Ccolor) / sizeof(cubeData.Ccolor[0]); ++c) {
-                Color& each_color = cube_mesh.color.emplace_back();
-                each_color.R = cubeData.Ccolor[c][0] ;
-                each_color.G = cubeData.Ccolor[c][1];
-                each_color.B = cubeData.Ccolor[c][2];
-            }
-            mesh_list.emplace_back(cube_mesh);
-        }
-    }
-    }
-
-    //帧缓存设置
-    Graphics_func.SetBuffer(ptrScreen[0], ptrScreen[1]);
-
-    while (TRUE) {
-        if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) {
-            return;
-        }
-        int faces_num = 0;
-        double Frames;
-        auto start = std::chrono::high_resolution_clock::now();   //测帧
-
-        BeginBatchDraw();
-        cleardevice(); // 清空屏幕
-
-        auto tech_start = std::chrono::high_resolution_clock::now();
-
-        mesh_tf out;
-        CameraData_Remain.lock();
-        for (Mmesh& each_mesh : mesh_list) {
-            Tf_func.Perspective(Camera_1, ptrScreen, each_mesh, out);
-        }
-        CameraData_Remain.unlock();
-
-
-        Graphics_func.CleanBuffer();
-        for (unsigned int k = 0; k < out.vertices_2d.size(); k+=3) {
-            Color c = out.color[k / 3];
-            Graphics_func.DrawTriangle(out.vertices_2d[k], out.vertices_2d[k+1], out.vertices_2d[k+2], c);
-        }
-
-        auto tech_end = std::chrono::high_resolution_clock::now();
-
-
-        //此处io性能瓶颈
-        for (int y = 0; y < ptrScreen[1]; ++y) {
-            for (int x = 0; x < ptrScreen[0]; ++x) {
-               Color p = Graphics_func.GetPixelColor(x,y);
-               if (p.R == 0 && p.G == 0 && p.B == 0) continue;
-               COLORREF color = RGB(p.R * 255, p.G * 255, p.B * 255);
-               putpixel(x,y, color);
-               
-               //plz重写此处读取帧缓存
-            }
-        }
-        
-          
-        /*
-        //临时实现光栅化
-        for (unsigned int k = 0; k < out.vertices_2d.size(); k += 3) {
-            POINT triangle[] = { static_cast<long>(out.vertices_2d[k].x) , static_cast<long>(out.vertices_2d[k].y) ,static_cast<long>(out.vertices_2d[k + 1].x) , static_cast<long>(out.vertices_2d[k + 1].y) , static_cast<long>(out.vertices_2d[k + 2].x) , static_cast<long>(out.vertices_2d[k + 2].y) };
-            fillpolygon(triangle, 3);
-        }
-        */
-
-
-        auto end = std::chrono::high_resolution_clock::now();    //测帧
-        std::chrono::duration<double> elapsed_seconds = end - start;
-        Frames = 1/elapsed_seconds.count();
-        faces_num = out.vertices_2d.size() / 3;
-
-        std::chrono::duration<double> PSTcosttime = tech_end - tech_start;
-        double PSTcosttime_process = 1/PSTcosttime.count();
-
-
-        std::string title_str = "MOON_Engine_Alpha_0.4.5  Compilation_Date:";
-        title_str.append(__DATE__);
-        std::string info = "FPS: " + std::to_string(Frames);
-        std::string info2 = ("  Theoretical_FPS:" + std::to_string(PSTcosttime_process));
-        std::string Faces_number = "  Faces: " + std::to_string(faces_num);
-        info.append(info2);
-        info.append(Faces_number);
-
-        const char* title = title_str.c_str();
-        const char* Frames_char = info.c_str();
-        outtextxy(4, 4, title);
-        outtextxy(4, textheight(title) + 4, Frames_char);
-        outtextxy(4, textheight(title) + textheight(Frames_char) + 4, "By_H  press ESC to close this program!");
-
-        fillcircle(ptrScreen[0] / 2, ptrScreen[1] / 2, 2);
-
-        FlushBatchDraw();
-    }
-
-}
-#endif
-
-
-//new codes
 //under development
 void Render_thread_V2() {
 
     SDL_LogSetPriority(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_VERBOSE);
 
-    SDL_Window* window = SDL_CreateWindow("Moon_engine_Alpha_0.5.1", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, ptrScreen[0], ptrScreen[1], SDL_WINDOW_RESIZABLE);
-
+    SDL_Window* window = SDL_CreateWindow(ENGINE_NAME, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, ptrScreen[0], ptrScreen[1], SDL_WINDOW_RESIZABLE);
 
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
-
 
     SDL_Texture* texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, ptrScreen[0], ptrScreen[1]);
 
     std::vector <Mmesh> mesh_list;
 
-    //cube test压力测试
+    //cube
     for (int h = -2; h < 0; h += 2) {
         for (int t = -20; t < 20; t += 2) {
             for (int w = -20; w < 20; w += 2) {
@@ -365,6 +240,11 @@ void Render_thread_V2() {
     Buffer Framebuffer_1;
     Framebuffer_1.SetBuffer(ptrScreen[0], ptrScreen[1]);
 
+    //double camera test
+    Buffer Framebuffer_2;
+    Framebuffer_2.SetBuffer(ptrScreenTEST[0], ptrScreenTEST[1]);
+
+
     SDL_Event event{};
     while (true) {
         SDL_PollEvent(&event);
@@ -392,41 +272,31 @@ void Render_thread_V2() {
         auto start = std::chrono::high_resolution_clock::now();   //测帧
 
         Framebuffer_1.CleanBuffer();
+        Framebuffer_2.CleanBuffer();
 
         //代替互斥锁的作用
         Camera_data tmpCamera_1 = Camera_1;
+        Camera_data tmpCamera_2 = Camera_2;
         
         for (Mmesh & each_mesh : mesh_list) {
             Render(tmpCamera_1, Framebuffer_1, ptrScreen, each_mesh);
         }
         
+        //new
+        //double camera test
+        Render(tmpCamera_2, Framebuffer_2, ptrScreenTEST, testModel);
+
         auto tech_end = std::chrono::high_resolution_clock::now();
 
-        /*old
-        SDL_RenderClear(renderer);
-
-        //此处io性能瓶颈
-        for (int y = 0; y < ptrScreen[1]; ++y) {
-            for (int x = 0; x < ptrScreen[0]; ++x) {
-                Color p = Graphics_func.GetPixelColor(x, y);
-                if (p.R == 0 && p.G == 0 && p.B == 0) continue; 
-                SDL_PutPixel(renderer, x, y, p.R, p.G, p.B, 1);
-                
-                //plz重写此处读取帧缓存
-            }
-        }
-        
-        SDL_RenderPresent(renderer);
-        
-        */
-        
 
         // 获取纹理的像素数据
         // 将帧缓存数据更新到纹理
         int pitch;
         void* pixels;
         SDL_LockTexture(texture, nullptr, &pixels, &pitch);
+
         uint32_t* pixelData = static_cast<uint32_t*>(pixels);
+
         for (int y = 0; y < ptrScreen[1]; ++y) {
             for (int x = 0; x < ptrScreen[0]; ++x) {
                 Color p = Framebuffer_1.GetPixelColor(x, y);
@@ -439,8 +309,6 @@ void Render_thread_V2() {
                 uint8_t g = static_cast<uint8_t>(p.G * 255.0);
                 uint8_t b = static_cast<uint8_t>(p.B * 255.0);
                 
-
-
                 //test codes
                 //test render depth picture
                 /*
@@ -455,6 +323,25 @@ void Render_thread_V2() {
             }
         }
         
+        //new
+        //double camera test
+        //test depth test
+        for (int y = 0; y < ptrScreenTEST[1]; ++y) {
+            for (int x = 0; x < ptrScreenTEST[0]; ++x) {
+                //Color p = Framebuffer_2.GetPixelColor(x, y);
+                double D = Framebuffer_2.GetDepth(x, y);
+
+                uint8_t r = static_cast<uint8_t>(D * 255.0);
+                uint8_t g = static_cast<uint8_t>(D * 255.0);
+                uint8_t b = static_cast<uint8_t>(D * 255.0);
+
+                uint32_t pixel = (255 << 24) | (r << 16) | (g << 8) | b;
+                int index = y * (pitch / sizeof(uint32_t)) + x;
+                pixelData[index] = pixel;
+            }
+        }
+
+
         SDL_UnlockTexture(texture);
 
 
@@ -504,7 +391,7 @@ void control_thread()
     double Control[] = {0,0,0,0,0,0};
     double speed = 0.03;
 
-    Camera_1.Camera[2] = 1;//更改camera初始位置示范
+    //Camera_1.CameraPos[2] = 1;//更改camera初始位置示范
 
     bool Puase = false;
     MoveMouseToCenter();
@@ -602,6 +489,9 @@ void control_thread()
         }
 
         camera_set(Camera_1,Control[0], Control[1], Control[2], Control[3], Control[4], Control[5]);
+
+        //double camera test
+        camera_set(Camera_2, Control[0], Control[1], Control[2], Control[3], Control[4], Control[5]);
 
 
 

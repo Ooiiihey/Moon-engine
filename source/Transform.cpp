@@ -4,9 +4,9 @@
 //计算线在近平面的交点坐标                          相机                                                                                                一个点                         另一个点            输出(屏幕上坐标)
  inline void Transform::Get_CrossPoint(const Camera_data& Receive_camera, const long screen_in[2], const Vertex& origin_1, const Vertex& origin_2, Vertex& out_vec_3d) {
     //待处理点和camera的front点的向量
-    Vertex vec1 = { Receive_camera.Forward_vec.x - origin_2.x + Receive_camera.Camera[0],
-                                Receive_camera.Forward_vec.y - origin_2.y + Receive_camera.Camera[1],
-                                Receive_camera.Forward_vec.z - origin_2.z + Receive_camera.Camera[2] };
+    Vertex vec1 = { Receive_camera.Forward_vec.x - origin_2.x + Receive_camera.CameraPos[0],
+                                Receive_camera.Forward_vec.y - origin_2.y + Receive_camera.CameraPos[1],
+                                Receive_camera.Forward_vec.z - origin_2.z + Receive_camera.CameraPos[2] };
     //待处理点和另一点的向量
     Vertex vec2 = { origin_1.x - origin_2.x,
                                 origin_1.y - origin_2.y,
@@ -15,9 +15,9 @@
     double a = dot(Receive_camera.Forward_vec, vec1) / dot(vec2, Receive_camera.Forward_vec);    //转换算法(已化简)
     if (a == 0) {
         //恰好距离零时处理
-        out_vec_3d.x = origin_2.x - Receive_camera.Camera[0];
-        out_vec_3d.y = origin_2.y - Receive_camera.Camera[1];
-        out_vec_3d.z = origin_2.z - Receive_camera.Camera[2];
+        out_vec_3d.x = origin_2.x - Receive_camera.CameraPos[0];
+        out_vec_3d.y = origin_2.y - Receive_camera.CameraPos[1];
+        out_vec_3d.z = origin_2.z - Receive_camera.CameraPos[2];
     }
     else {
         /*old
@@ -25,9 +25,9 @@
                                             (vec2.y * distance) / (cosV * vec2_Len) + origin_2.y,
                                             (vec2.z * distance) / (cosV * vec2_Len) + origin_2.z };
         */
-        out_vec_3d.x = vec2.x * a + origin_2.x - Receive_camera.Camera[0];
-        out_vec_3d.y = vec2.y * a + origin_2.y - Receive_camera.Camera[1];
-        out_vec_3d.z = vec2.z * a + origin_2.z - Receive_camera.Camera[2];
+        out_vec_3d.x = vec2.x * a + origin_2.x - Receive_camera.CameraPos[0];
+        out_vec_3d.y = vec2.y * a + origin_2.y - Receive_camera.CameraPos[1];
+        out_vec_3d.z = vec2.z * a + origin_2.z - Receive_camera.CameraPos[2];
     };
     return;
 }
@@ -88,9 +88,9 @@ void Transform::Perspective(const Camera_data& Receive_camera, const long screen
         //临时值
         Vertex  vec_P;
         Vertex Transformed_P;
-        vec_P.x = each_point.x - Receive_camera.Camera[0];
-        vec_P.y = each_point.y - Receive_camera.Camera[1];
-        vec_P.z = each_point.z - Receive_camera.Camera[2];
+        vec_P.x = each_point.x - Receive_camera.CameraPos[0];
+        vec_P.y = each_point.y - Receive_camera.CameraPos[1];
+        vec_P.z = each_point.z - Receive_camera.CameraPos[2];
 
         double dotValue = dot(Receive_camera.Forward_vec, vec_P);
         if (double depth = (dotValue / Receive_camera.NearPlane); depth >= Receive_camera.NearPlane) {
@@ -113,7 +113,7 @@ void Transform::Perspective(const Camera_data& Receive_camera, const long screen
 
     //以面为单位将每个角顶索引，并二次分割处理有不可见点的平面（一个点不可见的情况；两个点不可见的情况；三个点都不可见的情况）
     for (int i = 0; i < TargetMesh.faces.size(); ++i) {
-        double vecTest[3] = { TargetMesh.vertices[TargetMesh.faces[i].index[0]].x - Receive_camera.Camera[0], TargetMesh.vertices[TargetMesh.faces[i].index[0]].y - Receive_camera.Camera[1], TargetMesh.vertices[TargetMesh.faces[i].index[0]].z - Receive_camera.Camera[2] };
+        double vecTest[3] = { TargetMesh.vertices[TargetMesh.faces[i].index[0]].x - Receive_camera.CameraPos[0], TargetMesh.vertices[TargetMesh.faces[i].index[0]].y - Receive_camera.CameraPos[1], TargetMesh.vertices[TargetMesh.faces[i].index[0]].z - Receive_camera.CameraPos[2] };
         //剔除背面
         //bool can_see = (vecTest[0] * TargetMesh.normal_vectors[i].x + vecTest[1] * TargetMesh.normal_vectors[i].y + vecTest[2] * TargetMesh.normal_vectors[i].z) < 0 ? true : false;
         if ( (vecTest[0] * TargetMesh.normal_vectors[i].x + vecTest[1] * TargetMesh.normal_vectors[i].y + vecTest[2] * TargetMesh.normal_vectors[i].z) >= 0) continue;
@@ -155,8 +155,8 @@ void Transform::Perspective(const Camera_data& Receive_camera, const long screen
             CameraSpace_to_ScreenSpace(Receive_camera, screen_in, ClipOut_3d_1, ClipOut_1);
             CameraSpace_to_ScreenSpace(Receive_camera, screen_in, ClipOut_3d_2, ClipOut_2);
 
-            ClipOut_1.z = 1/Receive_camera.NearPlane; //逆深度
-            ClipOut_2.z = 1/Receive_camera.NearPlane;
+            ClipOut_1.z = 1 / Receive_camera.NearPlane; //逆深度
+            ClipOut_2.z = 1 / Receive_camera.NearPlane;
             if (num_bool) {
                 out_mesh.vertices_2d.emplace_back(Transformed_vertices[previous]);
                 out_mesh.vertices_2d.emplace_back(ClipOut_1);

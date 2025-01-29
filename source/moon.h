@@ -6,6 +6,7 @@
 #include <SDL.h>
 //use SDL 2
 
+#define ENGINE_NAME "Moon_engine_Alpha_v0.5.3"
 #define PI 3.14159265358979
 
 //数据类型
@@ -48,10 +49,12 @@ struct mesh_tf {
 struct Camera_data {
     //HFOV水平视野  
     double FOV = 40 * PI / 180;
-    double Camera[3] = { 0, 0, 0 };  //摄像机位置（实时）
+    double F = 1;    //f焦距(默认1)
     const double NearPlane = 0.04;   //近平面距离(运行时不可变)
     const double FarPlane = 4000;
-    double F = 1;    //f焦距(默认1)
+
+    double CameraPos[3] = { 0, 0, 0 };  //摄像机位置（实时）
+
     const double Forward[3] = { NearPlane, 0, 0 },
         y[3] = { NearPlane, -tan(FOV) * NearPlane, 0 },
         z[3] = { NearPlane, 0, tan(FOV) * NearPlane },
@@ -67,11 +70,11 @@ struct Camera_data {
 
 
 struct Buffer {
-    static long Buffer_size[2];
-    static std::vector<double> RedBuffer;
-    static std::vector<double> GreenBuffer;
-    static std::vector<double> BlueBuffer;
-    static std::vector<double> DepthBuffer;
+    long Buffer_size[2];
+    std::vector<double> RedBuffer;
+    std::vector<double> GreenBuffer;
+    std::vector<double> BlueBuffer;
+    std::vector<double> DepthBuffer;
 
     void SetBuffer(long width, long height);
     void CleanBuffer();
@@ -82,7 +85,6 @@ struct Buffer {
     bool CompareDepth_Smaller(const long x, const long y, double depth);
 
     double GetDepth(const long x, const long y);
-
 
 };
 
@@ -110,8 +112,8 @@ public:
 class Graphics {
 private:
     //临时项
-    static double coeffs_[15];
-    static double area_triangle;
+    double coeffs_[15];
+    double area_triangle;
 
     inline double To_unLineDepth(const Camera_data& Rec_camera, double depth);
 
