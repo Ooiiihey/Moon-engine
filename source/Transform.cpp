@@ -2,13 +2,13 @@
 
 
 //计算线在近平面的交点坐标                          相机                                                                                                一个点                         另一个点            输出(屏幕上坐标)
- inline void Transform::Get_CrossPoint(const Camera_data& Receive_camera, const long screen_in[2], const Vertex& origin_1, const Vertex& origin_2, Vertex& out_vec_3d) {
+ inline void Transform::Get_CrossPoint(const Camera_data& Receive_camera, const long screen_in[2], const Vec3& origin_1, const Vec3& origin_2, Vec3& out_vec_3d) {
     //待处理点和camera的front点的向量
-    Vertex vec1 = { Receive_camera.Forward_vec.x - origin_2.x + Receive_camera.CameraPos[0],
+    Vec3 vec1 = { Receive_camera.Forward_vec.x - origin_2.x + Receive_camera.CameraPos[0],
                                 Receive_camera.Forward_vec.y - origin_2.y + Receive_camera.CameraPos[1],
                                 Receive_camera.Forward_vec.z - origin_2.z + Receive_camera.CameraPos[2] };
     //待处理点和另一点的向量
-    Vertex vec2 = { origin_1.x - origin_2.x,
+    Vec3 vec2 = { origin_1.x - origin_2.x,
                                 origin_1.y - origin_2.y,
                                 origin_1.z - origin_2.z };
     //double vec1_dotValue = dot(Receive_camera.Forward_vec, vec1);
@@ -36,7 +36,7 @@
 
 // 计算面的法向量                                                  mesh
 inline void Transform::Get_NormalVector(Mmesh& cMesh) {
-    Vertex normal_vectors;
+    Vec3 normal_vectors;
     for (Face& each_face : cMesh.faces) {
 
         double vec_a[3] = { cMesh.vertices[each_face.index[1]].x - cMesh.vertices[each_face.index[0]].x ,
@@ -58,8 +58,8 @@ inline void Transform::Get_NormalVector(Mmesh& cMesh) {
 }
 
 
-inline void Transform::CameraSpace_to_ScreenSpace(const Camera_data& Receive_camera, const long screen_in[2], const Vertex& vertex_origin, Vertex& out) {
-    Vertex VecPlane = { vertex_origin.x - Receive_camera.Forward_vec.x,
+inline void Transform::CameraSpace_to_ScreenSpace(const Camera_data& Receive_camera, const long screen_in[2], const Vec3& vertex_origin, Vec3& out) {
+    Vec3 VecPlane = { vertex_origin.x - Receive_camera.Forward_vec.x,
                                     vertex_origin.y - Receive_camera.Forward_vec.y,
                                     vertex_origin.z - Receive_camera.Forward_vec.z };
     double b = (Receive_camera.F * (screen_in[0] >> 1))  / (tan(Receive_camera.FOV) * Receive_camera.NearPlane);
@@ -78,16 +78,16 @@ inline void Transform::CameraSpace_to_ScreenSpace(const Camera_data& Receive_cam
 //三角形组装+透视转换                                               摄像机                           分辨率                                原始mesh                   输出mesh
 void Transform::Perspective(const Camera_data& Receive_camera, const long screen_in[2], Mmesh& TargetMesh, mesh_tf& out_mesh) {
     std::vector <bool> Pinfo;//点的可见性检查数组
-    std::vector <Vertex> Transformed_vertices;//顶点缓冲对象
+    std::vector <Vec3> Transformed_vertices;//顶点缓冲对象
     //计算法向量
     TargetMesh.normal_vectors.clear();
     TargetMesh.normal_vectors.reserve(TargetMesh.faces.size());
     Get_NormalVector(TargetMesh);
 
-    for (const Vertex& each_point : TargetMesh.vertices) {
+    for (const Vec3& each_point : TargetMesh.vertices) {
         //临时值
-        Vertex  vec_P;
-        Vertex Transformed_P;
+        Vec3  vec_P;
+        Vec3 Transformed_P;
         vec_P.x = each_point.x - Receive_camera.CameraPos[0];
         vec_P.y = each_point.y - Receive_camera.CameraPos[1];
         vec_P.z = each_point.z - Receive_camera.CameraPos[2];
@@ -138,9 +138,9 @@ void Transform::Perspective(const Camera_data& Receive_camera, const long screen
             if (num == 3) continue;
             bool num_bool = (num == 1) ? true : false;
             
-            unsigned int previous{}, next{}, medium{};//          previous Vertex, next Vertex, medium Vertex    (看情况各自分配是不可见点还是可见点)(索引值)
-            Vertex ClipOut_3d_1, ClipOut_3d_2;            //          3d Vertex 1        3d Vertex 2
-            Vertex ClipOut_1, ClipOut_2;            //          Vertex 1        Vertex 2
+            unsigned int previous{}, next{}, medium{};//          previous Vec3, next Vec3, medium Vec3    (看情况各自分配是不可见点还是可见点)(索引值)
+            Vec3 ClipOut_3d_1, ClipOut_3d_2;            //          3d Vec3 1        3d Vec3 2
+            Vec3 ClipOut_1, ClipOut_2;            //          Vec3 1        Vec3 2
             //为了最后生成的点的数组仍然是正面顺时针的顺序
             for (int e = 0; e < 3; e++) {
                 if (num_bool ^ Pinfo[TargetMesh.faces[i].index[e]]) {//获得待处理点            //此处的异或运算分辨是1情况还是2情况

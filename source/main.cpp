@@ -77,7 +77,7 @@ void camera_set( Camera_data &Target_camera, double revolve_incline, double revo
     }//前向
 
     if (moveH != 0) {
-        Vertex horizon_vec = { Target_camera.CameraPos[0] - Target_camera.move_vec.x, Target_camera.CameraPos[1] - Target_camera.move_vec.y };
+        Vec3 horizon_vec = { Target_camera.CameraPos[0] - Target_camera.move_vec.x, Target_camera.CameraPos[1] - Target_camera.move_vec.y };
         double a_horizon = 1 - (moveH / GetLength(horizon_vec));
 
         Target_camera.CameraPos[0] = horizon_vec.x * a_horizon + Target_camera.move_vec.x;
@@ -199,13 +199,21 @@ void Render_thread_V2() {
 
     std::vector <Mmesh> mesh_list;
 
+    //坐标轴模型
+    Mmesh testModel;
+    //                                            0                 1                   2                   3                       4                       5                       6                   7                           z8              y9                  x10
+    testModel.vertices = { {0.1, -0.1 ,-0.1}, {-0.1, -0.1, -0.1},{-0.1, 0.1, -0.1}, { 0.1, 0.1 , -0.1 },     {0.1, -0.1 ,0.1}, {-0.1, -0.1, 0.1},{-0.1, 0.1, 0.1}, { 0.1, 0.1 ,0.1 },    {0.1, 0.1, 2}, {0.1, 2 ,0.1}, {2, 0.1, 0.1} };
+    testModel.faces = { {7, 6, 9}, {2, 9, 6}, {3, 9, 2}, { 3, 7, 9 },            {3, 2, 1},  {3, 1, 0},         {2, 5, 1}, {2, 6, 5},        {5, 4, 1}, {1, 4, 0},       {5, 8, 4}, {6, 8, 5}, {7, 8, 6}, {4, 8, 7},        {7, 10, 4}, {3, 10, 7}, {0, 10, 3}, {0, 4, 10} };
+    testModel.color = { {0.3, 0.9, 0.3}, {0.5, 0.8, 0.5}, {0.1, 0.4, 0.1},  {0.1, 0.9, 0.1},       {0.2, 0.2, 0.2},  {0.2, 0.2, 0.2},        {0.8, 0.8, 0.8},  {0.8, 0.8, 0.8},       {0.6, 0.6, 0.6}, {0.6, 0.6, 0.6},      {0.3, 0.3, 0.9},  {0.5, 0.5, 0.8} ,{0.1, 0.1, 0.4},  {0.1, 0.1, 0.9},        {0.9, 0.3, 0.3},   {0.8, 0.5, 0.5}, {0.4, 0.1, 0.1},  {0.9, 0.1, 0.1} };
+    mesh_list.push_back(testModel);
+
     //cube
     for (int h = -2; h < 0; h += 2) {
         for (int t = -20; t < 20; t += 2) {
             for (int w = -20; w < 20; w += 2) {
                 Mmesh cube_mesh;
                 for (int i = 0; i < sizeof(cubeData.Cpoint) / sizeof(cubeData.Cpoint[0]); i += 1) {
-                    Vertex& each_point = cube_mesh.vertices.emplace_back();
+                    Vec3& each_point = cube_mesh.vertices.emplace_back();
                     each_point.x = cubeData.Cpoint[i][0] + t;
                     each_point.y = cubeData.Cpoint[i][1] + w;
                     each_point.z = cubeData.Cpoint[i][2] + h;
@@ -228,12 +236,6 @@ void Render_thread_V2() {
         }
     }
 
-    Mmesh testModel;
-    //                                            0                 1                   2                   3                       4                       5                       6                   7                           z8              y9                  x10
-    testModel.vertices = { {0.1, -0.1 ,-0.1}, {-0.1, -0.1, -0.1},{-0.1, 0.1, -0.1}, { 0.1, 0.1 , -0.1 },     {0.1, -0.1 ,0.1}, {-0.1, -0.1, 0.1},{-0.1, 0.1, 0.1}, { 0.1, 0.1 ,0.1 },    {0.1, 0.1, 2}, {0.1, 2 ,0.1}, {2, 0.1, 0.1} };
-    testModel.faces = { {7, 6, 9}, {2, 9, 6}, {3, 9, 2}, { 3, 7, 9 },            {3, 2, 1},  {3, 1, 0},         {2, 5, 1}, {2, 6, 5},        {5, 4, 1}, {1, 4, 0},       {5, 8, 4}, {6, 8, 5}, {7, 8, 6}, {4, 8, 7},        {7, 10, 4}, {3, 10, 7}, {0, 10, 3}, {0, 4, 10} };
-    testModel.color = {   {0.3, 0.9, 0.3}, {0.5, 0.8, 0.5}, {0.1, 0.4, 0.1},  {0.1, 0.9, 0.1},       {0.2, 0.2, 0.2},  {0.2, 0.2, 0.2},        {0.8, 0.8, 0.8},  {0.8, 0.8, 0.8},       {0.6, 0.6, 0.6}, {0.6, 0.6, 0.6},      {0.3, 0.3, 0.9},  {0.5, 0.5, 0.8} ,{0.1, 0.1, 0.4},  {0.1, 0.1, 0.9},        {0.9, 0.3, 0.3},   {0.8, 0.5, 0.5}, {0.4, 0.1, 0.1},  {0.9, 0.1, 0.1}};
-    mesh_list.push_back(testModel);
 
 
     //帧缓存设置
@@ -280,6 +282,7 @@ void Render_thread_V2() {
         
         for (Mmesh & each_mesh : mesh_list) {
             Render(tmpCamera_1, Framebuffer_1, ptrScreen, each_mesh);
+
         }
         
         //new
@@ -418,15 +421,13 @@ void control_thread()
         int deltaX = currentPos.x - centerPos.x;
         int deltaY = currentPos.y - centerPos.y;
 
-        angleCurrent[0] = angleCurrent[0] + deltaX * 0.4;
+        angleCurrent[0] = std::fmod(angleCurrent[0] + deltaX * 0.4, 360.0);
+        if (angleCurrent[0] < 0) {
+            angleCurrent[0] += 360.0;
+        }
         angleCurrent[1] = std::clamp(angleCurrent[1] - deltaY * 0.4, -90.0, 90.0);
         //标准化数据
 
-        if (angleCurrent[0] > 360) {
-            angleCurrent[0] = angleCurrent[0] - 360;
-        }if (angleCurrent[0] < -360) {
-            angleCurrent[0] = angleCurrent[0] + 360;
-        }
 
 
         //处理camera镜头方向

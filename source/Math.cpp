@@ -31,20 +31,20 @@ double KQsqrt(double number) {
 
 
 
-double GetLength(const Vertex& vec) {
+double GetLength(const Vec3& vec) {
     return KQsqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
 };
 double GetLength(const double vec[3]) {
     return KQsqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]);
 };
-double dot(const Vertex& vec1, const Vertex& vec2) {
+double dot(const Vec3& vec1, const Vec3& vec2) {
     return (vec1.x * vec2.x + vec1.y * vec2.y + vec1.z * vec2.z);
 };
-void cross(const Vertex& vec1, const Vertex& vec2, Vertex &vec_cross) {
+void cross(const Vec3& vec1, const Vec3& vec2, Vec3 &vec_cross) {
     vec_cross = { (vec2.y * vec1.z - vec2.z * vec1.y), (vec2.z * vec1.x - vec2.x * vec1.z), (vec2.x * vec1.y - vec2.y * vec1.x) };
 };
 
 //new
-void rotate(const Vertex& v, const Vertex& u , double & angle) {
+void rotate(const Vec3& v, const Vec3& u , double & angle) {
 
 }

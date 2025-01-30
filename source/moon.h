@@ -6,12 +6,12 @@
 #include <SDL.h>
 //use SDL 2
 
-#define ENGINE_NAME "Moon_engine_Alpha_v0.5.3"
+#define ENGINE_NAME "Moon_engine_Alpha_v0.5.4"
 #define PI 3.14159265358979
 
 //数据类型
 //顶点
-struct Vertex {
+struct Vec3 {
     double x = 0, y = 0, z = 0;
 };
 //面
@@ -26,19 +26,19 @@ struct Color {
 
 //原始mesh
 struct Mmesh {
-    std::vector <Vertex> vertices = {};
+    std::vector <Vec3> vertices = {};
     std::vector <Face> faces = {};
-    std::vector <Vertex> normal_vectors = {};
-    std::vector <Vertex> textures_uv = {};
+    std::vector <Vec3> normal_vectors = {};
+    std::vector <Vec3> textures_uv = {};
     std::vector <Color> color = {};
 };
 
 //用来存转换后的mesh
 struct mesh_tf {
-    std::vector <Vertex> vertices_2d = {};
-    std::vector <Vertex> vertices_3d = {};
-    std::vector <Vertex> normal_vectors = {};
-    std::vector <Vertex> textures_uv = {};
+    std::vector <Vec3> vertices_2d = {};
+    std::vector <Vec3> vertices_3d = {};
+    std::vector <Vec3> normal_vectors = {};
+    std::vector <Vec3> textures_uv = {};
     std::vector <Color> color = {};
 };
 
@@ -62,7 +62,7 @@ struct Camera_data {
     //以camera为参照的初始相机方向坐标（作为固定值不可更改！）
 
     //存储实时方向向量
-    Vertex Forward_vec = { Forward[0], Forward[1], Forward[2] },
+    Vec3 Forward_vec = { Forward[0], Forward[1], Forward[2] },
                Y_vec = { y[0], y[1], y[2] },
                Z_vec = { z[0], z[1], z[2] },
                move_vec = { move[0], move[1], move[2] };
@@ -90,16 +90,16 @@ struct Buffer {
 
 double SSE2Qsqrt(double number);
 double KQsqrt(double number);
-double GetLength(const Vertex &vec);
+double GetLength(const Vec3 &vec);
 double GetLength(const double vec[3]);//重载函数
-double dot(const Vertex &vec1, const Vertex &vec2);
-void cross(const Vertex& vec1, const Vertex& vec2, Vertex &vec_cross);
+double dot(const Vec3 &vec1, const Vec3 &vec2);
+void cross(const Vec3& vec1, const Vec3& vec2, Vec3 &vec_cross);
 
 
 class Transform {
 private:
-    inline void Get_CrossPoint(const Camera_data& Receive_camera, const long screen_in[2], const Vertex& origin_1, const Vertex& origin_2, Vertex& output);
-    inline void CameraSpace_to_ScreenSpace(const Camera_data& Receive_camera, const long screen_in[2], const Vertex& vertex_origin, Vertex& out);
+    inline void Get_CrossPoint(const Camera_data& Receive_camera, const long screen_in[2], const Vec3& origin_1, const Vec3& origin_2, Vec3& output);
+    inline void CameraSpace_to_ScreenSpace(const Camera_data& Receive_camera, const long screen_in[2], const Vec3& vertex_origin, Vec3& out);
 public:
     inline void Get_NormalVector(Mmesh& cMesh);
     void Perspective(const Camera_data& Receive_camera, const long screen_in[2], Mmesh& TargetMesh, mesh_tf& out_mesh);
@@ -117,16 +117,16 @@ private:
 
     inline double To_unLineDepth(const Camera_data& Rec_camera, double depth);
 
-    double LocateDepth(const Vertex& v0, const Vertex& v1, const Vertex& v2, double a, double b);
+    double LocateDepth(const Vec3& v0, const Vec3& v1, const Vec3& v2, double a, double b);
 
     //优化版本
-    inline void PreComputeTriangle(const Vertex& v0, const Vertex& v1, const Vertex& v2);
+    inline void PreComputeTriangle(const Vec3& v0, const Vec3& v1, const Vec3& v2);
     inline double LocateDepth_v2(double a, double b);
 
-	inline void DrawFlatTopTriangle(const Camera_data& Receive_camera_2, Buffer& buffer, const Vertex& v0, const Vertex& v1, const Vertex& v2, const Color& c);
-    inline void DrawFlatBottomTriangle(const Camera_data& Receive_camera_2, Buffer& buffer, const Vertex& v0, const Vertex& v1, const Vertex& v2, const Color& c);
+	inline void DrawFlatTopTriangle(const Camera_data& Receive_camera_2, Buffer& buffer, const Vec3& v0, const Vec3& v1, const Vec3& v2, const Color& c);
+    inline void DrawFlatBottomTriangle(const Camera_data& Receive_camera_2, Buffer& buffer, const Vec3& v0, const Vec3& v1, const Vec3& v2, const Color& c);
 public:
-    void DrawTriangle(const Camera_data &Receive_camera_2, Buffer& buffer, const Vertex& v1, const Vertex& v2, const Vertex& v3, Color& c);
+    void DrawTriangle(const Camera_data &Receive_camera_2, Buffer& buffer, const Vec3& v1, const Vec3& v2, const Vec3& v3, Color& c);
 
 
 };
