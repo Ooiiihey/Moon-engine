@@ -84,6 +84,7 @@ void Graphics::DrawFlatTopTriangle(const Camera_data& Receive_camera, Buffer &bu
 
 		for (int x = xStart; x < xEnd; ++x) {
 
+			//此处坐标+0.5是为了匹配光栅化左顶规则
 			double d = To_unLineDepth(Receive_camera, LocateDepth_v2(x + 0.5f, y + 0.5f));
 			//double d = To_unLineDepth(Receive_camera, LocateDepth(v0, v1, v2, x, y));
 			if (buffer.CompareDepth_Smaller(x, y, d) ) {
@@ -114,6 +115,7 @@ void Graphics::DrawFlatBottomTriangle(const Camera_data& Receive_camera, Buffer&
 		const double px1 = m1 * (static_cast<double>(y) + 0.5f - v2.y) + v2.x;
 
 		// 确定当前行的 x 范围
+		//here do not use Buffer_size[0] - 1, this will cause black wire in the side of screen.
 		int xStart = std::clamp(static_cast<int>(ceil(px0 - 0.5f)) , 0, static_cast<int>(buffer.Buffer_size[0]));
 		int xEnd = std::clamp(static_cast<int>(ceil(px1 - 0.5f)) , 0, static_cast<int>(buffer.Buffer_size[0]));
 

@@ -3,11 +3,15 @@
 #include <vector>
 #include <cstdlib>
 #include <algorithm>
+
 #include <SDL.h>
+#include <SDL_ttf.h>
 //use SDL 2
 
-#define ENGINE_NAME "Moon_engine_Alpha_v0.5.4"
+#define ENGINE_NAME "Moon_engine_Alpha_v0.5.5"
 #define PI 3.14159265358979
+
+
 
 //数据类型
 //顶点
@@ -56,10 +60,10 @@ struct Camera_data {
     double CameraPos[3] = { 0, 0, 0 };  //摄像机位置（实时）
 
     const double Forward[3] = { NearPlane, 0, 0 },
-        y[3] = { NearPlane, -tan(FOV) * NearPlane, 0 },
-        z[3] = { NearPlane, 0, tan(FOV) * NearPlane },
-        move[3] = { 0, -1, 0 };  //移动辅助点(固定值)
-    //以camera为参照的初始相机方向坐标（作为固定值不可更改！）
+                           y[3] = { NearPlane, -1, 0 },
+                           z[3] = { NearPlane, 0, 1 },
+                           move[3] = { 0, -1, 0 };  //移动辅助点(固定值)
+    //以camera为参照的初始相机方向坐标（固定值不可更改！）
 
     //存储实时方向向量
     Vec3 Forward_vec = { Forward[0], Forward[1], Forward[2] },
@@ -70,7 +74,7 @@ struct Camera_data {
 
 
 struct Buffer {
-    long Buffer_size[2];
+    long Buffer_size[2] = {0, 0};
     std::vector<double> RedBuffer;
     std::vector<double> GreenBuffer;
     std::vector<double> BlueBuffer;

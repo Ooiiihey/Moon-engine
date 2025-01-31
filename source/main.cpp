@@ -21,28 +21,12 @@ long* ptrScreenTEST = screen_5;
 
 //创建相机
 Camera_data Camera_1;
-
 Camera_data Camera_2;
 
 
 Camera_data sharedStruct;
 std::mutex CameraData_Remain;
 //互斥锁
-
-
-#if 0
-//输出数组
-template<typename T, size_t n>
-void printA(T const(&arr)[n])
-{
-    std::cout.precision(16);
-    for (size_t i = 0; i < n; i++) {
-        std::cout << arr[i] << ' ';
-    }
-    std::cout << std::endl;
-}
-#endif
-
 
 
 // 函数用于将鼠标移动到屏幕中央
@@ -186,25 +170,61 @@ cube cubeData;
 
 
 
+void EasyRenderText(SDL_Renderer* renderer, TTF_Font* font, const char* text, SDL_Color textColor, int x, int y) {
+    SDL_Surface* textSurface_2 = TTF_RenderText_Solid(font, text, textColor);
+    SDL_Rect textDestination_2 = { x, y, textSurface_2->w, textSurface_2->h };
+    SDL_Texture* textTexture_2 = SDL_CreateTextureFromSurface(renderer, textSurface_2);
+    SDL_RenderCopy(renderer, textTexture_2, nullptr, &textDestination_2);
+    SDL_FreeSurface(textSurface_2);
+    SDL_DestroyTexture(textTexture_2);
+}
+
+
+
+
+
+
+
+
 //under development
 void Render_thread_V2() {
-
-    SDL_LogSetPriority(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_VERBOSE);
+    SDL_Init(SDL_INIT_VIDEO);
+    int TTF_Init(void);
+    if (TTF_Init() == -1) {
+        ExitProcess(21);
+    }
 
     SDL_Window* window = SDL_CreateWindow(ENGINE_NAME, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, ptrScreen[0], ptrScreen[1], SDL_WINDOW_RESIZABLE);
-
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
-
     SDL_Texture* texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, ptrScreen[0], ptrScreen[1]);
+    
+    //test
+     TTF_Font* font = TTF_OpenFont("resources/minecraft.ttf", 12);
+     SDL_Color textColor = { 0, 192, 0, 255 };
+    if (font == nullptr) ExitProcess(10);
+    
 
     std::vector <Mmesh> mesh_list;
-
     //坐标轴模型
     Mmesh testModel;
     //                                            0                 1                   2                   3                       4                       5                       6                   7                           z8              y9                  x10
-    testModel.vertices = { {0.1, -0.1 ,-0.1}, {-0.1, -0.1, -0.1},{-0.1, 0.1, -0.1}, { 0.1, 0.1 , -0.1 },     {0.1, -0.1 ,0.1}, {-0.1, -0.1, 0.1},{-0.1, 0.1, 0.1}, { 0.1, 0.1 ,0.1 },    {0.1, 0.1, 2}, {0.1, 2 ,0.1}, {2, 0.1, 0.1} };
-    testModel.faces = { {7, 6, 9}, {2, 9, 6}, {3, 9, 2}, { 3, 7, 9 },            {3, 2, 1},  {3, 1, 0},         {2, 5, 1}, {2, 6, 5},        {5, 4, 1}, {1, 4, 0},       {5, 8, 4}, {6, 8, 5}, {7, 8, 6}, {4, 8, 7},        {7, 10, 4}, {3, 10, 7}, {0, 10, 3}, {0, 4, 10} };
-    testModel.color = { {0.3, 0.9, 0.3}, {0.5, 0.8, 0.5}, {0.1, 0.4, 0.1},  {0.1, 0.9, 0.1},       {0.2, 0.2, 0.2},  {0.2, 0.2, 0.2},        {0.8, 0.8, 0.8},  {0.8, 0.8, 0.8},       {0.6, 0.6, 0.6}, {0.6, 0.6, 0.6},      {0.3, 0.3, 0.9},  {0.5, 0.5, 0.8} ,{0.1, 0.1, 0.4},  {0.1, 0.1, 0.9},        {0.9, 0.3, 0.3},   {0.8, 0.5, 0.5}, {0.4, 0.1, 0.1},  {0.9, 0.1, 0.1} };
+    testModel.vertices = { {0.1, -0.1 ,-0.1}, {-0.1, -0.1, -0.1},{-0.1, 0.1, -0.1}, { 0.1, 0.1 , -0.1 },   
+                                        {0.1, -0.1 ,0.1}, {-0.1, -0.1, 0.1},{-0.1, 0.1, 0.1}, { 0.1, 0.1 ,0.1 },   
+                                        {0.1, 0.1, 2}, {0.1, 2 ,0.1}, {2, 0.1, 0.1} };
+
+    testModel.faces = { {7, 6, 9}, {2, 9, 6}, {3, 9, 2}, { 3, 7, 9 },    
+                                    {3, 2, 1},  {3, 1, 0},  
+                                    {2, 5, 1}, {2, 6, 5},    
+                                    {5, 4, 1}, {1, 4, 0},
+                                    {5, 8, 4}, {6, 8, 5}, {7, 8, 6}, {4, 8, 7},
+                                    {7, 10, 4}, {3, 10, 7}, {0, 10, 3}, {0, 4, 10} };
+
+    testModel.color = { {0.3, 0.9, 0.3}, {0.5, 0.8, 0.5}, {0.1, 0.4, 0.1},  {0.1, 0.9, 0.1},
+                                    {0.2, 0.2, 0.2},  {0.2, 0.2, 0.2},
+                                    {0.8, 0.8, 0.8},  {0.8, 0.8, 0.8},
+                                    {0.6, 0.6, 0.6}, {0.6, 0.6, 0.6},
+                                    {0.3, 0.3, 0.9},  {0.3, 0.3, 0.8} ,{0.1, 0.1, 0.6},  {0.1, 0.1, 0.9},
+                                    {0.9, 0.3, 0.3},   {0.8, 0.5, 0.5}, {0.4, 0.1, 0.1},  {0.9, 0.1, 0.1} };
     mesh_list.push_back(testModel);
 
     //cube
@@ -247,8 +267,8 @@ void Render_thread_V2() {
     Framebuffer_2.SetBuffer(ptrScreenTEST[0], ptrScreenTEST[1]);
 
 
-    SDL_Event event{};
     while (true) {
+        SDL_Event event{};
         SDL_PollEvent(&event);
         switch (event.type) {
         case SDL_WINDOWEVENT:
@@ -259,30 +279,24 @@ void Render_thread_V2() {
                 SDL_DestroyRenderer(renderer);
                 SDL_DestroyWindow(window);
                 SDL_Quit();
+                ExitProcess(0);
                 return;
             }
             break;
 
-        case SDL_QUIT:
-            SDL_DestroyRenderer(renderer);
-            SDL_DestroyWindow(window);
-            SDL_Quit();
-            return;
         }
 
-        double Frames;
         auto start = std::chrono::high_resolution_clock::now();   //测帧
 
         Framebuffer_1.CleanBuffer();
         Framebuffer_2.CleanBuffer();
 
-        //代替互斥锁的作用
+        //代替互斥锁的作用 //
         Camera_data tmpCamera_1 = Camera_1;
         Camera_data tmpCamera_2 = Camera_2;
         
         for (Mmesh & each_mesh : mesh_list) {
             Render(tmpCamera_1, Framebuffer_1, ptrScreen, each_mesh);
-
         }
         
         //new
@@ -299,7 +313,6 @@ void Render_thread_V2() {
         SDL_LockTexture(texture, nullptr, &pixels, &pitch);
 
         uint32_t* pixelData = static_cast<uint32_t*>(pixels);
-
         for (int y = 0; y < ptrScreen[1]; ++y) {
             for (int x = 0; x < ptrScreen[0]; ++x) {
                 Color p = Framebuffer_1.GetPixelColor(x, y);
@@ -321,14 +334,14 @@ void Render_thread_V2() {
                 */
 
                 uint32_t pixel = (255 << 24) | (r << 16) | (g << 8) | b;
-                int index = y * (pitch / sizeof(uint32_t)) + x;
+                int index = y * (pitch / sizeof(uint32_t)) + x ;
                 pixelData[index] = pixel;
             }
         }
         
         //new
         //double camera test
-        //test depth test
+        //model's depth test
         for (int y = 0; y < ptrScreenTEST[1]; ++y) {
             for (int x = 0; x < ptrScreenTEST[0]; ++x) {
                 //Color p = Framebuffer_2.GetPixelColor(x, y);
@@ -339,7 +352,7 @@ void Render_thread_V2() {
                 uint8_t b = static_cast<uint8_t>(D * 255.0);
 
                 uint32_t pixel = (255 << 24) | (r << 16) | (g << 8) | b;
-                int index = y * (pitch / sizeof(uint32_t)) + x;
+                int index = y * (pitch / sizeof(uint32_t)) + x + ptrScreen[0] - ptrScreenTEST[0];
                 pixelData[index] = pixel;
             }
         }
@@ -351,35 +364,39 @@ void Render_thread_V2() {
         // 将纹理渲染到屏幕上
         
         SDL_RenderCopy(renderer, texture, nullptr, nullptr);
+        
 
 
         auto end = std::chrono::high_resolution_clock::now();    //测帧
-        std::chrono::duration<double> elapsed_seconds = end - start;
-        Frames = 1 / elapsed_seconds.count();
+        std::chrono::duration<double> elapsed_seconds = end - start; 
 
-        std::chrono::duration<double> PSTcosttime = tech_end - start;
-        double PSTcosttime_process = 1 / PSTcosttime.count();
+        std::chrono::duration<double> Theoretical__ = tech_end - start;
 
-        
+        std::string title_str = ENGINE_NAME;
+        title_str.append("  Compilation_Date:");
+        title_str.append(__DATE__);
+
+        std::string info = "FPS: " + std::to_string( 1 / elapsed_seconds.count() );
+        std::string info2 = ("  Theoretical_FPS:" + std::to_string(1 / Theoretical__.count()));
+        info.append(info2);
+
+        const char* Sign = "Press  ESC  to  pause  this  program  or  continue  play  it.";
+        const char* Sign_2 = "You  can  close  this  window  when  it  is  paused.";
+        const char* title = title_str.c_str();
+        const char* Frames_char = info.c_str();
+
+
+        EasyRenderText(renderer, font, title, textColor, 4, 4);
+        EasyRenderText(renderer, font, Frames_char, textColor, 4, 20);
+        EasyRenderText(renderer, font, Sign, textColor, 4, 36);
+        EasyRenderText(renderer, font, Sign_2, textColor, 4, 52);
+
         // 刷新渲染器
         SDL_RenderPresent(renderer);
 
-        std::cout << Frames <<", "<< PSTcosttime_process << std::endl;
-
-        /*old
         
-        
-        std::string title_str = "MOON_Engine_Alpha_0.4.5  Compilation_Date:";
-        title_str.append(__DATE__);
-        std::string info = "FPS: " + std::to_string(Frames);
-        std::string info2 = ("  Theoretical_FPS:" + std::to_string(PSTcosttime_process));
-        std::string Faces_number = "  Faces: " + std::to_string(faces_num);
-        info.append(info2);
-        info.append(Faces_number);
 
-        const char* title = title_str.c_str();
-        const char* Frames_char = info.c_str();
-        */
+        
     }
 
 }
@@ -501,16 +518,14 @@ void control_thread()
 
 
 
-int main() {
-    
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hprevInstance, LPSTR cmdstr, int code) {
+
     std::thread render(Render_thread_V2);
     std::thread control(control_thread);
 
     render.join();
     control.join();
-    
 
-
-    return 0 ;
+    ExitProcess(0);
 
 }
