@@ -1,17 +1,5 @@
 #include "moon.h"
 
-#if 0
-#include <emmintrin.h> // 包含SSE2指令集头文件
-//使用SSE2指令集的快速平方根
-double SSE2Qsqrt(double number) {
-    __m128d vec;
-    vec = _mm_load_sd(&number); // 加载double值到SSE寄存器
-    vec = _mm_sqrt_pd(vec);   // 计算平方根
-    _mm_store_sd(&number, vec); // 将结果存储回double变量
-    return number;
-}
-#endif
-
 //卡马克之魂快速平方根
 double KQsqrt(double number) {
     long long i;
@@ -30,21 +18,45 @@ double KQsqrt(double number) {
 }
 
 
+double dot(const Vec3& vec1, const Vec3& vec2) {
+    return (vec1.x * vec2.x + vec1.y * vec2.y + vec1.z * vec2.z);
+};
+
+double dot(const Vec3& vec1, const double vec2[3]) {
+    return (vec1.x * vec2[0] + vec1.y * vec2[1] + vec1.z * vec2[2]);
+};
+
+Vec3 cross(const Vec3& vec1, const Vec3& vec2) {
+    return Vec3 ( (vec2.y * vec1.z - vec2.z * vec1.y), (vec2.z * vec1.x - vec2.x * vec1.z), (vec2.x * vec1.y - vec2.y * vec1.x) );
+};
 
 double GetLength(const Vec3& vec) {
     return KQsqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
 };
+
 double GetLength(const double vec[3]) {
     return KQsqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]);
 };
-double dot(const Vec3& vec1, const Vec3& vec2) {
-    return (vec1.x * vec2.x + vec1.y * vec2.y + vec1.z * vec2.z);
-};
-void cross(const Vec3& vec1, const Vec3& vec2, Vec3 &vec_cross) {
-    vec_cross = { (vec2.y * vec1.z - vec2.z * vec1.y), (vec2.z * vec1.x - vec2.x * vec1.z), (vec2.x * vec1.y - vec2.y * vec1.x) };
-};
+
+
 
 //new
-void rotate(const Vec3& v, const Vec3& u , double & angle) {
+//p 绕 k单位向量 旋转
+Vec3 rotate(const Vec3& p, const Vec3& k , const double angle) {
+    /*
+    double len = GetLength(k);
+    if (len <= 1e-8) {
+        return p; // 或抛出异常
+    }
+    //k_为单位向量
+    Vec3 k_ = k / len;
+    double dotValue = dot(p, k_);
+    Vec3 j;
+    j.x = p.x - dotValue * k_.x;
+    j.y = p.y - dotValue * k_.y;
+    j.z = p.z - dotValue * k_.z;
 
+    return Vec3 ( k_ * dotValue + j * cos(angle) + cross(j, k_) * sin(angle) );
+    */
+    return Vec3(p * cos(angle) + cross(k, p) * sin(angle) + k * dot(k, p) * (1 - cos(angle)));
 }

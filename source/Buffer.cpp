@@ -1,61 +1,64 @@
 #include "moon.h"
 
-
 void Buffer::SetBuffer(long width, long height) {
-	if (width < 0 || height <= 0) {
-		throw std::runtime_error("FrameBuffer-Unexpected screen size!");
-	}
-	else {
-		Buffer_size[0] = width;
-		Buffer_size[1] = height;
+	if (width <= 0 || height <= 0) throw std::runtime_error("Unexpected Buffer size!");
 
-		RedBuffer.clear();
-		GreenBuffer.clear();
-		BlueBuffer.clear();
-		DepthBuffer.clear();
+	Buffer_size[0] = width;
+	Buffer_size[1] = height;
+	const size_t size = width * height;
 
-		RedBuffer.resize(width * height);
-		GreenBuffer.resize(width * height);
-		BlueBuffer.resize(width * height);
-		DepthBuffer.resize(width * height);
-		DepthBuffer.assign(width * height, 1);
-	}
-	return;
-};
+	std::lock_guard<std::mutex> lock(mtx);
+	Red.clear();
+	Green.clear();
+	Blue.clear();
+	Alapha.clear();
+	Depth.clear();
+
+	Red.resize(size, 0);
+	Green.resize(size, 0);
+	Blue.resize(size, 0);
+	Alapha.resize(size, 1.0);
+	Depth.resize(size, 1.0);
+
+}
 
 void Buffer::CleanBuffer() {
-	long totall = Buffer_size[0] * Buffer_size[1];
-	RedBuffer.assign(totall, 0);
-	GreenBuffer.assign(totall, 0);
-	BlueBuffer.assign(totall, 0);
-	DepthBuffer.assign(totall, 1);  //初始DepthBuffer
+	long total = Buffer_size[0] * Buffer_size[1];
+	std::lock_guard<std::mutex> lock(mtx);
+	Red.assign(total, 0.05);
+	Green.assign(total, 0.05);
+	Blue.assign(total, 0.06);
+	Alapha.assign(total, 1.0);
+	Depth.assign(total, 1.0);  //初始DepthBuffer
 };
 
 
-void Buffer::PutPixel(long x, long  y, double deepth, Color c) {
-	if (x < 0 || x > Buffer_size[0] - 1 || y < 0 || y > Buffer_size[1] - 1) {
+
+void Buffer::PutPixel(long x, long  y, double depth, Color c) {
+	if (x < 0 || x >= Buffer_size[0] || y < 0 || y >= Buffer_size[1] ) {
 		return;
 	}
 	else {
-		long totall = y * Buffer_size[0] + x;
-		RedBuffer[totall] = c.R;
-		GreenBuffer[totall] = c.G;
-		BlueBuffer[totall] = c.B;
-		DepthBuffer[totall] = deepth;
+		std::lock_guard<std::mutex> lock(mtx);
+		long total = y * Buffer_size[0] + x;
+		Red[total] = c.R;
+		Green[total] = c.G;
+		Blue[total] = c.B;
+		Depth[total] = depth;
 	}
 };
 
 
 Color Buffer::GetPixelColor(const long x, const long y) {
-	if (x < 0 || x >= Buffer_size[0] || y < 0 || y >= Buffer_size[1]) {
+	if (x < 0 || x > Buffer_size[0] - 1 || y < 0 || y > Buffer_size[1] - 1) {
 		return { 0,0,0 };
 	}
 	else {
 		Color back;
-		long totall = y * Buffer_size[0] + x;
-		back.R = RedBuffer[totall];
-		back.G = GreenBuffer[totall];
-		back.B = BlueBuffer[totall];
+		long total = y * Buffer_size[0] + x;
+		back.R = Red[total];
+		back.G = Green[total];
+		back.B = Blue[total];
 		return back;
 	}
 
@@ -63,23 +66,39 @@ Color Buffer::GetPixelColor(const long x, const long y) {
 
 bool Buffer::CompareDepth_Smaller(const long x, const long y, double depth_in) {
 	if (x < 0 || x >= Buffer_size[0] || y < 0 || y >= Buffer_size[1]) {
-		throw std::runtime_error("FrameBuffer-Unexpected comparision!");
+		throw std::runtime_error("DepthBuffer Unexpected comparision : out of buffer!");
 	}
-	if (DepthBuffer[y * Buffer_size[0] + x] > depth_in) {
+	if (Depth[y * Buffer_size[0] + x] > depth_in) {
 		return true;
-	}
-	else {
-		return false;
-	}
+	}else return false;
+	
 }
 
 double Buffer::GetDepth(const long x, const long y) {
 	if (x < 0 || x >= Buffer_size[0] || y < 0 || y >= Buffer_size[1]) {
 		return 1;
-	}
-	else {
-		return DepthBuffer[y * Buffer_size[0] + x];
+	} else {
+		return Depth[y * Buffer_size[0] + x];
 	}
 
 };
 
+void Buffer::merge(const Buffer& Buffer_chunk) {
+	std::lock_guard<std::mutex> lock(mtx);
+	// 检查缓冲区大小是否一致
+	if (Buffer_chunk.Buffer_size[0] != Buffer_size[0] || Buffer_chunk.Buffer_size[1] != Buffer_size[1]) {
+		throw std::runtime_error("Buffer sizes dont match!");
+	}
+
+	const long size = Buffer_size[0] * Buffer_size[1];
+
+	// 合并缓冲区
+	for (long e = 0; e < size; ++e) {
+		if (Buffer_chunk.Depth[e] < Depth[e]) {
+			Red[e] = Buffer_chunk.Red[e];
+			Green[e] = Buffer_chunk.Green[e];
+			Blue[e] = Buffer_chunk.Blue[e];
+			Depth[e] = Buffer_chunk.Depth[e];
+		}
+	}
+}
