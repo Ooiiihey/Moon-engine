@@ -1,6 +1,6 @@
-#include "moon.h"
+ï»¿#include "moon.h"
 
-//¿¨Âí¿ËÖ®»ê¿ìËÙÆ½·½¸ù
+//å¡é©¬å…‹ä¹‹é­‚å¿«é€Ÿå¹³æ–¹æ ¹
 double KQsqrt(double number) {
     long long i;
     double x2, y;
@@ -8,9 +8,9 @@ double KQsqrt(double number) {
 
     x2 = number * 0.5;
     y = number;
-    i = *reinterpret_cast<long long*>(&y); // ½« double µÄÎ»Ä£Ê½½âÊÍÎª long long
+    i = *reinterpret_cast<long long*>(&y); // å°† double çš„ä½æ¨¡å¼è§£é‡Šä¸º long long
     i = 0x5fe6eb50c7b537aaLL - (i >> 1);   // what the fuck?
-    y = *reinterpret_cast<double*>(&i);    // ½« long long µÄÎ»Ä£Ê½½âÊÍ»Ø double
+    y = *reinterpret_cast<double*>(&i);    // å°† long long çš„ä½æ¨¡å¼è§£é‡Šå› double
     y = y * (threehalfs - (x2 * y * y));   // 1st iteration
     y = y * (threehalfs - (x2 * y * y));   // 2nd iteration
 
@@ -41,14 +41,14 @@ double GetLength(const double vec[3]) {
 
 
 //new
-//p ÈÆ kµ¥Î»ÏòÁ¿ Ğı×ª
+//p ç»• kå•ä½å‘é‡ æ—‹è½¬
 Vec3 rotate(const Vec3& p, const Vec3& k , const double angle) {
     /*
     double len = GetLength(k);
     if (len <= 1e-8) {
-        return p; // »òÅ×³öÒì³£
+        return p; 
     }
-    //k_Îªµ¥Î»ÏòÁ¿
+    //k_ä¸ºå•ä½å‘é‡
     Vec3 k_ = k / len;
     double dotValue = dot(p, k_);
     Vec3 j;
@@ -56,7 +56,7 @@ Vec3 rotate(const Vec3& p, const Vec3& k , const double angle) {
     j.y = p.y - dotValue * k_.y;
     j.z = p.z - dotValue * k_.z;
 
-    return Vec3 ( k_ * dotValue + j * cos(angle) + cross(j, k_) * sin(angle) );
+    return Vec3 ( k_ * dotValue + j * cos(-angle) + cross(j, k_) * sin(-angle) );
     */
     return Vec3(p * cos(angle) + cross(k, p) * sin(angle) + k * dot(k, p) * (1 - cos(angle)));
 }

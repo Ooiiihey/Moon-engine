@@ -1,4 +1,4 @@
-#include "moon.h"
+ï»¿#include "moon.h"
 
 #include <string>
 #include <windows.h>
@@ -6,7 +6,7 @@
 
 //moon-engine
 
-//·Ö±æÂÊ
+//åˆ†è¾¨ç‡
 long screen_1[] = { 960, 540 };
 long screen_2[] = {1280, 720};
 long screen_3[] = { 640, 480 };
@@ -16,44 +16,44 @@ long screen_6[] = { 1920, 1080};
 
 long* ptrScreen = screen_1;
 //long* ptrScreenTEST = screen_5;
-//³õÊ¼»¯
+//åˆå§‹åŒ–
 
-//´´½¨Ïà»ú
+//åˆ›å»ºç›¸æœº
 Camera Camera_1;
 //Camera Camera_2;
 
-// º¯ÊıÓÃÓÚ½«Êó±êÒÆ¶¯µ½ÆÁÄ»ÖĞÑë
+// å‡½æ•°ç”¨äºå°†é¼ æ ‡ç§»åŠ¨åˆ°å±å¹•ä¸­å¤®
 void MoveMouseToCenter() {
-    // »ñÈ¡ÆÁÄ»µÄ¿í¶ÈºÍ¸ß¶È
+    // è·å–å±å¹•çš„å®½åº¦å’Œé«˜åº¦
     int screenWidth = GetSystemMetrics(SM_CXSCREEN);
     int screenHeight = GetSystemMetrics(SM_CYSCREEN);
 
-    // ¼ÆËãÆÁÄ»ÖĞÑëµÄ×ø±ê
+    // è®¡ç®—å±å¹•ä¸­å¤®çš„åæ ‡
     int centerX = screenWidth >> 1;
     int centerY = screenHeight >> 1 ;
-    // ½«Êó±êÒÆ¶¯µ½ÆÁÄ»ÖĞÑë
+    // å°†é¼ æ ‡ç§»åŠ¨åˆ°å±å¹•ä¸­å¤®
     SetCursorPos(centerX, centerY);
 }
 
 //old codes
 #if 0
-//Ïà»úÉèÖÃ                     Ä¿±êÏà»ú                       ÇãĞ±½Ç¶È                    Ë®Æ½½Ç¶È                      ×İÏò½Ç¶È          Ç°·½ÏòÒÆ¶¯Á¿//ºá·½Ïò±ä»¯Á¿//×İ·½Ïò±ä»¯Á¿ 
+//ç›¸æœºè®¾ç½®                     ç›®æ ‡ç›¸æœº                       å€¾æ–œè§’åº¦                    æ°´å¹³è§’åº¦                      çºµå‘è§’åº¦          å‰æ–¹å‘ç§»åŠ¨é‡//æ¨ªæ–¹å‘å˜åŒ–é‡//çºµæ–¹å‘å˜åŒ–é‡ 
 void camera_set( Camera &Target_Camera, double revolve_incline, double revolve_hori, double revolve_verti, double moveF,double moveH,double moveZ){
     double front_tmp[] = {Target_Camera.Forward.x, Target_Camera.Forward.y, Target_Camera.Forward.z};
     double y_tmp[] = { Target_Camera.Y.x, Target_Camera.Y.y, Target_Camera.Y.z };
     double z_tmp[] = { Target_Camera.Z.x, Target_Camera.Z.y, Target_Camera.Z.z };
 
     double ft[3]{0,0,0}, yt[3]{0,0,0}, zt[3]{0,0,0};
-    //ÖĞ¼äÁÙÊ±»º³åÖµ
+    //ä¸­é—´ä¸´æ—¶ç¼“å†²å€¼
     
-    //ºÏ²¢¹ıÀ´µÄÒÆ¶¯´úÂë
+    //åˆå¹¶è¿‡æ¥çš„ç§»åŠ¨ä»£ç 
     if (moveF != 0) {
         double a_front = 1 - (moveF / Target_Camera.NearPlane);
 
         Target_Camera.Pos.x = Target_Camera.Pos.x - Target_Camera.Forward_vec.x * a_front + Target_Camera.Forward_vec.x;
         Target_Camera.Pos.y = Target_Camera.Pos.y -Target_Camera.Forward_vec.y * a_front + Target_Camera.Forward_vec.y;
         Target_Camera.Pos.z = Target_Camera.Pos.z -Target_Camera.Forward_vec.z * a_front + Target_Camera.Forward_vec.z;
-    }//Ç°Ïò
+    }//å‰å‘
 
     if (moveH != 0) {
         Vec3 horizon_vec = { Target_Camera.Pos.x - Target_Camera.move_vec.x, Target_Camera.Pos.y - Target_Camera.move_vec.y, 0 };
@@ -64,13 +64,13 @@ void camera_set( Camera &Target_Camera, double revolve_incline, double revolve_h
         Target_Camera.Pos.y = horizon_vec.y * a_horizon + Target_Camera.move_vec.y;
         Target_Camera.move_vec.x = Target_Camera.move_vec.x + Target_Camera.Pos.x;
         Target_Camera.move_vec.y = Target_Camera.move_vec.y + Target_Camera.Pos.y;
-    }//ºáÏò
+    }//æ¨ªå‘
 
     if (moveZ != 0) {
         Target_Camera.Pos.z += moveZ;
-    }//×İÏò
+    }//çºµå‘
 
-    //Ïà»úÇãĞ±
+    //ç›¸æœºå€¾æ–œ
     if (revolve_incline != 0){
         double cosV = cos(-revolve_incline);
         double sinV = sin(-revolve_incline);
@@ -82,7 +82,7 @@ void camera_set( Camera &Target_Camera, double revolve_incline, double revolve_h
         y_tmp[2] = Target_Camera.Y.z * cosV - Target_Camera.Y.y * sinV;
     }
 
-    //Ïà»ú×İÏòĞı×ª
+    //ç›¸æœºçºµå‘æ—‹è½¬
     if (revolve_verti != 0){
         double cosV = cos(revolve_verti);
         double sinV = sin(revolve_verti);
@@ -102,7 +102,7 @@ void camera_set( Camera &Target_Camera, double revolve_incline, double revolve_h
 
     }
 
-    //Ïà»úË®Æ½Ğı×ª
+    //ç›¸æœºæ°´å¹³æ—‹è½¬
     if (revolve_hori != 0){
         double cosV = cos(-revolve_hori);
         double sinV = sin(-revolve_hori);
@@ -124,7 +124,7 @@ void camera_set( Camera &Target_Camera, double revolve_incline, double revolve_h
         z_tmp[0] = zt[0];
      
 
-        //ÒÆ¶¯ÓÃµÄ¸¨ÖúµãĞı×ª
+        //ç§»åŠ¨ç”¨çš„è¾…åŠ©ç‚¹æ—‹è½¬
         Target_Camera.move_vec.y = Target_Camera.move.y * cosV + Target_Camera.move.x * sinV;
         Target_Camera.move_vec.x = Target_Camera.move.x * cosV - Target_Camera.move.y * sinV;
         Target_Camera.move_vec.x = Target_Camera.move_vec.x + Target_Camera.Pos.x;
@@ -162,7 +162,7 @@ struct cube {
     int Ctriangle[12][3] = {
         {0,5,1},{4,5,0},{7,2,3} ,{2,7,6} ,{7,5,6}, {5,4,6} ,{3,2,1} ,{2,0,1} ,{7,3,1},{5,7,1},{0,6,4},{0,2,6} };
 
-    double Ccolor[12][3] = { {0.15, 0.15, 0.15},  {0.15, 0.15, 0.15},  {0.7, 0.7, 0.7},   {0.7, 0.7, 0.7}, {0.5, 0.5, 0.5},  {0.5, 0.5, 0.5},  {0.1, 0.1, 0.1},  {0.1, 0.1, 0.1}, {0.3, 0.3, 0.3}, {0.3, 0.3, 0.3},  {0.15, 0.15, 0.15},  {0.15, 0.15, 0.15}};
+    float Ccolor[12][3] = { {0.15f, 0.15f, 0.15f},  {0.15f, 0.15f, 0.15f},  {0.7f, 0.7f, 0.7f},   {0.7f, 0.7f, 0.7f}, {0.5f, 0.5f, 0.5f},  {0.5f, 0.5f, 0.5f},  {0.1f, 0.1f, 0.1f},  {0.1f, 0.1f, 0.1f}, {0.3f, 0.3f, 0.3f}, {0.3f, 0.3f, 0.3f},  {0.15f, 0.15f, 0.15f},  {0.15f, 0.15f, 0.15f}};
 };
 cube cubeData;
 
@@ -190,14 +190,6 @@ void EasyRenderText(SDL_Renderer* renderer, TTF_Font* font, const char* text, SD
 }
 
 
-Buffer Render_thread(const Camera& c0, long Buffer_size[2], const long screen_in[2], const std::vector <Mesh>& mesh_list) {
-    Buffer frame_chunk;
-    frame_chunk.SetBuffer(Buffer_size[0], Buffer_size[1]);
-    Render(c0, frame_chunk, screen_in, mesh_list);
-    return std::move(frame_chunk);
-}
-
-
 
 //under development
 
@@ -207,9 +199,11 @@ void Display_thread() {
     if (TTF_Init() == -1) {
         ExitProcess(21);
     }
-
+  
     SDL_Window* window = SDL_CreateWindow(ENGINE_NAME, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, ptrScreen[0], ptrScreen[1], SDL_WINDOW_RESIZABLE);
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
+
+    //SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     SDL_Texture* texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, ptrScreen[0], ptrScreen[1]);
     
     //test
@@ -217,10 +211,8 @@ void Display_thread() {
      SDL_Color textColor = { 0, 192, 0, 255 };
     if (font == nullptr) ExitProcess(10);
     
-    BS::thread_pool pool(8);
-
     std::vector <Mesh> mesh_list;
-    //×ø±êÖáÄ£ĞÍ
+    //åæ ‡è½´æ¨¡å‹
     Mesh testModel;
     //                                            0                 1                   2                   3                       4                       5                       6                   7                           z8              y9                  x10
     testModel.vertices = { {0.1, -0.1 ,-0.1}, {-0.1, -0.1, -0.1},{-0.1, 0.1, -0.1}, { 0.1, 0.1 , -0.1 },   
@@ -234,13 +226,14 @@ void Display_thread() {
                                     {5, 8, 4}, {6, 8, 5}, {7, 8, 6}, {4, 8, 7},
                                     {7, 10, 4}, {3, 10, 7}, {0, 10, 3}, {0, 4, 10} };
 
-    testModel.color = { {0.3, 0.9, 0.3}, {0.5, 0.8, 0.5}, {0.1, 0.4, 0.1},  {0.1, 0.9, 0.1},
-                                    {0.2, 0.2, 0.2},  {0.2, 0.2, 0.2},
-                                    {0.8, 0.8, 0.8},  {0.8, 0.8, 0.8},
-                                    {0.6, 0.6, 0.6}, {0.6, 0.6, 0.6},
-                                    {0.3, 0.3, 0.9},  {0.3, 0.3, 0.8} ,{0.1, 0.1, 0.6},  {0.1, 0.1, 0.9},
-                                    {0.9, 0.3, 0.3},   {0.8, 0.5, 0.5}, {0.4, 0.1, 0.1},  {0.9, 0.1, 0.1} };
-    mesh_list.push_back(testModel);
+    testModel.color = { {0.3f, 0.9f, 0.3f}, {0.5f, 0.8f, 0.5f}, {0.1f, 0.4f, 0.1f},  {0.1f, 0.9f, 0.1f},
+                                    {0.2f, 0.2f, 0.2f},  {0.2f, 0.2f, 0.2f},
+                                    {0.8f, 0.8f, 0.8f},  {0.8f, 0.8f, 0.8f},
+                                    {0.6f, 0.6f, 0.6f}, {0.6f, 0.6f, 0.6f},
+                                    {0.3f, 0.3f, 0.9f},  {0.3f, 0.3f, 0.8f} ,{0.1f, 0.1f, 0.6f},  {0.1f, 0.1f, 0.9f},
+                                    {0.9f, 0.3f, 0.3f},   {0.8f, 0.5f, 0.5f}, {0.4f, 0.1f, 0.1f},  {0.9f, 0.1f, 0.1f} };
+
+    //mesh_list.push_back(testModel);
 
     //cube
     for (int h = -2; h < 0; h += 2) {
@@ -272,8 +265,14 @@ void Display_thread() {
     }
 
 
+    // Load OBJ model
+    
 
-    //Ö¡»º´æÉèÖÃ
+    Mesh LoadedMesh = LoadModel("resources/ImageToStl.com_assets_00_murixir_05_lumelana_08_extended_01_fbx_lumelana_extended.obj");
+
+    mesh_list.emplace_back(LoadedMesh);
+
+    //å¸§ç¼“å­˜è®¾ç½®
     Buffer Framebuffer_1;
     Framebuffer_1.SetBuffer(ptrScreen[0], ptrScreen[1]);
 
@@ -301,7 +300,7 @@ void Display_thread() {
 
         }
 
-        auto start = std::chrono::high_resolution_clock::now();   //²âÖ¡
+        auto start = std::chrono::high_resolution_clock::now();   //æµ‹å¸§
 
         
         //Framebuffer_2.CleanBuffer();
@@ -309,46 +308,8 @@ void Display_thread() {
         Camera ctmp = Camera_1;
 
         
-#if 0
-        // ¼ÆËã×ÜÈÎÎñÊıÁ¿ºÍÃ¿¸öÏß³Ì´¦ÀíµÄÈÎÎñ´óĞ¡
-        const int total_meshes = static_cast<int>(mesh_list.size());
-        const int step = max(1, total_meshes / 4);
-
-        const int num_tasks = (total_meshes + step - 1) / step; // ÏòÉÏÈ¡Õû
-
-        std::vector<std::future<Buffer>> bufferFutures;
-
-        for (int i = 0; i < num_tasks; ++i) {
-            const int start = i * step;
-            const int end = min(start + step, total_meshes);
-            const int count = end - start;
-
-            // Ê¹ÓÃ std::vector µÄ¹¹Ôìº¯ÊıÖ±½Ó³õÊ¼»¯£¬±ÜÃâ¶à´Î push_back
-            std::vector<Mesh> mesh_list_little(mesh_list.begin() + start, mesh_list.begin() + end);
-
-             bufferFutures.emplace_back( pool.submit_task([&, mesh = std::move(mesh_list_little)]() {
-                return Render_thread(ctmp, Framebuffer_1.Buffer_size, ptrScreen, mesh);
-                }) 
-             );
-        }
-        /*
-        pool.submit_task([&]() {
-            return Render_thread(ctmp, Framebuffer_1, ptrScreen, mesh_list);
-            });
-        */
-
-        //pool.wait();
-
         Framebuffer_1.CleanBuffer();
-
-        for (int d = 0; d < bufferFutures.size(); d++) {
-            Buffer chunk = bufferFutures[d].get();
-            Framebuffer_1.merge(chunk);
-        }
-
-#endif
-        Framebuffer_1.CleanBuffer();
-        Render(ctmp, Framebuffer_1, ptrScreen, mesh_list);
+        unsigned int FaceNumber = Render(ctmp, Framebuffer_1, ptrScreen, mesh_list);
 
         //new
         //double camera test
@@ -359,8 +320,8 @@ void Display_thread() {
         auto tech_end = std::chrono::high_resolution_clock::now();
 
 
-        // »ñÈ¡ÎÆÀíµÄÏñËØÊı¾İ
-        // ½«Ö¡»º´æÊı¾İ¸üĞÂµ½ÎÆÀí
+        // è·å–çº¹ç†çš„åƒç´ æ•°æ®
+        // å°†å¸§ç¼“å­˜æ•°æ®æ›´æ–°åˆ°çº¹ç†
         int pitch;
         void* pixels;
         SDL_LockTexture(texture, nullptr, &pixels, &pitch);
@@ -369,30 +330,29 @@ void Display_thread() {
         for (int y = 0; y < ptrScreen[1]; ++y) {
             for (int x = 0; x < ptrScreen[0]; ++x) {
                 Color p = Framebuffer_1.GetPixelColor(x, y);
-
+                uint8_t r =0, g =0, b=0, a=0;
                 //test codes
-                //double D = 1- Framebuffer_1.GetDepth(x, y);
+                /*
+                if (p == Color{ 0.05f, 0.05f, 0.06f, 1.0f }) {
+                    r = static_cast<uint8_t>(p.R * 255.0);
+                    g = static_cast<uint8_t>(p.G * 255.0);
+                    b = static_cast<uint8_t>(p.B * 255.0);
+                    a = static_cast<uint8_t>(p.a * 255.0);
+                }
+                else {
+                    double D = 1 - Framebuffer_1.GetDepth(x, y);
+                    r = static_cast<uint8_t>(std::clamp( p.R * 255.0 *D*100, 0.0, 255.0));
+                    g = static_cast<uint8_t>(std::clamp(p.G * 255.0 * D * 100, 0.0, 255.0));
+                    b = static_cast<uint8_t>(std::clamp(p.B * 255.0 * D * 100, 0.0, 255.0));
+                    a = static_cast<uint8_t>(std::clamp(p.a * 255.0 * D * 100, 0.0, 255.0));
+                }
+                */
+                r = static_cast<uint8_t>(p.R * 255.0);
+                g = static_cast<uint8_t>(p.G * 255.0);
+                b = static_cast<uint8_t>(p.B * 255.0);
+                a = static_cast<uint8_t>(p.a * 255.0);
                 
-                //if (p.R == 0 && p.G == 0 && p.B == 0) continue;
-
-                uint8_t r = static_cast<uint8_t>(p.R * 255.0);
-                uint8_t g = static_cast<uint8_t>(p.G * 255.0);
-                uint8_t b = static_cast<uint8_t>(p.B * 255.0);
-                /*
-                uint8_t r = static_cast<uint8_t>(std::clamp( p.R * 255.0 *D*100, 0.0, 255.0));
-                uint8_t g = static_cast<uint8_t>(std::clamp(p.G * 255.0 * D * 100, 0.0, 255.0));
-                uint8_t b = static_cast<uint8_t>(std::clamp(p.B * 255.0 * D * 100, 0.0, 255.0));
-                */
-
-                //test codes
-                //test render depth picture
-                /*
-                r = static_cast<uint8_t>(D * 255.0 );
-                g = static_cast<uint8_t>(D * 255.0);
-                b = static_cast<uint8_t>(D * 255.0 );
-                */
-
-                uint32_t pixel = (255 << 24) | (r << 16) | (g << 8) | b;
+                uint32_t pixel = (a << 24) | (r << 16) | (g << 8) | b;
                 int index = y * (pitch / sizeof(uint32_t)) + x ;
                 pixelData[index] = pixel;
             }
@@ -422,22 +382,22 @@ void Display_thread() {
         SDL_UnlockTexture(texture);
 
 
-        // ½«ÎÆÀíäÖÈ¾µ½ÆÁÄ»ÉÏ
+        // å°†çº¹ç†æ¸²æŸ“åˆ°å±å¹•ä¸Š
         
         SDL_RenderCopy(renderer, texture, nullptr, nullptr);
         
 
 
-        auto end = std::chrono::high_resolution_clock::now();    //²âÖ¡
-        std::chrono::duration<double> elapsed_seconds = end - start; 
+        auto end = std::chrono::high_resolution_clock::now();    //æµ‹å¸§
 
+        std::chrono::duration<double> elapsed_seconds = end - start; 
         std::chrono::duration<double> Theoretical__ = tech_end - start;
 
         std::string title_str = ENGINE_NAME;
         title_str.append("                      Compilation_Date:");
         title_str.append(__DATE__);
 
-        std::string info = std::to_string( 1 / elapsed_seconds.count() ) + " FPS      " + std::to_string(1 / Theoretical__.count()) + " FPS(theoretical)";
+        std::string info = std::to_string( 1 / elapsed_seconds.count() ) + " FPS      " + std::to_string(1 / Theoretical__.count()) + " FPS(theoretical)" +"     Faces: " + std::to_string(FaceNumber);
 
         std::string pos = "Pos  " + std::to_string(Camera_1.Pos.x) + ", " + std::to_string(Camera_1.Pos.y) + ", " + std::to_string(Camera_1.Pos.z);
         const char* pos_char = pos.c_str();
@@ -454,7 +414,7 @@ void Display_thread() {
         EasyRenderText(renderer, font, Sign, textColor, 4, 68);
         EasyRenderText(renderer, font, Sign_2, textColor, 4, 84);
 
-        // Ë¢ĞÂäÖÈ¾Æ÷
+        // åˆ·æ–°æ¸²æŸ“å™¨
         SDL_RenderPresent(renderer);
 
         
@@ -465,7 +425,7 @@ void Display_thread() {
 }
 
 
-//camera¿ØÖÆÏß³Ì
+//cameraæ§åˆ¶çº¿ç¨‹
 void control_thread()
 {
     POINT currentPos, centerPos = { GetSystemMetrics(SM_CXSCREEN)/ 2, GetSystemMetrics(SM_CYSCREEN)/2 };
@@ -492,7 +452,7 @@ void control_thread()
 
         }
 
-        Sleep(1); // ĞİÃßÒ»¶ÎÊ±¼ä
+        Sleep(1); // ä¼‘çœ ä¸€æ®µæ—¶é—´
         GetCursorPos(&currentPos);
         
 
@@ -504,20 +464,21 @@ void control_thread()
             angleCurrent[0] += 360.0;
         }
         angleCurrent[1] = std::clamp(angleCurrent[1] - deltaY * 0.4, -90.0, 90.0);
-        //±ê×¼»¯Êı¾İ
+        //æ ‡å‡†åŒ–æ•°æ®
 
 
 
-        //´¦Àícamera¾µÍ··½Ïò
+        //å¤„ç†cameraé•œå¤´æ–¹å‘
         Control[1] = angleCurrent[0] * PI / 180;
         Control[2] = angleCurrent[1] * PI / 180;
         
         MoveMouseToCenter();
 
-        //¼ì²â²Ù×÷
+        //æ£€æµ‹æ“ä½œ
 
         if (GetAsyncKeyState(VK_CONTROL) & 0x8000) {
-            speed =0.001;
+            speed =0.0001;
+            //speed = 0.1;
         }else{
             speed = 0.02;
         }
@@ -546,7 +507,7 @@ void control_thread()
             Control[5] = 0;
         }
 
-        //±ä½¹test
+        //å˜ç„¦test
         if (GetKeyState('Z') & 0x8000 && Camera_1.F < 10) {
             Camera_1.F = Camera_1.F+0.1;
         }
@@ -567,7 +528,6 @@ void control_thread()
             Control[0] = 0;
         }
 
-        //camera_set(Camera_1,Control[0], Control[1], Control[2], Control[3], Control[4], Control[5]);
         Camera_1.Move_ForwardBack(Control[3]);
         Camera_1.Move_LeftRight(Control[4]);
         Camera_1.Move_UpDown(Control[5]);

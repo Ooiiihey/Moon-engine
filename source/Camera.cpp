@@ -1,4 +1,4 @@
-#include "moon.h"
+ï»¿#include "moon.h"
 
 void Camera::Set_CameraPos(double x, double y, double z) {
 	Pos.x = x;
@@ -29,7 +29,7 @@ void Camera::Move_UpDown(const double step) {
 	Pos.z += step;
 };
 
-//											            		ºáÏò				×İÏò		    	ÇãĞ±					
+//											            		æ¨ªå‘				çºµå‘		    	å€¾æ–œ					
 void Camera::Set_Direction(double yaw, double pitch, double roll) {
     //yaw
     Vec3 new_forward = rotate(Forward, Z, yaw);

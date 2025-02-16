@@ -1,7 +1,6 @@
-#pragma once
+ï»¿#pragma once
 #include <iostream>
 #include <vector>
-#include <cstdlib>
 #include <algorithm>
 
 #include "BS_thread_pool.h"
@@ -11,12 +10,14 @@
 #include <SDL_ttf.h>
 //use SDL 2
 
-#define ENGINE_NAME "Moon_engine_Alpha_v0.5.8"
+
+
+#define ENGINE_NAME "Moon_engine_Alpha_v0.5.9"
 #define PI 3.14159265358979
 
 
 
-//Êı¾İÀàĞÍ
+//æ•°æ®ç±»å‹
 
 struct Vec3 {
     double x = 0, y = 0, z = 0;
@@ -69,16 +70,17 @@ struct Vec3 {
     }
 };
 
+
 struct Vec2 {
     double u = 0, v = 0;
 };
 
-//2D¶¥µã
+//2Dé¡¶ç‚¹
 struct  Vertex2D{
     double x = 0, y = 0, x3d = 0, y3d = 0, z3d = 0, u = 0, v = 0;
 };
 
-class VerticesData {
+class DataCollection {
 public:
     std::vector <Vertex2D> vertex2d;
     std::vector <Vec3> norVec;
@@ -87,17 +89,26 @@ public:
     Vec3 get3D(unsigned int index);
 };
 
-//Ãæ
+//é¢
 struct Face {
     unsigned int index[3] = { 0,0,0 };
 };
 
 //RGB 
 struct Color {
-    double R = 0, G = 0, B = 0, a = 0;
+    float R = 0, G = 0, B = 0, a = 0;
+    bool operator==(Color otherC) {
+        if (R == otherC.R && G == otherC.G && B == otherC.B && a == otherC.a) {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 };
 
-//Ô­Ê¼mesh
+//åŸå§‹mesh
 struct Mesh {
     std::vector <Vec3> vertices = {};
     std::vector <Face> faces = {};
@@ -105,7 +116,7 @@ struct Mesh {
     std::vector <Color> color = {};
 };
 
-//ÓÃÀ´´æ×ª»»ºóµÄmesh
+//ç”¨æ¥å­˜è½¬æ¢åçš„mesh
 struct Mesh_R {
     std::vector <Vertex2D> vertices = {};
     std::vector <Vec3> normal_vectors = {};
@@ -113,26 +124,31 @@ struct Mesh_R {
     std::vector <Color> color = {};
 };
 
-
+struct splitValue {
+    double widthBegin = 0.0;
+    double widthEnd = 1.0;
+    double heightBegin = 0.0;
+    double heightEnd = 1.0;
+};
 
 
 /*old codes
 struct Camera {
-    //HFOVË®Æ½ÊÓÒ°  
+    //HFOVæ°´å¹³è§†é‡  
     double FOV = 40 * PI / 180;
-    double F = 1;    //f½¹¾à(Ä¬ÈÏ1)
-    const double NearPlane = 0.04;   //½üÆ½Ãæ¾àÀë(ÔËĞĞÊ±²»¿É±ä)
+    double F = 1;    //fç„¦è·(é»˜è®¤1)
+    const double NearPlane = 0.04;   //è¿‘å¹³é¢è·ç¦»(è¿è¡Œæ—¶ä¸å¯å˜)
     const double FarPlane = 4000;
 
-    double Pos[3] = { 0, 0, 0 };  //ÉãÏñ»úÎ»ÖÃ£¨ÊµÊ±£©
+    double Pos[3] = { 0, 0, 0 };  //æ‘„åƒæœºä½ç½®ï¼ˆå®æ—¶ï¼‰
 
     const double Forward[3] = { NearPlane, 0, 0 },
         y[3] = { NearPlane, 1, 0 },
         z[3] = { NearPlane, 0, 1 },
-        move[3] = { 0, -1, 0 };  //ÒÆ¶¯¸¨Öúµã(¹Ì¶¨Öµ)
-    //ÒÔcameraÎª²ÎÕÕµÄ³õÊ¼Ïà»ú·½Ïò×ø±ê£¨¹Ì¶¨Öµ²»¿É¸ü¸Ä£¡£©
+        move[3] = { 0, -1, 0 };  //ç§»åŠ¨è¾…åŠ©ç‚¹(å›ºå®šå€¼)
+    //ä»¥cameraä¸ºå‚ç…§çš„åˆå§‹ç›¸æœºæ–¹å‘åæ ‡ï¼ˆå›ºå®šå€¼ä¸å¯æ›´æ”¹ï¼ï¼‰
 
-    //´æ´¢ÊµÊ±·½ÏòÏòÁ¿
+    //å­˜å‚¨å®æ—¶æ–¹å‘å‘é‡
     Vec3 Forward_vec = { Forward[0], Forward[1], Forward[2] },
         Y_vec = { y[0], y[1], y[2] },
         Z_vec = { z[0], z[1], z[2] },
@@ -145,25 +161,25 @@ double dot(const Vec3& vec1, const Vec3& vec2);
 double dot(const Vec3& vec1, const double vec2[3]);
 Vec3 cross(const Vec3& vec1, const Vec3& vec2);
 double GetLength(const Vec3& vec);
-double GetLength(const double vec[3]);//ÖØÔØº¯Êı
+double GetLength(const double vec[3]);//é‡è½½å‡½æ•°
 Vec3 rotate(const Vec3& p, const Vec3& k, const double angle);
 
 
-//camera½á¹¹Êı¾İÀàĞÍ
+//cameraç»“æ„æ•°æ®ç±»å‹
 class Camera {
 public:
     const double NearPlane = 0.04;
     double FarPlane = 4000;
     double FOV = 45 * PI / 180;
-    double F = 1;    //f½¹¾à
+    double F = 1;    //fç„¦è·
     Vec3 Pos = { 0, 0, 0 };
 
-    // ³õÊ¼»¯·½ÏòÏòÁ¿ÎªÄ¬ÈÏ×ø±êÏµ
+    // åˆå§‹åŒ–æ–¹å‘å‘é‡ä¸ºé»˜è®¤åæ ‡ç³»
     const Vec3 Forward = { 1, 0, 0 },
         Y = { 0, 1, 0 },
         Z = { 0, 0, 1 },
-        move = { 0, -1, 0 };  //ÒÆ¶¯¸¨Öúµã(¹Ì¶¨Öµ)
-    //ÒÔcameraÎª²ÎÕÕµÄ³õÊ¼Ïà»ú·½Ïò×ø±ê£¨²»¿É¸ü¸Ä£¡£©
+        move = { 0, -1, 0 };  //ç§»åŠ¨è¾…åŠ©ç‚¹(å›ºå®šå€¼)
+    //ä»¥cameraä¸ºå‚ç…§çš„åˆå§‹ç›¸æœºæ–¹å‘åæ ‡ï¼ˆä¸å¯æ›´æ”¹ï¼ï¼‰
 
     Vec3 Forward_vec = { 1, 0, 0 },
         Y_vec = { 0, 1, 0 },
@@ -182,46 +198,59 @@ public:
 
 class Buffer {
 public:
-    std::mutex mtx;
+    //std::mutex mtx;
     long Buffer_size[2] = {0, 0};
+    /* old version
     std::vector<float> Red;
     std::vector<float> Green;
     std::vector<float> Blue;
     std::vector<float> Alapha;
-    std::vector<float> Depth;
-
-    // Ä¬ÈÏ¹¹Ôìº¯Êı
+    */
+    std::vector<Color> PixelColor;
+    std::vector<double> Depth;
+    
+    // é»˜è®¤æ„é€ å‡½æ•°
     Buffer() = default;
 
-    // ÏÔÊ½¶¨Òå¿½±´¹¹Ôìº¯Êı
-    Buffer(const Buffer& other): 
+    // æ˜¾å¼å®šä¹‰æ‹·è´æ„é€ å‡½æ•°
+    Buffer(const Buffer& other) :
         Buffer_size{ other.Buffer_size[0], other.Buffer_size[1] },
+        /*
         Red(other.Red),
         Green(other.Green),
         Blue(other.Blue),
+        */
+        PixelColor(other.PixelColor),
         Depth(other.Depth) {
     }
 
-    // ÏÔÊ½¶¨Òå¿½±´¸³ÖµÔËËã·û
+    // æ˜¾å¼å®šä¹‰æ‹·è´èµ‹å€¼è¿ç®—ç¬¦
     Buffer& operator=(const Buffer& other) {
         if (this != &other) {
             Buffer_size[0] = other.Buffer_size[0];
             Buffer_size[1] = other.Buffer_size[1];
+            /*
             Red = other.Red;
             Green = other.Green;
             Blue = other.Blue;
+            */
+            PixelColor = other.PixelColor;
             Depth = other.Depth;
         }
         return *this;
     }
 
 
-    // ÏÔÊ½¶¨ÒåÒÆ¶¯¸³ÖµÔËËã·û
+    // æ˜¾å¼å®šä¹‰ç§»åŠ¨èµ‹å€¼è¿ç®—ç¬¦
     Buffer(Buffer&& other) noexcept : 
         Buffer_size{ other.Buffer_size[0], other.Buffer_size[1] },
+        /*
         Red(std::move(other.Red)),
         Green(std::move(other.Green)),
         Blue(std::move(other.Blue)),
+        */
+        PixelColor(std::move(other.PixelColor)),
+
         Depth(std::move(other.Depth)) {
     }
 
@@ -246,10 +275,10 @@ private:
     inline Vec3 To_CameraSpace(const Camera& Receive_camera, const Vec3& Vertex_WorldSpace);
     inline Vec3 Get_CrossPoint(const Camera& Receive_camera, const Vec3& origin_1, const Vec3& origin_2);
     inline Vertex2D CameraSpace_to_ScreenSpace(const Camera& Receive_camera, const long screen_in[2], const Vec3& vertex_origin);
-    inline void Get_NormalVector(Mesh& cMesh, VerticesData& list);
+    inline void Get_NormalVector(Mesh& cMesh, DataCollection& list);
 public:
     
-    void Perspective(const Camera& Receive_camera, const long screen_in[2], Mesh& TargetMesh, Mesh_R& out_mesh);
+    void VertexShader(const Camera& Receive_camera, const long screen_in[2], Mesh& TargetMesh, Mesh_R& out_mesh);
 
 
 };
@@ -258,21 +287,21 @@ public:
 
 class Graphics {
 private:
-    //ÁÙÊ±Ïî
-    double coeffs_[21];
-    double reciprocal_area;
+    //ä¸´æ—¶é¡¹
+
 
     inline double To_unLineDepth(const Camera& Rec_camera, double depth);
 
-    inline void PreComputeTriangle(const Vertex2D& v0, const Vertex2D& v1, const Vertex2D& v2);
-    inline void Interporate(double a, double b, Vertex2D& back);
+    inline void PreComputeTriangle(double coeffs_[21], double &reciprocal_area, const Vertex2D& v0, const Vertex2D& v1, const Vertex2D& v2);
+    inline void Interporate(double coeffs_[21], double& reciprocal_area, double a, double b, Vertex2D& back);
 
-	inline void DrawFlatTopTriangle(const Camera& Receive_camera_2, Buffer& buffer, const Vertex2D& v0, const Vertex2D& v1, const Vertex2D& v2, const Color& c);
-    inline void DrawFlatBottomTriangle(const Camera& Receive_camera_2, Buffer& buffer, const Vertex2D& v0, const Vertex2D& v1, const Vertex2D& v2, const Color& c);
+	inline void DrawFlatTopTriangle(const Camera& Receive_camera_2, Buffer& buffer, splitValue& Buffer_spilit, const Vertex2D& v0, const Vertex2D& v1, const Vertex2D& v2, const Color& c);
+    inline void DrawFlatBottomTriangle(const Camera& Receive_camera_2, Buffer& buffer, splitValue& Buffer_spilit, const Vertex2D& v0, const Vertex2D& v1, const Vertex2D& v2, const Color& c);
 public:
-    void DrawTriangle(const Camera &Receive_camera_2, Buffer& buffer, const Vertex2D& v0, const Vertex2D& v1, const Vertex2D& v2, Color& c);
+    void DrawTriangle(const Camera &Receive_camera_2, Buffer& buffer,splitValue& Buffer_spilit, const Vertex2D& v0, const Vertex2D& v1, const Vertex2D& v2, Color& c);
 
 
 };
 
-void Render(const Camera Receive_camera, Buffer& FrameBuffer, const long screen_in[2], const std::vector <Mesh>& mesh_list);
+Mesh LoadModel(const std::string& filename);
+unsigned int Render(const Camera Receive_camera, Buffer& FrameBuffer, const long screen_in[2], const std::vector <Mesh>& mesh_list);

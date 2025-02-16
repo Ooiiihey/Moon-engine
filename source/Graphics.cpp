@@ -1,5 +1,4 @@
-#include "moon.h"
-
+ï»¿#include "moon.h"
 
 
 inline double Graphics::To_unLineDepth(const Camera& Rec_camera, double depth) {
@@ -7,14 +6,14 @@ inline double Graphics::To_unLineDepth(const Camera& Rec_camera, double depth) {
 }
 
 
-inline void Graphics::PreComputeTriangle(const Vertex2D& v0, const Vertex2D& v1, const Vertex2D& v2){
+inline void Graphics::PreComputeTriangle(double coeffs_[21], double& reciprocal_area, const Vertex2D& v0, const Vertex2D& v1, const Vertex2D& v2){
 
-	// ¼ÆËãÈı½ÇĞÎÃæ»ı
+	// è®¡ç®—ä¸‰è§’å½¢é¢ç§¯
 	double fixed_term1 = v0.x * v1.y + v1.x * v2.y + v2.x * v0.y;
 	double fixed_term2 = v2.x * v1.y + v1.x * v0.y + v0.x * v2.y;
 	reciprocal_area = 1.0 / (fixed_term1 - fixed_term2);
 
-	// Ô¤ÏÈ¼ÆËãÖØĞÄ×ø±êÏµµÄÏµÊı£¨ÖÜÆÚdraw same triangleÄÚ¹Ì¶¨£©
+	// é¢„å…ˆè®¡ç®—é‡å¿ƒåæ ‡ç³»çš„ç³»æ•°ï¼ˆå‘¨æœŸdraw same triangleå†…å›ºå®šï¼‰
 	coeffs_[0] = v0.x; coeffs_[1] = v0.y;
 	coeffs_[2] = v1.x; coeffs_[3] = v1.y;
 	coeffs_[4] = v2.x; coeffs_[5] = v2.y;
@@ -33,25 +32,25 @@ inline void Graphics::PreComputeTriangle(const Vertex2D& v0, const Vertex2D& v1,
 	coeffs_[20] = v2.z3d;
 }
 
-//ÓÅ»¯°æ±¾
-inline void Graphics::Interporate(double a, double b, Vertex2D& back) {
-	// ¼ÆËã area0 ºÍ area1 µÄ±äÏî
+//ä¼˜åŒ–ç‰ˆæœ¬
+inline void Graphics::Interporate(double coeffs_[21], double &reciprocal_area, double a, double b, Vertex2D& back) {
+	// è®¡ç®— area0 å’Œ area1 çš„å˜é¡¹
 	double area0 = a * coeffs_[3] + coeffs_[2] * coeffs_[5] + coeffs_[4] * b
 							- coeffs_[4] * coeffs_[3] - coeffs_[2] * b - a * coeffs_[5];
 	double area1 = coeffs_[0] * b + a * coeffs_[5] + coeffs_[4] * coeffs_[1]
 							- coeffs_[4] * b - a * coeffs_[1] - coeffs_[0] * coeffs_[5];
 
-	// Ê¹ÓÃÔ¤¼ÆËãµÄ area
+	// ä½¿ç”¨é¢„è®¡ç®—çš„ area
 	double alpha = area0 * reciprocal_area;
 	double beta = area1 * reciprocal_area;
 	double gamma = 1.0 - alpha - beta;
 
 	back.x = a; back.y = b;
-	// ·µ»ØÄæÉî¶È²åÖµµÄ½á¹û
+	// è¿”å›é€†æ·±åº¦æ’å€¼çš„ç»“æœ
 	back.x3d = 1.0 / (alpha / coeffs_[6] + beta / coeffs_[7] + gamma / coeffs_[8]);
 	back.y3d = (alpha * coeffs_[15] / coeffs_[6] + beta * coeffs_[16] / coeffs_[7] + gamma * coeffs_[17] / coeffs_[8]) / back.x3d;
 	back.z3d = (alpha * coeffs_[18] / coeffs_[6] + beta * coeffs_[19] / coeffs_[7] + gamma * coeffs_[20] / coeffs_[8]) / back.x3d;
-	//uv²åÖµ
+	//uvæ’å€¼
 	back.u = (alpha * coeffs_[9] / coeffs_[6] + beta  * coeffs_[11] / coeffs_[7]+ gamma  * coeffs_[13] / coeffs_[8]) / back.x3d;
 	back.v = (alpha *  coeffs_[10] / coeffs_[6] + beta * coeffs_[12] / coeffs_[7] + gamma  * coeffs_[14] / coeffs_[8]) / back.x3d;
 
@@ -60,32 +59,35 @@ inline void Graphics::Interporate(double a, double b, Vertex2D& back) {
 
 
 
-void Graphics::DrawFlatTopTriangle(const Camera& Receive_camera, Buffer &buffer, const Vertex2D& v0, const Vertex2D& v1, const Vertex2D& v2, const Color& c) {
+void Graphics::DrawFlatTopTriangle(const Camera& Receive_camera, Buffer &buffer, splitValue& Buffer_spilit, const Vertex2D& v0, const Vertex2D& v1, const Vertex2D& v2, const Color& c) {
 
-	//Ğ±ÂÊµ¹Êı
+	//æ–œç‡å€’æ•°
 	double m0 = (v2.x - v0.x) / (v2.y - v0.y);
 	double m1 = (v2.x - v1.x) / (v2.y - v1.y);
 
-	//ÆğÊ¼É¨ÃèÏß
-	int yStart = std::clamp((int)ceil(v0.y - 0.5), 0, int(buffer.Buffer_size[1]));
-	int yEnd = std::clamp((int)ceil(v2.y - 0.5), 0, int(buffer.Buffer_size[1]));
+	//èµ·å§‹æ‰«æçº¿
+	int yStart = std::clamp(static_cast<int>(ceil(v0.y - 0.5)), static_cast<int>(Buffer_spilit.heightBegin * buffer.Buffer_size[1]), static_cast<int>(Buffer_spilit.heightEnd * buffer.Buffer_size[1]));
+	int yEnd = std::clamp(static_cast<int>(ceil(v2.y - 0.5)), static_cast<int>(Buffer_spilit.heightBegin * buffer.Buffer_size[1]), static_cast<int>(Buffer_spilit.heightEnd * buffer.Buffer_size[1]));
 
 	if (yStart == yEnd) return;
 
-	PreComputeTriangle(v0, v1, v2);
+	double coeffs_[21];
+	double reciprocal_area = 0;
+
+	PreComputeTriangle(coeffs_, reciprocal_area,  v0, v1, v2);
 	for (int y = yStart; y < yEnd; ++y) {
 		const double px0 = m0 * (double(y) + 0.5f - v0.y) + v0.x;
 		const double px1 = m1 * (double(y) + 0.5f - v1.y) + v1.x;
 
-		int xStart = std::clamp((int)ceil(px0 - 0.5f), 0, int(buffer.Buffer_size[0]));
-		int xEnd = std::clamp((int)ceil(px1 - 0.5f), 0, int(buffer.Buffer_size[0]));
+		int xStart = std::clamp((int)ceil(px0 - 0.5f), (int)(Buffer_spilit.widthBegin * buffer.Buffer_size[0]), int(Buffer_spilit.widthEnd * buffer.Buffer_size[0]));
+		int xEnd = std::clamp((int)ceil(px1 - 0.5f), (int)(Buffer_spilit.widthBegin * buffer.Buffer_size[0]), int(Buffer_spilit.widthEnd * buffer.Buffer_size[0]));
 
 		if (xStart == xEnd) continue;
 
 		for (int x = xStart; x < xEnd; ++x) {
 			Vertex2D out ;
-			//´Ë´¦×ø±ê+0.5ÊÇÎªÁËÆ¥Åä¹âÕ¤»¯×ó¶¥¹æÔò
-			Interporate(x + 0.5f, y + 0.5f, out);
+			//æ­¤å¤„åæ ‡+0.5æ˜¯ä¸ºäº†åŒ¹é…å…‰æ …åŒ–å·¦é¡¶è§„åˆ™
+			Interporate(coeffs_, reciprocal_area, x + 0.5f, y + 0.5f, out);
 			double d = To_unLineDepth(Receive_camera, out.x3d);
 			if (buffer.CompareDepth_Smaller(x, y, d) ) {
 				buffer.PutPixel(x, y, d, c);
@@ -97,32 +99,34 @@ void Graphics::DrawFlatTopTriangle(const Camera& Receive_camera, Buffer &buffer,
 	}
 };
 
-void Graphics::DrawFlatBottomTriangle(const Camera& Receive_camera, Buffer& buffer, const Vertex2D& v0, const Vertex2D& v1, const Vertex2D& v2, const Color& c) {
-	// Ğ±ÂÊµ¹Êı
+void Graphics::DrawFlatBottomTriangle(const Camera& Receive_camera, Buffer& buffer, splitValue& Buffer_spilit, const Vertex2D& v0, const Vertex2D& v1, const Vertex2D& v2, const Color& c) {
+	// æ–œç‡å€’æ•°
 	double m0 = (v1.x - v0.x) / (v1.y - v0.y);
 	double m1 = (v2.x - v0.x) / (v2.y - v0.y);
 
-	// ÆğÊ¼É¨ÃèÏß
-	int yStart = std::clamp(static_cast<int>(ceil(v0.y - 0.5)), 0, static_cast<int>(buffer.Buffer_size[1]));
-	int yEnd = std::clamp(static_cast<int>(ceil(v2.y - 0.5)), 0, static_cast<int>(buffer.Buffer_size[1]));
+	// èµ·å§‹æ‰«æçº¿
+	int yStart = std::clamp(static_cast<int>(ceil(v0.y - 0.5)), static_cast<int>(Buffer_spilit.heightBegin * buffer.Buffer_size[1]), static_cast<int>(Buffer_spilit.heightEnd * buffer.Buffer_size[1]));
+	int yEnd = std::clamp(static_cast<int>(ceil(v2.y - 0.5)), static_cast<int>(Buffer_spilit.heightBegin * buffer.Buffer_size[1]), static_cast<int>(Buffer_spilit.heightEnd * buffer.Buffer_size[1]));
 
 	if (yStart == yEnd) return;
 
-	PreComputeTriangle(v0, v1, v2);
+	double coeffs_[21];
+	double reciprocal_area = 0;
+	PreComputeTriangle(coeffs_, reciprocal_area, v0, v1, v2);
 	for (int y = yStart; y < yEnd; ++y) {
 		const double px0 = m0 * (static_cast<double>(y) + 0.5f - v1.y) + v1.x;
 		const double px1 = m1 * (static_cast<double>(y) + 0.5f - v2.y) + v2.x;
 
 		//here do not use Buffer_size[0] - 1, this will cause black wire in the side of screen.
-		int xStart = std::clamp(static_cast<int>(ceil(px0 - 0.5f)) , 0, static_cast<int>(buffer.Buffer_size[0]));
-		int xEnd = std::clamp(static_cast<int>(ceil(px1 - 0.5f)) , 0, static_cast<int>(buffer.Buffer_size[0]));
+		int xStart = std::clamp((int)ceil(px0 - 0.5f), (int)(Buffer_spilit.widthBegin * buffer.Buffer_size[0]), int(Buffer_spilit.widthEnd * buffer.Buffer_size[0]));
+		int xEnd = std::clamp((int)ceil(px1 - 0.5f), (int)(Buffer_spilit.widthBegin * buffer.Buffer_size[0]), int(Buffer_spilit.widthEnd * buffer.Buffer_size[0]));
 
 		if (xStart == xEnd) continue;
 
 		for (int x = xStart ; x < xEnd; ++x) {
 			Vertex2D out;
-			//´Ë´¦×ø±ê+0.5ÊÇÎªÁËÆ¥Åä¹âÕ¤»¯×ó¶¥¹æÔò
-			Interporate(x + 0.5f, y + 0.5f, out);
+			//æ­¤å¤„åæ ‡+0.5æ˜¯ä¸ºäº†åŒ¹é…å…‰æ …åŒ–å·¦é¡¶è§„åˆ™
+			Interporate(coeffs_, reciprocal_area, x + 0.5f, y + 0.5f, out);
 			double d = To_unLineDepth(Receive_camera, out.x3d);
 			if (buffer.CompareDepth_Smaller(x, y, d)) {
 				buffer.PutPixel(x, y, d, c);
@@ -133,28 +137,47 @@ void Graphics::DrawFlatBottomTriangle(const Camera& Receive_camera, Buffer& buff
 	}
 }
 
-void Graphics::DrawTriangle(const Camera& Receive_camera, Buffer& buffer, const Vertex2D& v0, const Vertex2D& v1, const Vertex2D& v2, Color& c) {
+void Graphics::DrawTriangle(const Camera& Receive_camera, Buffer& buffer, splitValue& Buffer_spilit, const Vertex2D& v0, const Vertex2D& v1, const Vertex2D& v2, Color& c) {
+
+
 	const Vertex2D* pv0 = &v0;
 	const Vertex2D* pv1 = &v1;
 	const Vertex2D* pv2 = &v2;
 
-	//½»»»ÉÏÏÂË³Ğò
+	// è®¡ç®—ä¸‰è§’å½¢çš„è¾¹ç•ŒçŸ©å½¢
+	double triMinX = std::min({ pv0->x, pv1->x, pv2->x });
+	double triMaxX = std::max({ pv0->x, pv1->x, pv2->x });
+	double triMinY = std::min({ pv0->y, pv1->y, pv2->y });
+	double triMaxY = std::max({ pv0->y, pv1->y, pv2->y });
+
+	// è®¡ç®—å±å¹•çš„æ¸²æŸ“èŒƒå›´
+	long screenMinX = static_cast<long>(Buffer_spilit.widthBegin * buffer.Buffer_size[0]);
+	long screenMaxX = static_cast<long>(Buffer_spilit.widthEnd * buffer.Buffer_size[0]);
+	long screenMinY = static_cast<long>(Buffer_spilit.heightBegin * buffer.Buffer_size[1]);
+	long screenMaxY = static_cast<long>(Buffer_spilit.heightEnd * buffer.Buffer_size[1]);
+
+	// æ£€æŸ¥ä¸‰è§’å½¢æ˜¯å¦ä½äºå±å¹•ä¹‹å¤–
+	if (triMaxX < screenMinX || triMinX > screenMaxX || triMaxY < screenMinY || triMinY > screenMaxY) {
+		return;
+	}
+
+	//äº¤æ¢ä¸Šä¸‹é¡ºåº
 	if (pv1->y < pv0->y)  std::swap(pv0, pv1);
 	if (pv2->y < pv1->y)  std::swap(pv2, pv1);
 	if (pv1->y < pv0->y)  std::swap(pv0, pv1);
 
-	//×ÔÈ»Æ½¶¥Èı½ÇĞÎ
-	if ((ceil)(pv1->y -0.5f)== (ceil)(pv0->y - 0.5f)) {
+	//è‡ªç„¶å¹³é¡¶ä¸‰è§’å½¢
+	if ( /*(ceil)(pv1->y - 0.5f) == (ceil)(pv0->y - 0.5f)*/ pv1->y == pv0->y) {
 		if (pv1->x < pv0->x) std::swap(pv0, pv1);
-		DrawFlatTopTriangle(Receive_camera, buffer, *pv0, *pv1, *pv2, c);
+		DrawFlatTopTriangle(Receive_camera, buffer, Buffer_spilit, *pv0, *pv1, *pv2, c);
 	}
-	else if ((ceil)(pv1->y -0.5f) == (ceil)(pv2->y -0.5f)) {
+	else if (/*(ceil)(pv1->y - 0.5f) == (ceil)(pv2->y - 0.5f) */ pv1->y == pv2->y) {
 		if (pv1->x > pv2->x) std::swap(pv2, pv1);
-		DrawFlatBottomTriangle(Receive_camera, buffer, *pv0, *pv1, *pv2, c);
+		DrawFlatBottomTriangle(Receive_camera, buffer, Buffer_spilit,*pv0, *pv1, *pv2, c);
 	}
 	else {
 		const double alphaSplit = (pv1->y - pv0->y) / (pv2->y - pv0->y);
-		const double depth = 1.0 / (1 / pv0->x3d + (1/pv2->x3d - 1/pv0->x3d) * alphaSplit);//´Ë´¦½øĞĞµÄÊÇÄæÉî¶ÈµÄ²åÖµ
+		const double depth = 1.0 / (1 / pv0->x3d + (1/pv2->x3d - 1/pv0->x3d) * alphaSplit);//æ­¤å¤„è¿›è¡Œçš„æ˜¯é€†æ·±åº¦çš„æ’å€¼
 		const Vertex2D vi = {	pv0->x + (pv2->x - pv0->x) * alphaSplit,
 										pv1->y,
 										depth,
@@ -166,13 +189,13 @@ void Graphics::DrawTriangle(const Camera& Receive_camera, Buffer& buffer, const 
 
 		if (pv1->x < vi.x) {
 			//major right
-			DrawFlatBottomTriangle(Receive_camera, buffer, *pv0, *pv1, vi, c);
-			DrawFlatTopTriangle(Receive_camera, buffer, *pv1, vi, *pv2, c);
+			DrawFlatBottomTriangle(Receive_camera, buffer, Buffer_spilit, *pv0, *pv1, vi, c);
+			DrawFlatTopTriangle(Receive_camera, buffer, Buffer_spilit, *pv1, vi, *pv2, c);
 		}
 		else {
 			//major left
-			DrawFlatBottomTriangle(Receive_camera, buffer, *pv0, vi, *pv1, c);
-			DrawFlatTopTriangle(Receive_camera, buffer, vi, *pv1, *pv2, c);
+			DrawFlatBottomTriangle(Receive_camera, buffer, Buffer_spilit, *pv0, vi, *pv1, c);
+			DrawFlatTopTriangle(Receive_camera, buffer, Buffer_spilit, vi, *pv1, *pv2, c);
 		}
 	}
 

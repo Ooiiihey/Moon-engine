@@ -1,4 +1,4 @@
-#include "moon.h"
+ï»¿#include "moon.h"
 
 inline Vec3 Transform::To_CameraSpace(const Camera& Receive_camera, const Vec3& Vertex_WorldSpace) {
     Vec3 vec_P = Vertex_WorldSpace - Receive_camera.Pos;
@@ -7,7 +7,7 @@ inline Vec3 Transform::To_CameraSpace(const Camera& Receive_camera, const Vec3& 
                         dot(vec_P, Receive_camera.Z_vec) );
 };
 
-//¼ÆËãÏßÔÚ½üÆ½ÃæµÄ½»µã×ø±ê                          Ïà»ú                                                           Ò»¸öµã                         ÁíÒ»¸öµã       
+//è®¡ç®—çº¿åœ¨è¿‘å¹³é¢çš„äº¤ç‚¹åæ ‡                          ç›¸æœº                                                           ä¸€ä¸ªç‚¹                         å¦ä¸€ä¸ªç‚¹       
  inline Vec3 Transform::Get_CrossPoint(const Camera& Receive_camera, const Vec3& origin_1, const Vec3& origin_2) {
      double alpha = (Receive_camera.NearPlane - origin_1.x) / (origin_2.x - origin_1.x);
      return Vec3(Receive_camera.NearPlane,
@@ -16,8 +16,8 @@ inline Vec3 Transform::To_CameraSpace(const Camera& Receive_camera, const Vec3& 
 
  }
 
-// ¼ÆËãÃæµÄ·¨ÏòÁ¿                                                  mesh
-inline void Transform::Get_NormalVector(Mesh& cMesh, VerticesData& list) {
+// è®¡ç®—é¢çš„æ³•å‘é‡                                                  mesh
+inline void Transform::Get_NormalVector(Mesh& cMesh, DataCollection& list) {
     Vec3 normal_vectors;
     for (Face& each_face : cMesh.faces) {
         double vec_a[3] = { cMesh.vertices[each_face.index[1]].x - cMesh.vertices[each_face.index[0]].x ,
@@ -42,138 +42,125 @@ inline void Transform::Get_NormalVector(Mesh& cMesh, VerticesData& list) {
 inline Vertex2D Transform::CameraSpace_to_ScreenSpace(const Camera& Receive_camera, const long screen_in[2], const Vec3& vertex_CameraSpace) {
     Vec3 VecPlane = vertex_CameraSpace * (Receive_camera.NearPlane / vertex_CameraSpace.x);
     double b = (Receive_camera.F * (screen_in[0] >> 1)) / (tan(Receive_camera.FOV) * Receive_camera.NearPlane);
-    return Vertex2D((screen_in[0] >> 1) - (b * VecPlane.y), (screen_in[1] >> 1) - (b * VecPlane.z), vertex_CameraSpace.x, vertex_CameraSpace.y, vertex_CameraSpace.z, 0, 0);//x´æ´¢camera_SpaceÖĞÉî¶È
-    //Æ½Ãæ×ø±êÖáÓ³Éä,×ø±êÒÑÊÊÅädirecX×ø±êÏµ
+    //è¿™é‡Œä¼šè£…è½½ä¸ŠCameraSpaceçš„åæ ‡
+    return Vertex2D((screen_in[0] >> 1) - (b * VecPlane.y), (screen_in[1] >> 1) - (b * VecPlane.z), vertex_CameraSpace.x, vertex_CameraSpace.y, vertex_CameraSpace.z, 0, 0);//xå­˜å‚¨camera_Spaceä¸­æ·±åº¦
+    //å¹³é¢æ˜ å°„,åæ ‡å·²é€‚é…direcXåæ ‡ç³»
 
 }
 
-//face×é×°+Í¸ÊÓ×ª»»                                               ÉãÏñ»ú                           ·Ö±æÂÊ                                Ô­Ê¼mesh                   Êä³ömesh
-void Transform::Perspective(const Camera& Receive_camera, const long screen_in[2], Mesh& Original_Mesh, Mesh_R& out) {
-    int faceNUM = Original_Mesh.faces.size();
-    std::vector <bool> Vertex_info;//µã¿É¼ûĞÔ¼ì²é
-    Vertex_info.reserve(faceNUM);
 
-    std::vector <bool> CameraSpaceVertex_exist_info;//´æÔÚĞÔ¼ì²é
-    CameraSpaceVertex_exist_info.reserve(faceNUM);
+//faceç»„è£…+é€è§†è½¬æ¢                                               æ‘„åƒæœº                           åˆ†è¾¨ç‡                                åŸå§‹mesh                   è¾“å‡ºmesh
+void Transform::VertexShader(const Camera& Receive_camera, const long screen_in[2], Mesh& Original_Mesh, Mesh_R& out) {
+    unsigned int faceNUM = (unsigned int)Original_Mesh.faces.size();
+    std::vector <bool> Vertices_info;//ç‚¹å¯è§æ€§æ£€æŸ¥
+    //std::vector <bool> CameraSpaceVertex_exist_info;//å­˜åœ¨æ€§æ£€æŸ¥
+    Vertices_info.reserve(faceNUM);
+    //CameraSpaceVertex_exist_info.reserve(faceNUM);
+    out.vertices.reserve(faceNUM * 3);
 
-    VerticesData Vertices_data;
-    Vertices_data.vertex2d.reserve(Original_Mesh.vertices.size());
+    DataCollection VerticesData;
+    VerticesData.vertex2d.reserve(Original_Mesh.vertices.size());
 
-    
+    //preCompute
+    double b = (Receive_camera.F * (screen_in[0] >> 1)) / (tan(Receive_camera.FOV) * Receive_camera.NearPlane);
+
     for (const Vec3& each_point : Original_Mesh.vertices) {
         Vertex2D Transformed_P;
-        if (double depth = dot(each_point - Receive_camera.Pos, Receive_camera.Forward_vec ); depth >= Receive_camera.NearPlane) {
-            Vertex_info.push_back(true);
-            CameraSpaceVertex_exist_info.push_back(true);
-            //×ª»»µ½camera space
-            Vec3 CameraSpace_P = { depth,
-                                           dot(each_point - Receive_camera.Pos, Receive_camera.Y_vec),
-                                           dot(each_point - Receive_camera.Pos, Receive_camera.Z_vec) };
-            
-            Transformed_P = CameraSpace_to_ScreenSpace(Receive_camera, screen_in, CameraSpace_P );            //ÆÁÄ»×ø±ê
+        Vec3 CameraSpace_P = To_CameraSpace(Receive_camera, each_point);//è½¬æ¢åˆ°camera space
+
+        if (CameraSpace_P.x >= Receive_camera.NearPlane) {
+            Vertices_info.push_back(true);
+            Vec3 VecPlane = CameraSpace_P * (Receive_camera.NearPlane / CameraSpace_P.x);
+
+            Transformed_P = { (screen_in[0] >> 1) - (b * VecPlane.y),
+                                        (screen_in[1] >> 1) - (b * VecPlane.z),
+                                        CameraSpace_P.x, CameraSpace_P.y, CameraSpace_P.z,
+                                        0, 0 };
+
+            //Transformed_P = CameraSpace_to_ScreenSpace(Receive_camera, screen_in, CameraSpace_P );            //å±å¹•åæ ‡
         } else { 
-             //²»¿É¼ûÇé¿ö
-            Vertex_info.push_back(false);
-            CameraSpaceVertex_exist_info.push_back(false);
+             //ä¸å¯è§æƒ…å†µ
+            Vertices_info.push_back(false);
+            Transformed_P = { 0, 0, CameraSpace_P.x, CameraSpace_P.y, CameraSpace_P.z, 0, 0 };
         }
-        Vertices_data.vertex2d.emplace_back(Transformed_P);
+        VerticesData.vertex2d.emplace_back(Transformed_P);
     }
     
-    if (not std::any_of(Vertex_info.begin(), Vertex_info.end(), [](bool value) { return value; })) return;//Ö±½ÓÌø¹ıÍêÈ«²»¿É¼ûµÄmesh
+    if (not std::any_of(Vertices_info.begin(), Vertices_info.end(), [](bool value) { return value; })) return;//ç›´æ¥è·³è¿‡å®Œå…¨ä¸å¯è§çš„mesh
 
-    Vertices_data.norVec.reserve(faceNUM);
-    Get_NormalVector(Original_Mesh, Vertices_data);
+    VerticesData.norVec.reserve(faceNUM);
+    Get_NormalVector(Original_Mesh, VerticesData);
 
-    //ÒÔÃæÎªµ¥Î»½«Ã¿¸ö½Ç¶¥Ë÷Òı£¬²¢¶ş´Î·Ö¸î´¦ÀíÓĞ²»¿É¼ûµãµÄÆ½Ãæ£¨Ò»¸öµã²»¿É¼ûµÄÇé¿ö£»Á½¸öµã²»¿É¼ûµÄÇé¿ö£»Èı¸öµã¶¼²»¿É¼ûµÄÇé¿ö£©
-    for (int i = 0; i < faceNUM; ++i) {
+    //ä»¥é¢ä¸ºå•ä½å°†æ¯ä¸ªè§’é¡¶ç´¢å¼•ï¼Œå¹¶äºŒæ¬¡åˆ†å‰²å¤„ç†æœ‰ä¸å¯è§ç‚¹çš„å¹³é¢ï¼ˆä¸€ä¸ªç‚¹ä¸å¯è§çš„æƒ…å†µï¼›ä¸¤ä¸ªç‚¹ä¸å¯è§çš„æƒ…å†µï¼›ä¸‰ä¸ªç‚¹éƒ½ä¸å¯è§çš„æƒ…å†µï¼‰
+    for (unsigned int i = 0; i < faceNUM; ++i) {
         Face* ptrFace = &Original_Mesh.faces[i];
-        int index0 = Original_Mesh.faces[i].index[0];
+        unsigned int index0 = ptrFace->index[0];
+        if (dot( (Original_Mesh.vertices[index0] - Receive_camera.Pos), VerticesData.norVec[i]) >= 0) continue;
 
-        Vec3 vecTest = Original_Mesh.vertices[index0] - Receive_camera.Pos;
-        if (dot(vecTest, Vertices_data.norVec[i]) >= 0) continue;
+        unsigned int index1 = ptrFace->index[1];
+        unsigned int index2 = ptrFace->index[2];
+        //é¢å…¨å¯è§çš„æƒ…å†µ
+        if (Vertices_info[index0] && Vertices_info[index1] && Vertices_info[index2] ) {
+            //åé¢æ­¤å¤„åŠ å…¥uvç´¢å¼•çš„ç»“æœ
 
-        int index1 = Original_Mesh.faces[i].index[1];
-        int index2 = Original_Mesh.faces[i].index[2];
-        //ÃæÈ«¿É¼ûµÄÇé¿ö
-        if (Vertex_info[index0] && Vertex_info[index1] && Vertex_info[index2] ) {
-
-            //ºóÃæ´Ë´¦¼ÓÈëuvË÷ÒıµÄ½á¹û
-
-            out.vertices.emplace_back(Vertices_data.vertex2d[index0]);
-            out.vertices.emplace_back(Vertices_data.vertex2d[index1]);
-            out.vertices.emplace_back(Vertices_data.vertex2d[index2]);
+            out.vertices.emplace_back(VerticesData.vertex2d[index0]);
+            out.vertices.emplace_back(VerticesData.vertex2d[index1]);
+            out.vertices.emplace_back(VerticesData.vertex2d[index2]);
             
-            out.normal_vectors.emplace_back(Vertices_data.norVec[i]);
+            out.normal_vectors.emplace_back(VerticesData.norVec[i]);
 
             out.color.emplace_back(Original_Mesh.color[i]);
         }
         else {
-            //²»ÍêÕûÃæ´¦Àí(ÈÔÈ»¼ì²é×ÜÌåÃæÕıÃæ¿É¼ûĞÔ)
-            int num = static_cast<int>(not Vertex_info[index0]) + static_cast<int>(not Vertex_info[index1]) + static_cast<int>(not Vertex_info[index2]);
+            //ä¸å®Œæ•´é¢å¤„ç†
+            int num = (!Vertices_info[index0]) + (!Vertices_info[index1]) + (!Vertices_info[index2]);
             if (num == 3) continue;
-            bool num_bool = (num == 1) ? true : false;
+            bool num_bool = (num == 1);
 
-            unsigned int previous{}, next{}, medium{};//          previous Vec3, next Vec3, medium Vec3    (¿´Çé¿ö¸÷×Ô·ÖÅäÊÇ²»¿É¼ûµã»¹ÊÇ¿É¼ûµã)(Ë÷ÒıÖµ)
+            unsigned int previous{}, next{}, medium{};//          previous Vec3, next Vec3, medium Vec3    (çœ‹æƒ…å†µå„è‡ªåˆ†é…æ˜¯ä¸å¯è§ç‚¹è¿˜æ˜¯å¯è§ç‚¹)(ç´¢å¼•å€¼)
             Vec3 ClipOut_3d_1, ClipOut_3d_2;            //          3d Vec3 1        3d Vec3 2
             Vertex2D ClipOut_1, ClipOut_2;            //          Vec3 1        Vec3 2
-            //ÎªÁË×îºóÉú³ÉµÄµãµÄÊı×éÈÔÈ»ÊÇÕıÃæË³Ê±ÕëµÄË³Ğò
+            //ä¸ºäº†æœ€åç”Ÿæˆçš„ç‚¹çš„æ•°ç»„ä»ç„¶æ˜¯æ­£é¢é¡ºæ—¶é’ˆçš„é¡ºåº
             for (int e = 0; e < 3; e++) {
-                if (num_bool ^ Vertex_info[(*ptrFace).index[e]]) {//»ñµÃ´ı´¦Àíµã            //´Ë´¦µÄÒì»òÔËËã·Ö±æÊÇ1Çé¿ö»¹ÊÇ2Çé¿ö
-                    medium = (*ptrFace).index[e];
-                    previous = (*ptrFace).index[(e + 5) % 3];
-                    next = (*ptrFace).index[(e + 7) % 3];
+                if (num_bool ^ Vertices_info[ptrFace->index[e]]) {//è·å¾—å¾…å¤„ç†ç‚¹            //æ­¤å¤„çš„å¼‚æˆ–è¿ç®—åˆ†è¾¨æ˜¯1æƒ…å†µè¿˜æ˜¯2æƒ…å†µ
+                    medium = ptrFace->index[e];
+                    previous = ptrFace->index[(e + 2) % 3];
+                    next = ptrFace->index[(e + 1) % 3];
                     break;
                 }
             }
 
-            if (num_bool && (not CameraSpaceVertex_exist_info[medium]) ) {
-                CameraSpaceVertex_exist_info[medium] = true;
-                Vec3 tmp = To_CameraSpace(Receive_camera, Original_Mesh.vertices[medium]);
-                Vertices_data.put3DIndex(tmp, medium);
-            }else{
-                if (not CameraSpaceVertex_exist_info[previous]) {
-                    CameraSpaceVertex_exist_info[previous] = true;
-                    Vec3 tmp = To_CameraSpace(Receive_camera, Original_Mesh.vertices[previous]);
-                    Vertices_data.put3DIndex(tmp, previous);
-
-                }if (not CameraSpaceVertex_exist_info[next]) {
-                    CameraSpaceVertex_exist_info[next] = true;
-                    Vec3 tmp = To_CameraSpace(Receive_camera, Original_Mesh.vertices[next]);
-                    Vertices_data.put3DIndex(tmp, next);
-                }
-            }
-
-            ClipOut_3d_1 = Get_CrossPoint(Receive_camera, Vertices_data.get3D(previous), Vertices_data.get3D(medium));
-            ClipOut_3d_2 = Get_CrossPoint(Receive_camera, Vertices_data.get3D(next), Vertices_data.get3D(medium));
+            ClipOut_3d_1 = Get_CrossPoint(Receive_camera, VerticesData.get3D(previous), VerticesData.get3D(medium));
+            ClipOut_3d_2 = Get_CrossPoint(Receive_camera, VerticesData.get3D(next), VerticesData.get3D(medium));
             ClipOut_1 = CameraSpace_to_ScreenSpace(Receive_camera, screen_in, ClipOut_3d_1);
             ClipOut_2 = CameraSpace_to_ScreenSpace(Receive_camera, screen_in, ClipOut_3d_2);
-            //ºóĞø¹âÕ¤»¯¼ÓÈëÎÆÀíÓ³ÉäÊ±£¬¼ÇµÃÔÚÕâ¼Óuv×ø±ê×ª»»£¡
+            //åç»­å…‰æ …åŒ–åŠ å…¥çº¹ç†æ˜ å°„æ—¶ï¼Œè®°å¾—åœ¨è¿™åŠ uvåæ ‡è½¬æ¢ï¼
 
             if (num_bool) {
 
-                out.vertices.emplace_back(Vertices_data.vertex2d[previous]);
+                out.vertices.emplace_back(VerticesData.vertex2d[previous]);
                 out.vertices.emplace_back(ClipOut_1);
                 out.vertices.emplace_back(ClipOut_2);
 
-                out.normal_vectors.emplace_back(Vertices_data.norVec[i]);
+                out.normal_vectors.emplace_back(VerticesData.norVec[i]);
                 out.color.emplace_back(Original_Mesh.color[i]);
                 
-                //´Ë´¦Êä³öµÚ¶ş¸öÃæ
+                //æ­¤å¤„è¾“å‡ºç¬¬äºŒä¸ªé¢
                 out.vertices.emplace_back(ClipOut_2);
-                out.vertices.emplace_back(Vertices_data.vertex2d[next]);
-                out.vertices.emplace_back(Vertices_data.vertex2d[previous]);
+                out.vertices.emplace_back(VerticesData.vertex2d[next]);
+                out.vertices.emplace_back(VerticesData.vertex2d[previous]);
 
-                out.normal_vectors.emplace_back(Vertices_data.norVec[i]);
+                out.normal_vectors.emplace_back(VerticesData.norVec[i]);
                 out.color.emplace_back(Original_Mesh.color[i]);
                 
             }
             else {
-                //²ÃÇĞµÃÒ»¸öÃæµÄÇé¿ö
+                //è£åˆ‡å¾—ä¸€ä¸ªé¢çš„æƒ…å†µ
                 out.vertices.emplace_back(ClipOut_1);
-                out.vertices.emplace_back(Vertices_data.vertex2d[medium]);
+                out.vertices.emplace_back(VerticesData.vertex2d[medium]);
                 out.vertices.emplace_back(ClipOut_2);
 
-                out.normal_vectors.emplace_back(Vertices_data.norVec[i]);
+                out.normal_vectors.emplace_back(VerticesData.norVec[i]);
                 out.color.emplace_back(Original_Mesh.color[i]);
             }
         };
@@ -182,7 +169,4 @@ void Transform::Perspective(const Camera& Receive_camera, const long screen_in[2
     return;
     //developing now
 }
-
-
-
 
