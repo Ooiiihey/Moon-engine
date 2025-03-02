@@ -94,7 +94,7 @@ inline void Graphics::Interporate(double coeffs_[30], double& reciprocal_area, d
 
 
 
-RGBa Graphics::Calculate_ParallelLight(RGBa inputColor, Vertex2D&target) {
+RGBa Graphics::Calculate_ParallelLight(RGBa inputColor, Vertex2D& target) {
 	RGBa finalColor;
 
 	Vec3 lightDir = GC.PL.direction;
@@ -103,29 +103,27 @@ RGBa Graphics::Calculate_ParallelLight(RGBa inputColor, Vertex2D&target) {
 	lightDir.normalize();
 
 	Vec3 lightToVertex = { -lightDir.x, -lightDir.y, -lightDir.z };
-	
 
 	// 环境光
-	RGBa ambient = inputColor * lightColor;
+	RGBa ambient = inputColor * GC.ptrMateral0->ambientColor * lightColor;
 
 	// 漫反射
 	double diffuseFactor = dot(target.norVector, lightToVertex);
 	RGBa diffuse = { 0, 0, 0 };
+
 	if (diffuseFactor > 0) {
-		diffuse = inputColor * lightColor;
+		diffuse = inputColor * GC.ptrMateral0->diffuseColor * lightColor;
 		diffuse.R *= diffuseFactor;
 		diffuse.G *= diffuseFactor;
 		diffuse.B *= diffuseFactor;
 	}
 
-
 	// 计算漫反射高光 (Blinn-Phong模型)
 	RGBa specular = { 0, 0, 0 };
 	if (diffuseFactor > 0) {
-
 		Vec3 vertexWorldPos = GC.Receive_camera->Forward_vec * target._3D.x
-												+ GC.Receive_camera->Y_vec * target._3D.y
-												+ GC.Receive_camera->Z_vec * target._3D.z + GC.Receive_camera->Pos;
+			+ GC.Receive_camera->Y_vec * target._3D.y
+			+ GC.Receive_camera->Z_vec * target._3D.z + GC.Receive_camera->Pos;
 
 		Vec3 viewDir = (GC.Receive_camera->Pos - vertexWorldPos).normalize();
 		Vec3 halfway = (lightToVertex + viewDir).normalize();
@@ -133,7 +131,7 @@ RGBa Graphics::Calculate_ParallelLight(RGBa inputColor, Vertex2D&target) {
 		double specularFactor = dot(target.norVector, halfway);
 		if (specularFactor > 0) {
 			specularFactor = pow(specularFactor, GC.ptrMateral0->specularExponent); // 高光指数
-			specular = lightColor;
+			specular = GC.ptrMateral0->specularColor * lightColor;
 			specular.R *= specularFactor;
 			specular.G *= specularFactor;
 			specular.B *= specularFactor;
@@ -183,11 +181,14 @@ void Graphics::DrawFlatTopTriangle(const Vertex2D& v0, const Vertex2D& v1, const
 			//此处坐标+0.5是为了匹配光栅化左顶规则
 			Interporate(coeffs_, reciprocal_area, x + 0.5f, y + 0.5f, out);
 
-			//I dont know ,but adding it makes the graphic looks better
-			out.norVector = { (out.norVector.x + 1) / 2, (out.norVector.y + 1) / 2, (out.norVector.z + 1) / 2};
+
 
 			double d = To_unLineDepth(out._3D.x);
 			if (GC.buffer->CompareDepth_Smaller(x, y, d)) {
+
+				//I dont know ,but adding it can make the graphic looks better
+				//out.norVector += { 1, 1, 1};
+				//out.norVector.normalize();
 
 				RGBa Final_color = Calculate_ParallelLight(GC.ptrMateral0->SelfColor, out);
 				//Final_color = { (float)out.norVector.x , (float)out.norVector.y, (float)out.norVector.z, 1.0f };
@@ -230,10 +231,11 @@ void Graphics::DrawFlatBottomTriangle(const Vertex2D& v0, const Vertex2D& v1, co
 			//此处坐标+0.5是为了匹配光栅化左顶规则
 			Interporate(coeffs_, reciprocal_area, x + 0.5f, y + 0.5f, out);
 
-			out.norVector = { (out.norVector.x + 1) / 2, (out.norVector.y + 1) / 2, (out.norVector.z + 1) / 2 };
-
 			double d = To_unLineDepth(out._3D.x);
 			if (GC.buffer->CompareDepth_Smaller(x, y, d)) {
+
+				//out.norVector += { 1, 1, 1};
+				//out.norVector.normalize();
 
 				RGBa Final_color = Calculate_ParallelLight(GC.ptrMateral0->SelfColor, out);
 				//Final_color = { (float)out.norVector.x , (float)out.norVector.y, (float)out.norVector.z, 1.0f };

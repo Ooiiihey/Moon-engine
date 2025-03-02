@@ -20,7 +20,10 @@ std::vector <spilitValue> s_list = {
     {0.0, 0.5, 0.0, 0.5}, {0.5, 1.0, 0.0, 0.5}, 
     {0.0, 0.5, 0.5, 1.0}, {0.5, 1.0, 0.5, 1.0} };
 
-std::vector<spilitValue> s_list = {
+
+*/
+/*
+std::vector<splitValue> s_list = {
     {0.0, 0.25, 0.0, 0.3333333},
     {0.25, 0.5, 0.0, 0.3333333},
     {0.5, 0.75, 0.0, 0.3333333},
@@ -39,10 +42,12 @@ std::vector<spilitValue> s_list = {
   //temporary Rasterize
 void Rasterize_thread(const Camera Receive_camera, Buffer& FrameBuffer, splitValue s, const TriangleList& list, const ParallelLight& light) {
     Graphics Graphics_func;
-    for (unsigned int k = 0; k < list.vertices.size(); k += 3) {
-        //RGBa c = list.color[k / 3];
+    unsigned int size = list.vertices.size();
+
+    for (unsigned int k = 0; k < size; k += 3) {
 
         Graphics_func.DrawTriangle(Receive_camera, FrameBuffer, s, list.vertices[k], list.vertices[k + 1], list.vertices[k + 2], list.ptrTexture[k/3], list.ptrMtl[k/3], light);
+
     }
 
 }

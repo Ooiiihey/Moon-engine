@@ -186,8 +186,8 @@ public:
 
 class ParallelLight {
 public:
-    Vec3 direction = { -0.5, -0.5, -0.3 };
-    RGBa LightColor = { 0.3, 0.3, 0.3 };
+    Vec3 direction = { -0.2, -0.5, -0.3 };
+    RGBa LightColor = { 0.4, 0.4, 0.4 };
 
 };
 

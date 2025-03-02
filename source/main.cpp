@@ -225,12 +225,16 @@ void Display_thread() {
 
 
     // Load OBJ model
-    Mesh LoadedMesh = LoadFUNC.LoadMesh("resources/Model/niko.obj");
+    Mesh LoadedMesh = LoadFUNC.LoadMesh("resources/Model/utah_teapot.obj");
     Mesh Scene = LoadFUNC.LoadMesh("resources/Model/Scene.obj");
 
     Material mtltest, mtl0;
-    mtltest.SelfColor = { 0.3, 0.3, 0.3 };
-    mtl0.SelfColor = { 0.1, 0.6, 0.1 };
+    mtltest.SelfColor = { 0.5f, 0.5f, 0.5f };
+    mtltest.diffuseColor = { 0.7f, 0.7f, 0.7f };
+    mtltest.specularColor = { 0.1f, 0.1f, 0.1f };
+    mtltest.ambientColor = { 0.6f, 0.6f, 0.6f };
+    mtltest.specularExponent = 2;
+    mtl0.SelfColor = { 0.1f, 0.6f, 0.1f };
 
     Model Mtest, M0, M1, Mscene;
 
@@ -244,13 +248,14 @@ void Display_thread() {
     Mscene.LinkMaterial(mtltest);
 
     ParallelLight L;
+    L.LightColor = { 0.8f, 0.8f, 0.8f };
     
 
     //Mscene.RotateMesh(Vec3( -PI / 2, 0, 0));
     Mscene.UpdateMesh();
 
     //M0.ZoomSize(0.005);
-
+    M0.ZoomSize(4);
 
     std::vector <Model> Models_List;
 
@@ -292,7 +297,7 @@ void Display_thread() {
 
 
 
-        Models_List.emplace_back(Mscene);
+        //Models_List.emplace_back(Mscene);
         Models_List.emplace_back(M0);
 
         Models_List.emplace_back(Mtest);

@@ -4,22 +4,6 @@
 #include "tiny_obj_loader.h"
 #include "moon.h"
 
-/*
-// 计算向量归一化
-inline Vec3 Normalize(Vec3 vec) {
-    double length = KQsqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
-    if (length == 0) return vec;
-    return Vec3(vec.x / length, vec.y / length, vec.z / length);
-}
-
-// 计算面法向量
-inline Vec3 CalculateFaceNormal(const Vec3& v0, const Vec3& v1, const Vec3& v2) {
-    Vec3 edge1 = v1 - v0;
-    Vec3 edge2 = v2 - v0;
-    Vec3 normal = cross(edge1, edge2);
-    return Normalize(normal);
-}
-*/
 
 // 加载模型并转换为 Mesh
 Mesh Load::LoadMesh(const std::string& filename) {
@@ -65,33 +49,6 @@ Mesh Load::LoadMesh(const std::string& filename) {
             for (int i = 0; i < face; ++i) {
                 indices.push_back(shape.mesh.indices[face_idx * face + i]);
             }
-            /*
-            // 获取顶点坐标
-            Vec3 v0 = mesh.vertices[indices[0].vertex_index];
-            Vec3 v1 = mesh.vertices[indices[1].vertex_index];
-            Vec3 v2 = mesh.vertices[indices[2].vertex_index];
-
-            
-            // 计算面法向量
-            Vec3 normal = CalculateFaceNormal(v0, v1, v2);
-
-            // 定义平行光方向
-            Vec3 lightDirection(0.5f, -0.2f, -1.0f); // 平行光方向
-
-            // 计算光照强度（使用法向量与光线方向的点积）
-            Vec3 normalizedNormal = Normalize(normal);
-            Vec3 normalizedLightDirection = Normalize(lightDirection);
-            double diffuseIntensity = dot(normalizedNormal, normalizedLightDirection);
-
-            // 将光照强度映射到颜色
-            diffuseIntensity = (diffuseIntensity + 1.0) / 2.0; // 将范围从 [-1, 1] 映射到 [0, 1]
-
-            // 设置颜色
-            face_color.R = static_cast<float>(diffuseIntensity);
-            face_color.G = static_cast<float>(diffuseIntensity);
-            face_color.B = static_cast<float>(diffuseIntensity);
-            face_color.a = 1.0f;
-            */
 
             // 赋值顶点索引
             for (int i = 0; i < face; ++i) {
@@ -100,7 +57,7 @@ Mesh Load::LoadMesh(const std::string& filename) {
             std::swap(face_indices.index[0], face_indices.index[2]);
 
             mesh.faces.push_back(face_indices);
-            //mesh.color.push_back(face_color);
+
         }
     }
 
