@@ -1,4 +1,4 @@
-﻿#include "moon.h"
+﻿#include "Moon.h"
 
 #include <string>
 #include <windows.h>
@@ -9,12 +9,12 @@
 //分辨率
 long screen_1[] = { 960, 540 };
 long screen_2[] = {1280, 720};
-long screen_3[] = { 640, 480 };
+long screen_3[] = { 640, 360 };
 long screen_4[] = { 2560, 1600 };
 long screen_5[] = { 192, 108 };
 long screen_6[] = { 1920, 1080};
 
-long* ptrScreen = screen_1;
+long* ptrScreen = screen_3;
 //long* ptrScreenTEST = screen_5;
 //初始化
 
@@ -181,7 +181,7 @@ void EasyRenderText(SDL_Renderer* renderer, TTF_Font* font, const char* text, SD
 
 //under development
 
-Load LoadFUNC;
+Load LoadFunc;
 
 void Display_thread() {
     SDL_Init(SDL_INIT_VIDEO);
@@ -207,61 +207,83 @@ void Display_thread() {
                                         {0.1, -0.1 ,0.1}, {-0.1, -0.1, 0.1},{-0.1, 0.1, 0.1}, { 0.1, 0.1 ,0.1 },   
                                         {0, 0, 1024}, {0, 1024,0.05}, {1024, 0, 0.05} };
 
-    testMesh.faces = { {7, 6, 9}, {2, 9, 6}, {3, 9, 2}, { 3, 7, 9 },    
+    testMesh.facesIndex = { {7, 6, 9}, {2, 9, 6}, {3, 9, 2}, { 3, 7, 9 },    
                                     {3, 2, 1},  {3, 1, 0},  
                                     {2, 5, 1}, {2, 6, 5},    
                                     {5, 4, 1}, {1, 4, 0},
                                     {5, 8, 4}, {6, 8, 5}, {7, 8, 6}, {4, 8, 7},
                                     {7, 10, 4}, {3, 10, 7}, {0, 10, 3}, {0, 4, 10} };
 
-    /*
-    testMesh.color = { {0.3f, 0.9f, 0.3f}, {0.5f, 0.8f, 0.5f}, {0.1f, 0.4f, 0.1f},  {0.1f, 0.9f, 0.1f},
-                                    {0.2f, 0.2f, 0.2f},  {0.2f, 0.2f, 0.2f},
-                                    {0.8f, 0.8f, 0.8f},  {0.8f, 0.8f, 0.8f},
-                                    {0.6f, 0.6f, 0.6f}, {0.6f, 0.6f, 0.6f},
-                                    {0.3f, 0.3f, 0.9f},  {0.3f, 0.3f, 0.8f} ,{0.1f, 0.1f, 0.6f},  {0.1f, 0.1f, 0.9f},
-                                    {0.9f, 0.3f, 0.3f},   {0.8f, 0.5f, 0.5f}, {0.4f, 0.1f, 0.1f},  {0.9f, 0.1f, 0.1f} };
-*/
+
+    //NonTexture mesh should have placeholder
+    Face texIndexPlaceholder;
+    Vec2 uvCoordPlaceholder;
+
+    testMesh.texIndex.resize( testMesh.facesIndex.size(), texIndexPlaceholder);
+    testMesh.UVCoords = { uvCoordPlaceholder };
+
 
 
     // Load OBJ model
-    Mesh LoadedMesh = LoadFUNC.LoadMesh("resources/Model/utah_teapot.obj");
-    Mesh Scene = LoadFUNC.LoadMesh("resources/Model/Scene.obj");
+    Mesh LoadedMesh = LoadFunc.LoadMesh("resources/Model/niko.obj");
+    Mesh Scene = LoadFunc.LoadMesh("resources/Model/Scene.obj");
 
-    Material mtltest, mtl0;
+    MoonTexture niko = LoadFunc.LoadTextureImage("resources/Texture/niko.png");
+    MoonTexture city = LoadFunc.LoadTextureImage("resources/Texture/City.png");
+    MoonTexture defaultTex = LoadFunc.LoadTextureImage("resources/Texture/default_tex.png");
+
+    MoonMaterial mtltest, mtl0, mtlscene;
     mtltest.SelfColor = { 0.5f, 0.5f, 0.5f };
     mtltest.diffuseColor = { 0.7f, 0.7f, 0.7f };
-    mtltest.specularColor = { 0.1f, 0.1f, 0.1f };
-    mtltest.ambientColor = { 0.6f, 0.6f, 0.6f };
-    mtltest.specularExponent = 2;
-    mtl0.SelfColor = { 0.1f, 0.6f, 0.1f };
+    mtltest.specularColor = { 0.4f, 0.4f, 0.4f };
+    mtltest.ambientColor = { 0.5f, 0.5f, 0.5f };
+    mtltest.specularExponent = 128;
 
-    Model Mtest, M0, M1, Mscene;
+    mtlscene.SelfColor = { 0.5f, 0.5f, 0.5f };
+    mtlscene.diffuseColor = { 0.7f, 0.7f, 0.7f };
+    mtlscene.specularColor = { 0.0f, 0.0f, 0.0f };
+    mtlscene.ambientColor = { 0.5f, 0.5f, 0.5f };
+    mtlscene.specularExponent = 2;
+
+
+    mtl0.SelfColor = { 0.5f, 0.5f, 0.5f };
+    mtl0.diffuseColor = { 0.7f, 0.7f, 0.7f };
+    mtl0.specularColor = { 0.1f, 0.1f, 0.1f };
+    mtl0.ambientColor = { 0.55f, 0.55f, 0.55f };
+    mtl0.specularExponent = 2;
+    mtl0.SelfColor = { 0.1f, 0.6f, 0.4f };
+
+    MoonModel Mtest, M0, M1, Mscene;
 
     Mtest.LinkMesh(testMesh);
     M0.LinkMesh(LoadedMesh);
 
     Mscene.LinkMesh(Scene);
 
-    Mtest.LinkMaterial(mtl0);
-    M0.LinkMaterial(mtltest);
-    Mscene.LinkMaterial(mtltest);
+    Mtest.linkMaterial(mtl0);
+    M0.linkMaterial(mtltest);
+    Mscene.linkMaterial(mtlscene);
+
+    M0.linkTexture(niko);
+    Mtest.linkTexture(defaultTex);
+    Mscene.linkTexture(city);
 
     ParallelLight L;
     L.LightColor = { 0.8f, 0.8f, 0.8f };
     
 
     //Mscene.RotateMesh(Vec3( -PI / 2, 0, 0));
+    //Mscene.ZoomSize(10);
     Mscene.UpdateMesh();
 
     //M0.ZoomSize(0.005);
-    M0.ZoomSize(4);
+    M0.ZoomSize(8);
 
-    std::vector <Model> Models_List;
+    std::vector <MoonModel> Models_List;
 
 
     //帧缓存设置
-    Buffer Framebuffer_1;
+    MoonBuffer Framebuffer_1;
     Framebuffer_1.SetBuffer(ptrScreen[0], ptrScreen[1]);
 
     double circle = 0;
@@ -288,7 +310,7 @@ void Display_thread() {
 
         
 
-        circle = std::fmod(circle + 0.001, 2 * PI);
+        circle = std::fmod(circle + 0.01, 2 * PI);
 
         M0.SetMeshPos(Vec3(sin(circle) * 4, cos(circle) * 6, sin(circle) * 3));
         M0.RotateMesh(Vec3(circle, circle, circle));
@@ -296,11 +318,10 @@ void Display_thread() {
         M0.UpdateMesh();
 
 
-
-        //Models_List.emplace_back(Mscene);
-        Models_List.emplace_back(M0);
-
         Models_List.emplace_back(Mtest);
+        Models_List.emplace_back(Mscene);
+        Models_List.emplace_back(M0);
+        
 
 
         auto start = std::chrono::high_resolution_clock::now();   //测帧

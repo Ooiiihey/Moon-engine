@@ -24,7 +24,7 @@
     <ClCompile Include="source\Math.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="source\Transform.cpp">
+    <ClCompile Include="source\VertexShader.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="source\Buffer.cpp">
@@ -33,10 +33,10 @@
     <ClCompile Include="source\Pipeline.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="source\Camera.cpp">
+    <ClCompile Include="source\CameraFunc.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="source\DataType.cpp">
+    <ClCompile Include="source\SmallFunc.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="source\Load.cpp">
@@ -44,10 +44,13 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="source\moon.h">
+    <ClInclude Include="source\Moon.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="source\tiny_obj_loader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Data.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

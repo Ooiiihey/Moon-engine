@@ -19,8 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="source\Camera.cpp" />
-    <ClCompile Include="source\DataType.cpp" />
+    <ClCompile Include="source\CameraFunc.cpp" />
+    <ClCompile Include="source\SmallFunc.cpp" />
     <ClCompile Include="source\Load.cpp" />
     <ClCompile Include="source\main.cpp">
       <RuntimeLibrary Condition="'$(Configuration)|$(Platform)'=='Release_|x64'">MultiThreaded</RuntimeLibrary>
@@ -36,11 +36,12 @@
     </ClCompile>
     <ClCompile Include="source\Math.cpp" />
     <ClCompile Include="source\Pipeline.cpp" />
-    <ClCompile Include="source\Transform.cpp" />
+    <ClCompile Include="source\VertexShader.cpp" />
     <ClCompile Include="source\Buffer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="source\moon.h" />
+    <ClInclude Include="source\Data.h" />
+    <ClInclude Include="source\Moon.h" />
     <ClInclude Include="source\tiny_obj_loader.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

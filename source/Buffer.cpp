@@ -1,6 +1,6 @@
-﻿#include "moon.h"
+﻿#include "Moon.h"
 
-void Buffer::SetBuffer(long width, long height) {
+void MoonBuffer::SetBuffer(int width, int height) {
 	if (width <= 0 || height <= 0) throw std::runtime_error("Unexpected Buffer size!");
 
 	Buffer_size[0] = width;
@@ -9,25 +9,31 @@ void Buffer::SetBuffer(long width, long height) {
 
 	PixelColor.clear();
 	Depth.clear();
-	NorVector.clear();
+	PixelCam3DVertex.clear();
+	PixelNorVector.clear();
+	PixelptrMaterial.clear();
 
 
 	PixelColor.resize(size, RGBa{ 0.0f, 0.0f, 0.0f, 1.0f });
 	Depth.resize(size, 1.0);
-	NorVector.resize(size, Vec3(0, 0, 0));
+	PixelCam3DVertex.resize(size, Vec3(0, 0, 0));
+	PixelNorVector.resize(size, Vec3(0, 0, 0));
+	PixelptrMaterial.resize(size, nullptr);
 
 }
 
-void Buffer::CleanBuffer() {
+void MoonBuffer::CleanBuffer() {
 	long total = Buffer_size[0] * Buffer_size[1];
 	PixelColor.assign(total, RGBa{ 0.0f, 0.0f, 0.0f, 1.0f });
 	Depth.assign(total, 1.0);  //初始DepthBuffer
-	NorVector.assign(total, Vec3(0, 0, 0));
+	PixelCam3DVertex.assign(total, Vec3(0, 0, 0));
+	PixelNorVector.assign(total, Vec3(0, 0, 0));
+	PixelptrMaterial.assign(total, nullptr);
 };
 
 
 
-void Buffer::PutPixel(long x, long  y, double depth, RGBa c, Vec3& NorVec) {
+void MoonBuffer::PutPixelData(const int x, const int y, double depth, RGBa c, Vec3& Cam3Dvertex, Vec3& NorVec, MoonMaterial* ptrmtl) {
 	if (x < 0 || x >= Buffer_size[0] || y < 0 || y >= Buffer_size[1] ) {
 		return;
 	}
@@ -35,24 +41,69 @@ void Buffer::PutPixel(long x, long  y, double depth, RGBa c, Vec3& NorVec) {
 		long total = y * Buffer_size[0] + x;
 		PixelColor[total] = c;
 		Depth[total] = depth;
-		NorVector[total] = NorVec;
+		PixelCam3DVertex[total] = Cam3Dvertex;
+		PixelNorVector[total] = NorVec;
+		PixelptrMaterial[total] = ptrmtl;
 	}
-};
+}
+void MoonBuffer::PutPixelColor_only(const int x, const int y, RGBa Color) {
+	if (x < 0 || x >= Buffer_size[0] || y < 0 || y >= Buffer_size[1]) {
+		return;
+	}
+	else {
+		long total = y * Buffer_size[0] + x;
+		PixelColor[total] = Color;
+	}
+
+}
+;
 
 
-RGBa Buffer::GetPixelColor(const long x, const long y) {
+
+RGBa MoonBuffer::GetPixelColor(const int x, const int y) {
 	if (x < 0 || x > Buffer_size[0] - 1 || y < 0 || y > Buffer_size[1] - 1) {
-		return RGBa( 0, 0, 0, 0 );
+		return RGBa();
 	}
 	else {
 		long total = y * Buffer_size[0] + x;
 		return PixelColor[total];
 		
 	}
-
 };
 
-bool Buffer::CompareDepth_Smaller(const long x, const long y, double depth_in) {
+MoonMaterial* MoonBuffer::GetPtrMtl(const int x, const int y) {
+	if (x < 0 || x > Buffer_size[0] - 1 || y < 0 || y > Buffer_size[1] - 1) {
+		return nullptr;
+	}
+	else {
+		long total = y * Buffer_size[0] + x;
+		return PixelptrMaterial[total];
+	}
+}
+
+Vec3 MoonBuffer::GetCam3Dvertex(const int x, const int y) {
+	if (x < 0 || x > Buffer_size[0] - 1 || y < 0 || y > Buffer_size[1] - 1) {
+		return Vec3();
+	}
+	else {
+		long total = y * Buffer_size[0] + x;
+		return PixelCam3DVertex[total];
+	}
+}
+
+Vec3 MoonBuffer::GetNorVec(const int x, const int y) {
+	if (x < 0 || x > Buffer_size[0] - 1 || y < 0 || y > Buffer_size[1] - 1) {
+		return Vec3();
+	}
+	else {
+		long total = y * Buffer_size[0] + x;
+		return PixelNorVector[total];
+	}
+
+}
+
+
+bool MoonBuffer::CompareDepth_Smaller(const int x, const int y, double depth_in) {
 	if (x < 0 || x >= Buffer_size[0] || y < 0 || y >= Buffer_size[1]) {
 		throw std::runtime_error("DepthBuffer Unexpected comparision : out of buffer!");
 	}
@@ -62,7 +113,7 @@ bool Buffer::CompareDepth_Smaller(const long x, const long y, double depth_in) {
 	
 }
 
-double Buffer::GetDepth(const long x, const long y) {
+double MoonBuffer::GetDepth(const int x, const int y) {
 	if (x < 0 || x >= Buffer_size[0] || y < 0 || y >= Buffer_size[1]) {
 		return 1.0;
 	} else {
@@ -71,7 +122,9 @@ double Buffer::GetDepth(const long x, const long y) {
 
 };
 
-void Buffer::merge(const Buffer& Buffer_chunk) {
+
+/*
+void MoonBuffer::merge(const MoonBuffer& Buffer_chunk) {
 	// 检查缓冲区大小是否一致
 	if (Buffer_chunk.Buffer_size[0] != Buffer_size[0] || Buffer_chunk.Buffer_size[1] != Buffer_size[1]) {
 		throw std::runtime_error("Buffer sizes dont match!");
@@ -90,3 +143,5 @@ void Buffer::merge(const Buffer& Buffer_chunk) {
 		}
 	}
 }
+
+*/
