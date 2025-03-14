@@ -9,7 +9,7 @@
 //use SDL 2
 
 
-#define ENGINE_NAME "Moon_engine_Alpha_v0.6.2"
+#define ENGINE_NAME "Moon_engine_Alpha_v0.6.4"
 #define PI 3.14159265358979
 
 
@@ -51,7 +51,7 @@ public:
 struct ShaderContext {
 
     const Camera* Receive_camera = nullptr;
-    long screen_in[2];
+    long screen_in[2] = {0, 0};
 
     VertexBufferObject* VBO = nullptr;
     std::vector <unsigned char>* Vertices_info = nullptr;
@@ -66,7 +66,7 @@ private:
     ShaderContext Context;
 
     inline Vec3 ToCameraSpace(const Vec3& Vertex_WorldSpace);
-    //Vec3 ToCameraSpace_Normal(const Vec3& normal);
+
     inline Vertex2D Clip(const Vertex2D& origin_1, const Vertex2D& origin_2);
 
     inline void Get_FaceNorVector(VertexBufferObject& list);
@@ -97,7 +97,7 @@ struct GraphicContext {
 
     ParallelLight PL;
 
-    int ChunkWidth_Begin, ChunkWidth_End, ChunkHeight_Begin, ChunkHeight_End;
+    int ChunkWidth_Begin, ChunkWidth_End, ChunkHeight_Begin, ChunkHeight_End = 0;
 };
 
 
@@ -113,7 +113,7 @@ private:
     void PreComputeTriangle(double coeffs_[30], double& reciprocal_area, const Vertex2D& v0, const Vertex2D& v1, const Vertex2D& v2);
     void Interporate(double coeffs_[30], double& reciprocal_area, double a, double B, Vertex2D& back);
 
-    RGBa Calculate_ParallelLight(RGBa inputColor, Vertex2D& target);
+    //RGBa Calculate_ParallelLight(RGBa inputColor, Vertex2D& target);
 
     RGBa CalculateLight(RGBa inputColor, const Vec3& targetCam3D, const Vec3& norVec, const MoonMaterial* ptrMtl);
 

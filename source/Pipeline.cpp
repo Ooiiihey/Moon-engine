@@ -44,7 +44,7 @@ std::vector<splitValue> s_list_2 = {
 void Rasterize_thread(const Camera& Receive_camera, MoonBuffer& FrameBuffer, splitValue s, const TriangleList& list, const ParallelLight& light) {
     Graphics GraphicalFunc;
     GraphicalFunc.Refresh_GraphicContext(Receive_camera, FrameBuffer, s, light);
-    unsigned int size = list.vertices.size();
+    unsigned int size = (unsigned int)list.vertices.size();
     for (unsigned int k = 0; k < size; k += 3) {
         GraphicalFunc.DrawTriangleTex(list.vertices[k], list.vertices[k + 1], list.vertices[k + 2], list.ptrTexture[k/3], list.ptrMtl[k/3]);
 
@@ -82,6 +82,6 @@ unsigned int Render(const Camera Receive_camera, MoonBuffer &FrameBuffer, const 
     }
     Draw_pool.wait();
 */
-    return LIST.vertices.size() / 3;
+    return static_cast<unsigned int> (LIST.vertices.size() / 3);
     
 }

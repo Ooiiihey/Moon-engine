@@ -29,6 +29,8 @@ inline Vec3 VertexShader::ToCameraSpace(const Vec3& Vertex_WorldSpace) {
 
  }
 
+
+ //camera space下
 // 计算面的法向量                                                  mesh
 inline void VertexShader::Get_FaceNorVector(VertexBufferObject& list) {
     Vec3 normal_vectors, veca, vecb;
@@ -38,6 +40,12 @@ inline void VertexShader::Get_FaceNorVector(VertexBufferObject& list) {
         veca = Context.Original_Mesh->vertices[each_face.index[1]] - Context.Original_Mesh->vertices[each_face.index[0]];
         vecb = Context.Original_Mesh->vertices[each_face.index[2]] - Context.Original_Mesh->vertices[each_face.index[1]];
         normal_vectors = cross(veca, vecb);
+
+        //转换到camera space下
+        normal_vectors = { dot(normal_vectors, Context.Receive_camera->Forward_vec), 
+                                        dot(normal_vectors, Context.Receive_camera->Y_vec),
+                                        dot(normal_vectors, Context.Receive_camera->Z_vec)
+                                        };
         normal_vectors.normalize();
 
         list.FaceNorVec.emplace_back(normal_vectors);
@@ -141,19 +149,26 @@ void VertexShader::transform(const Camera& Receive_camera, const long screen_in[
     //计算法向量
     VBO.FaceNorVec.reserve(faceNUM);
     Get_FaceNorVector(VBO);
+    
 
     //计算顶点法向量
-    for (unsigned int INDEX = 0; INDEX < faceNUM; ++INDEX) {
-        const Face* ptrFace = &MDL.WorldSpaceMesh.facesIndex[INDEX];
-        VBO.vertex2d[ptrFace->index[0]].norVector += VBO.FaceNorVec[INDEX];
-        VBO.vertex2d[ptrFace->index[1]].norVector += VBO.FaceNorVec[INDEX];
-        VBO.vertex2d[ptrFace->index[2]].norVector += VBO.FaceNorVec[INDEX];
+    if (MDL.ptrMaterial->SmoothShader) {
+        for (unsigned int Index = 0; Index < faceNUM; ++Index) {
+            const Face* ptrFace = &MDL.WorldSpaceMesh.facesIndex[Index];
+            VBO.vertex2d[ptrFace->index[0]].norVector += VBO.FaceNorVec[Index];
+            VBO.vertex2d[ptrFace->index[1]].norVector += VBO.FaceNorVec[Index];
+            VBO.vertex2d[ptrFace->index[2]].norVector += VBO.FaceNorVec[Index];
+        }
+
+        for (unsigned int num = 0; num < vertexNUM; ++num) {
+            if (VBO.vertex2d[num].norVector.length() == 0) continue;
+            VBO.vertex2d[num].norVector.normalize();
+        }
+
     }
 
-    for (unsigned int num = 0; num < vertexNUM; ++num) {
-        if (VBO.vertex2d[num].norVector.length() == 0) continue;
-        VBO.vertex2d[num].norVector.normalize();
-    }
+
+
 
 
 
@@ -171,16 +186,25 @@ void VertexShader::transform(const Camera& Receive_camera, const long screen_in[
         int num = (!Vertices_info[idx0]) + (!Vertices_info[idx1]) + (!Vertices_info[idx2]);
 
         //正面检查 || 近平面后不可见vertex检查
-        if (dot( (MDL.WorldSpaceMesh.vertices[idx0] - Receive_camera.Pos), VBO.FaceNorVec[i]) >= 0 || num == 3) continue;
+        if (dot(VBO.vertex2d[idx0].v3D, VBO.FaceNorVec[i]) >= 0 || num == 3) continue;
 
         //临时分配uv 每个面的vertex会重新进行一次uv分配
         VBO.vertex2d[idx0].UVCoords = MDL.WorldSpaceMesh.UVCoords[FaceTexIndex->index[0]];
         VBO.vertex2d[idx1].UVCoords = MDL.WorldSpaceMesh.UVCoords[FaceTexIndex->index[1]];
         VBO.vertex2d[idx2].UVCoords = MDL.WorldSpaceMesh.UVCoords[FaceTexIndex->index[2]];
 
+        //非smooth shader下直接使用面法线向量
+        if (!MDL.ptrMaterial->SmoothShader) {
+            VBO.vertex2d[idx0].norVector = VBO.FaceNorVec[i];
+            VBO.vertex2d[idx1].norVector = VBO.FaceNorVec[i];
+            VBO.vertex2d[idx2].norVector = VBO.FaceNorVec[i];
+        }
+
         //面全可见的情况
         if (num == 0) {
             if (TestScreenOutside(VBO.vertex2d[idx0], VBO.vertex2d[idx1], VBO.vertex2d[idx2])) continue;
+
+
 
             out.vertices.emplace_back(VBO.vertex2d[idx0]);
             out.vertices.emplace_back(VBO.vertex2d[idx1]);
@@ -198,7 +222,7 @@ void VertexShader::transform(const Camera& Receive_camera, const long screen_in[
             Vertex2D ClipOut_1, ClipOut_2;            //          Vec3 1        Vec3 2
 
             for (int e = 0; e < 3; e++) {
-                if (num_bool ^ Vertices_info[ptrFace->index[e]]) {//获得待处理点            //此处的异或分辨是1情况还是2情况
+                if (num_bool ^ static_cast<bool> (Vertices_info[ptrFace->index[e]]) ) {//获得待处理点            //此处的异或分辨是1情况还是2情况
                     medium = ptrFace->index[e];
                     previous = ptrFace->index[(e + 2) % 3];
                     next = ptrFace->index[(e + 1) % 3];
@@ -221,15 +245,13 @@ void VertexShader::transform(const Camera& Receive_camera, const long screen_in[
                     out.ptrMtl.emplace_back(MDL.ptrMaterial);
 
                 }
-
-                
+  
                 //此处输出第二个面
                 if (!TestScreenOutside(ClipOut_2, VBO.vertex2d[next], VBO.vertex2d[previous])) {
                     out.vertices.emplace_back(ClipOut_2);
                     out.vertices.emplace_back(VBO.vertex2d[next]);
                     out.vertices.emplace_back(VBO.vertex2d[previous]);
 
-                    
                     out.ptrTexture.emplace_back(MDL.ptrTexture);
                     out.ptrMtl.emplace_back(MDL.ptrMaterial);
                 }
@@ -242,7 +264,6 @@ void VertexShader::transform(const Camera& Receive_camera, const long screen_in[
                     out.vertices.emplace_back(VBO.vertex2d[medium]);
                     out.vertices.emplace_back(ClipOut_2);
 
-                    
                     out.ptrTexture.emplace_back(MDL.ptrTexture);
                     out.ptrMtl.emplace_back(MDL.ptrMaterial);
                 }

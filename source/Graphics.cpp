@@ -8,10 +8,10 @@ void  Graphics::Refresh_GraphicContext(const Camera& Receive_camera, MoonBuffer&
 	GC.PL = PL0;
 
 	// 计算渲染范围
-	GC.ChunkWidth_Begin = Buffer_spilit.widthBegin * buffer.Buffer_size[0];
-	GC.ChunkWidth_End = Buffer_spilit.widthEnd * buffer.Buffer_size[0];
-	GC.ChunkHeight_Begin = Buffer_spilit.heightBegin * buffer.Buffer_size[1];
-	GC.ChunkHeight_End = Buffer_spilit.heightEnd * buffer.Buffer_size[1];
+	GC.ChunkWidth_Begin = static_cast<int> (Buffer_spilit.widthBegin * buffer.Buffer_size[0]);
+	GC.ChunkWidth_End = static_cast<int> (Buffer_spilit.widthEnd * buffer.Buffer_size[0]);
+	GC.ChunkHeight_Begin = static_cast<int> (Buffer_spilit.heightBegin * buffer.Buffer_size[1]);
+	GC.ChunkHeight_End = static_cast<int> (Buffer_spilit.heightEnd * buffer.Buffer_size[1]);
 }
 
 inline double Graphics::To_unLineDepth( double depth) {
@@ -98,7 +98,7 @@ inline void Graphics::Interporate(double coeffs_[30], double& reciprocal_area, d
 }
 
 
-
+/* old codes
 RGBa Graphics::Calculate_ParallelLight(RGBa inputColor, Vertex2D& target) {
 	RGBa finalColor;
 
@@ -153,7 +153,7 @@ RGBa Graphics::Calculate_ParallelLight(RGBa inputColor, Vertex2D& target) {
 
 	return finalColor;
 }
-
+*/
 
 RGBa Graphics::CalculateLight(RGBa inputColor, const Vec3& targetCam3D, const Vec3& norVec, const MoonMaterial* ptrMtl) {
 	RGBa finalColor;
@@ -164,10 +164,14 @@ RGBa Graphics::CalculateLight(RGBa inputColor, const Vec3& targetCam3D, const Ve
 		return RGBa{0.0f, 0.0f, 0.01f, 1.0f};
 	}
 
-	Vec3 lightDir = GC.PL.direction;
-	RGBa lightColor = GC.PL.LightColor;
-
+	//使用camera space下的方向
+	Vec3 lightDir = { dot(GC.PL.direction, GC.Receive_camera->Forward_vec),
+								dot(GC.PL.direction, GC.Receive_camera->Y_vec),
+								dot(GC.PL.direction, GC.Receive_camera->Z_vec),
+							};
 	lightDir.normalize();
+
+	RGBa lightColor = GC.PL.LightColor;
 
 	Vec3 lightToVertex = { -lightDir.x, -lightDir.y, -lightDir.z };
 
@@ -188,12 +192,8 @@ RGBa Graphics::CalculateLight(RGBa inputColor, const Vec3& targetCam3D, const Ve
 	// 计算漫反射高光 (Blinn-Phong模型)
 	RGBa specular;
 	if (diffuseFactor > 0) {
-		Vec3 vertexWorldPos = GC.Receive_camera->Forward_vec * targetCam3D.x
-			+ GC.Receive_camera->Y_vec * targetCam3D.y
-			+ GC.Receive_camera->Z_vec * targetCam3D.z
-			+ GC.Receive_camera->Pos;
 
-		Vec3 viewDir = (GC.Receive_camera->Pos - vertexWorldPos).normalize();
+		Vec3 viewDir = (Vec3(0, 0, 0) - targetCam3D).normalize();
 		Vec3 halfway = (lightToVertex + viewDir).normalize();
 
 		float specularFactor = (float)dot(norVec, halfway);
@@ -235,8 +235,8 @@ void Graphics::DrawFlatTopTriangle(const Vertex2D& v0, const Vertex2D& v1, const
 
 	PreComputeTriangle(coeffs_, reciprocal_area,  v0, v1, v2);
 	for (int y = yStart; y < yEnd; ++y) {
-		const float px0 = m0 * (double(y) + 0.5f - v0.y) + v0.x;
-		const float px1 = m1 * (double(y) + 0.5f - v1.y) + v1.x;
+		const float px0 = static_cast <float>(m0 * (double(y) + 0.5f - v0.y) + v0.x);
+		const float px1 = static_cast <float>(m1 * (double(y) + 0.5f - v1.y) + v1.x);
 
 		//here do not use Buffer_size[0] - 1, this will cause black wire in the side of screen.
 		int xStart = std::clamp((int)ceil(px0 - 0.5f), GC.ChunkWidth_Begin, GC.ChunkWidth_End);
@@ -281,8 +281,8 @@ void Graphics::DrawFlatBottomTriangle(const Vertex2D& v0, const Vertex2D& v1, co
 	PreComputeTriangle(coeffs_, reciprocal_area, v0, v1, v2);
 
 	for (int y = yStart; y < yEnd; ++y) {
-		const float px0 = m0 * (static_cast<double>(y) + 0.5f - v1.y) + v1.x;
-		const float px1 = m1 * (static_cast<double>(y) + 0.5f - v2.y) + v2.x;
+		const float px0 = static_cast <float>(m0 * (double(y) + 0.5f - v1.y) + v1.x);
+		const float px1 = static_cast <float>(m1 * (double(y) + 0.5f - v2.y) + v2.x);
 
 		//here do not use Buffer_size[0] - 1, this will cause black wire in the side of screen.
 		int xStart = std::clamp((int)ceil(px0 - 0.5f), GC.ChunkWidth_Begin, GC.ChunkWidth_End);
@@ -390,6 +390,7 @@ void Graphics::Deferred_RenderLight() {
 
 	for (int y = GC.ChunkHeight_Begin; y < GC.ChunkHeight_End; ++y) {
 		for (int x = GC.ChunkWidth_Begin; x < GC.ChunkWidth_End; ++x) {
+			if (!GC.buffer->GetPtrMtl(x, y)) continue;
 			RGBa origialPixel = GC.buffer->GetPixelColor(x, y);
 			RGBa pixel = CalculateLight(origialPixel, GC.buffer->GetCam3Dvertex(x, y), GC.buffer->GetNorVec(x, y), GC.buffer->GetPtrMtl(x, y));
 			GC.buffer->PutPixelColor_only(x, y, pixel);

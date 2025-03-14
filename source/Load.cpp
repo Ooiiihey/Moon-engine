@@ -88,9 +88,11 @@ Mesh Load::LoadMesh(const std::string& filename) {
         exit(12);
     }
 
-    return mesh;
+    return std::move(mesh);
 }
 
+
+//load png type pictures
 MoonTexture Load::LoadTextureImage(const std::string& filename) {
     int Width, Height, Channels;
     unsigned char* ImageData = stbi_load(filename.c_str(), &Width, &Height, &Channels, 4);
@@ -114,15 +116,7 @@ MoonTexture Load::LoadTextureImage(const std::string& filename) {
             pixel.a = (float)ImageData[index + 3] / 255.0f;
 
             tex.Pixels.emplace_back(pixel);
-            /*
-            for (int c = 0; c < Channels; ++c) {
-                int index = (y * Width + x) * Channels + c;
-                unsigned char value = ImageData[index];
 
-                float t = (float)value / 255.0f;
-
-            }
-        */
         }
     }
 

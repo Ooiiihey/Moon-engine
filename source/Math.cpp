@@ -54,7 +54,7 @@ Vec3 rotate(const Vec3& p, const Vec3& k , const double angle) {
     return Vec3(p * cos(angle) + cross(k, p) * sin(angle) + k * dot(k, p) * (1 - cos(angle)));
 }
 
-Vec3 rotate_all(const Vec3 &j, Vec3 & angle) {
+Vec3 rotate_all(const Vec3 &j, Vec3 angle) {
 
     Vec3 X = { 1, 0, 0 };
     Vec3 Y = { 0, 1, 0 };

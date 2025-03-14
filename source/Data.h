@@ -82,7 +82,7 @@ double dot(const Vec3& vec1, const double vec2[3]);
 Vec3 cross(const Vec3& vec1, const Vec3& vec2);
 
 Vec3 rotate(const Vec3& p, const Vec3& k, const double angle);
-Vec3 rotate_all(const Vec3& j, Vec3& angle);
+Vec3 rotate_all(const Vec3& j, Vec3 angle);
 
 
 
@@ -226,6 +226,7 @@ public:
 
 class MoonMaterial {
 public:
+    bool SmoothShader = true;
 
     // 材质环境光系数 (Ka)
     RGBa ambientColor = { 0.4f, 0.4f, 0.4f };

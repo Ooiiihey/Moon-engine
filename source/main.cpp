@@ -229,29 +229,38 @@ void Display_thread() {
     Mesh Scene = LoadFunc.LoadMesh("resources/Model/Scene.obj");
 
     MoonTexture niko = LoadFunc.LoadTextureImage("resources/Texture/niko.png");
-    MoonTexture city = LoadFunc.LoadTextureImage("resources/Texture/City.png");
+    MoonTexture city = LoadFunc.LoadTextureImage("resources/Texture/city.png");
     MoonTexture defaultTex = LoadFunc.LoadTextureImage("resources/Texture/default_tex.png");
 
-    MoonMaterial mtltest, mtl0, mtlscene;
-    mtltest.SelfColor = { 0.5f, 0.5f, 0.5f };
-    mtltest.diffuseColor = { 0.7f, 0.7f, 0.7f };
-    mtltest.specularColor = { 0.4f, 0.4f, 0.4f };
-    mtltest.ambientColor = { 0.5f, 0.5f, 0.5f };
-    mtltest.specularExponent = 128;
+    MoonMaterial mtl0, mtl1, mtltest, mtlscene;
+
+    mtl0.SelfColor = { 0.5f, 0.5f, 0.5f };
+    mtl0.diffuseColor = { 0.7f, 0.7f, 0.7f };
+    mtl0.specularColor = { 0.4f, 0.4f, 0.4f };
+    mtl0.ambientColor = { 0.5f, 0.5f, 0.5f };
+    mtl0.specularExponent = 128;
+
+    mtl1.SelfColor = { 0.5f, 0.5f, 0.5f };
+    mtl1.diffuseColor = { 0.7f, 0.7f, 0.7f };
+    mtl1.specularColor = { 0.4f, 0.4f, 0.4f };
+    mtl1.ambientColor = { 0.5f, 0.5f, 0.5f };
+    mtl1.specularExponent = 128;
 
     mtlscene.SelfColor = { 0.5f, 0.5f, 0.5f };
     mtlscene.diffuseColor = { 0.7f, 0.7f, 0.7f };
     mtlscene.specularColor = { 0.0f, 0.0f, 0.0f };
     mtlscene.ambientColor = { 0.5f, 0.5f, 0.5f };
     mtlscene.specularExponent = 2;
+    mtlscene.SmoothShader = false;
 
 
-    mtl0.SelfColor = { 0.5f, 0.5f, 0.5f };
-    mtl0.diffuseColor = { 0.7f, 0.7f, 0.7f };
-    mtl0.specularColor = { 0.1f, 0.1f, 0.1f };
-    mtl0.ambientColor = { 0.55f, 0.55f, 0.55f };
-    mtl0.specularExponent = 2;
-    mtl0.SelfColor = { 0.1f, 0.6f, 0.4f };
+    mtltest.SelfColor = { 0.5f, 0.5f, 0.5f };
+    mtltest.diffuseColor = { 0.7f, 0.7f, 0.7f };
+    mtltest.specularColor = { 0.1f, 0.1f, 0.1f };
+    mtltest.ambientColor = { 0.55f, 0.55f, 0.55f };
+    mtltest.specularExponent = 2;
+    mtltest.SelfColor = { 0.1f, 0.6f, 0.4f };
+    mtltest.SmoothShader = false;
 
     MoonModel Mtest, M0, M1, Mscene;
 
@@ -260,8 +269,8 @@ void Display_thread() {
 
     Mscene.LinkMesh(Scene);
 
-    Mtest.linkMaterial(mtl0);
-    M0.linkMaterial(mtltest);
+    Mtest.linkMaterial(mtltest);
+    M0.linkMaterial(mtl0);
     Mscene.linkMaterial(mtlscene);
 
     M0.linkTexture(niko);
@@ -310,13 +319,15 @@ void Display_thread() {
 
         
 
-        circle = std::fmod(circle + 0.01, 2 * PI);
+        circle = std::fmod(circle + 0.001, 2 * PI);
 
-        M0.SetMeshPos(Vec3(sin(circle) * 4, cos(circle) * 6, sin(circle) * 3));
+        M0.SetMeshPos(Vec3(sin(circle) * 6, cos(circle) * 8, sin(circle) * 3));
         M0.RotateMesh(Vec3(circle, circle, circle));
  
         M0.UpdateMesh();
 
+        
+        //L.direction = rotate_all(L.direction, Vec3(0, 0.1, 0));
 
         Models_List.emplace_back(Mtest);
         Models_List.emplace_back(Mscene);
