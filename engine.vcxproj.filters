@@ -36,10 +36,16 @@
     <ClCompile Include="source\CameraFunc.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="source\SmallFunc.cpp">
+    <ClCompile Include="source\SmallFuncs.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="source\Load.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Shadow.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Lights.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -51,6 +57,18 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="source\Data.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Lights.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Camera.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Shadow.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="source\BS_thread_pool.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

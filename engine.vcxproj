@@ -20,7 +20,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\CameraFunc.cpp" />
-    <ClCompile Include="source\SmallFunc.cpp" />
+    <ClCompile Include="source\Lights.cpp" />
+    <ClCompile Include="source\Shadow.cpp" />
+    <ClCompile Include="source\SmallFuncs.cpp" />
     <ClCompile Include="source\Load.cpp" />
     <ClCompile Include="source\main.cpp">
       <RuntimeLibrary Condition="'$(Configuration)|$(Platform)'=='Release_|x64'">MultiThreaded</RuntimeLibrary>
@@ -40,8 +42,12 @@
     <ClCompile Include="source\Buffer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\BS_thread_pool.h" />
+    <ClInclude Include="source\Camera.h" />
     <ClInclude Include="source\Data.h" />
+    <ClInclude Include="source\Lights.h" />
     <ClInclude Include="source\Moon.h" />
+    <ClInclude Include="source\Shadow.h" />
     <ClInclude Include="source\tiny_obj_loader.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
