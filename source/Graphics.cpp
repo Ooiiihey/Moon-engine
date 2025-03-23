@@ -612,10 +612,10 @@ void Graphics_forShadow::DrawFlatTopTriangle(const Vertex2D& v0, const Vertex2D&
 		for (int x = xStart; x < xEnd; ++x) {
 			//此处坐标+0.5是为了匹配光栅化左顶规则
 			Vertex2D out = Interporate(coeffs_, reciprocal_area, x + 0.5f, y + 0.5f);
+			double d = To_unLineDepth(out.v3D.x);
+			if (GC.depthbuffer->CompareDepth_Smaller(x, y, d) && GC.ptrTexture->getPixel(out.UVCoords.u, out.UVCoords.v).a != 0) {
 
-			if (GC.depthbuffer->CompareDepth_Smaller(x, y, out.v3D.x) && GC.ptrTexture->getPixel(out.UVCoords.u, out.UVCoords.v).a != 0) {
-
-				GC.depthbuffer->PutDepth(x, y, out.v3D.x);
+				GC.depthbuffer->PutDepth(x, y, d);
 
 			}
 
@@ -652,10 +652,10 @@ void Graphics_forShadow::DrawFlatBottomTriangle(const Vertex2D& v0, const Vertex
 		for (int x = xStart; x < xEnd; ++x) {
 			//此处坐标+0.5是为了匹配光栅化左顶规则
 			Vertex2D out = Interporate(coeffs_, reciprocal_area, x + 0.5f, y + 0.5f);
+			double d = To_unLineDepth(out.v3D.x);
+			if (GC.depthbuffer->CompareDepth_Smaller(x, y, d) && GC.ptrTexture->getPixel(out.UVCoords.u, out.UVCoords.v).a != 0) {
 
-			if (GC.depthbuffer->CompareDepth_Smaller(x, y, out.v3D.x) && GC.ptrTexture->getPixel(out.UVCoords.u, out.UVCoords.v).a != 0) {
-
-				GC.depthbuffer->PutDepth(x, y, out.v3D.x);
+				GC.depthbuffer->PutDepth(x, y, d);
 
 			}
 

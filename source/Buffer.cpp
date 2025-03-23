@@ -9,14 +9,14 @@ void DepthBuffer::SetBuffer(int width, int height) {
 	const size_t size = width * height;
 
 	Depth.clear();
-	Depth.resize(size, INFINITY);
+	Depth.resize(size, 1.0);
 
 
 }
 
 void DepthBuffer::CleanBuffer() {
 	long total = Buffer_size[0] * Buffer_size[1];
-	Depth.assign(total, INFINITY);  //初始DepthBuffer
+	Depth.assign(total, 1.0);  //初始DepthBuffer
 
 };
 

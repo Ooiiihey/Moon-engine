@@ -75,8 +75,11 @@ bool ShadowCaster_PointLight::isInShadow(const Vec3& WorldSpaceVertex)
 
 
 		if (point.v3D.x < VirtualCam.NearPlane or (point.x > width || point.x < 0 || point.y > height || point.y < 0)) continue;
+		double depth = std::clamp(tmp.FarPlane * (point.v3D.x - tmp.NearPlane)
+			/
+			(point.v3D.x * (tmp.FarPlane - tmp.NearPlane)), 0.0, 1.0);
 
-		if (!depthBuffersList[i].CompareDepth_Smaller((int)point.x, (int)point.y, point.v3D.x - 0.15)) {
+		if (!depthBuffersList[i].CompareDepth_Smaller((int)point.x, (int)point.y, depth - 0.00017)) {
 			return true;
 		}
 

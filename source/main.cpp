@@ -279,7 +279,7 @@ void Display_thread() {
     Mtest.linkMaterial(mtltest);
     Mniko.linkMaterial(mtl0);
     modelMoon.linkMaterial(mtl1);
-    scene.linkMaterial(mtlscene);
+    scene.linkMaterial(mtl0);
     Skybox.linkMaterial(mtl1);
 
     Mniko.linkTexture(niko);
@@ -295,6 +295,7 @@ void Display_thread() {
     AmbientLight AL;
     AL.Color = { 0.3f, 0.25f, 0.2f };
 
+
     PointLight PL;
     //PL.Positon = { 10, 10, 1 };
     PL.Color = { 0.2f, 0.2f, 0.9f };
@@ -304,7 +305,7 @@ void Display_thread() {
     PL.Radius = 40;
 
     //初始化shadowCaster里的
-    PL.ShadowCaster.reSetMap(128, Vec3(0, 0, 0), 20);
+    PL.ShadowCaster.reSetMap(256, Vec3(0, 0, 0), 20);
 
 
     

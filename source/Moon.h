@@ -12,7 +12,7 @@
 //use SDL 2
 
 
-#define ENGINE_NAME "Moon_engine_Alpha_v0.6.6"
+#define ENGINE_NAME "Moon_engine_Alpha_v0.6.7"
 
 
 
