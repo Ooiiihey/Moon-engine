@@ -92,7 +92,7 @@ Mesh Load::LoadMesh(const std::string& filename) {
 
 
 //load png type pictures
-MoonTexture Load::LoadTextureImage(const std::string& filename) {
+Texture_M Load::LoadTextureImage(const std::string& filename) {
     int Width, Height, Channels;
     unsigned char* ImageData = stbi_load(filename.c_str(), &Width, &Height, &Channels, 4);
 
@@ -101,7 +101,7 @@ MoonTexture Load::LoadTextureImage(const std::string& filename) {
         exit(36);
     }
 
-    MoonTexture tex;
+    Texture_M tex;
     tex.SetTexture(Width, Height);
 
     for (int y = 0; y < Height; ++y) {

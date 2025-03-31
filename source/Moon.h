@@ -1,4 +1,5 @@
 ﻿#pragma once
+
 #include "Data.h"
 #include "Camera.h"
 #include "Shadow.h"
@@ -12,8 +13,16 @@
 //use SDL 2
 
 
-#define ENGINE_NAME "Moon_engine_Alpha_v0.6.7"
+#define ENGINE_NAME "Moon_engine_Alpha_v0.7.0"
+/*
 
+
+
+
+
+
+
+*/
 
 
 
@@ -42,13 +51,15 @@ protected:
 
     inline bool TestScreenOutside(Vertex2D& v0, Vertex2D& v1, Vertex2D& v2);
 
+    
+
 
 public:
 
     Vertex2D PerspectiveOneVertex(const Camera& Receive_camera, int screen_in[2], const Vec3& target);
 
-    virtual void Transform(const Camera& Receive_camera, const int screen_in[2], const MoonModel& MDL, std::vector<Triangle>& List);
-    
+    virtual void Transform(const Camera& Receive_camera, const int screen_in[2], const Model_M& MDL, std::vector<Triangle>& List, bool inverse_culling);
+ 
 
 };
 
@@ -63,8 +74,8 @@ struct GraphicContext {
     DepthBuffer* depthbuffer = nullptr;
     splitValue* Buffer_spilit = nullptr;
 
-    MoonTexture* ptrTexture = nullptr;
-    MoonMaterial* ptrMateral0 = nullptr;
+    Texture_M* ptrTexture = nullptr;
+    Material_M* ptrMateral0 = nullptr;
 
     int ChunkWidth_Begin, ChunkWidth_End, ChunkHeight_Begin, ChunkHeight_End = 0;
 };
@@ -74,26 +85,29 @@ class BaseGraphics {
 protected:
     GraphicContext GC;
 
-    inline double To_unLineDepth(double depthBuffersList);
+    inline double To_unLineDepth(double MapsList);
 
     inline void PreComputeTriangle(double coeffs_[30], double& reciprocal_area, const Vertex2D& v0, const Vertex2D& v1, const Vertex2D& v2);
     inline Vertex2D Interporate(double coeffs_[30], double& reciprocal_area, double a, double B);
 
 
-    void DrawFlatTopTriangle(bool direct, const Vertex2D& v0, const Vertex2D& v1, const Vertex2D& v2);
-    void DrawFlatBottomTriangle(bool direct, const Vertex2D& v0, const Vertex2D& v1, const Vertex2D& v2);
+    void DrawFlatTopTriangle(const Vertex2D& v0, const Vertex2D& v1, const Vertex2D& v2);
+    void DrawFlatBottomTriangle(const Vertex2D& v0, const Vertex2D& v1, const Vertex2D& v2);
 
 public:
 
     void RefreshGraphicContext(const Camera& Receive_camera, BufferCollection& buffer, splitValue& Buffer_spilit);
+    //scan line
+    void DrawTriangle(const Vertex2D& v0, const Vertex2D& v1, const Vertex2D& v2, Texture_M* ptrTexture0, Material_M* ptrMtl1);
+    //box
+    void OptimizedDrawTriangle(const Vertex2D& v0, const Vertex2D& v1, const Vertex2D& v2, Texture_M* texture, Material_M* material);
 
-    void DrawTriangleTexture(const Vertex2D& v0, const Vertex2D& v1, const Vertex2D& v2, MoonTexture* ptrTexture0, MoonMaterial* ptrMtl1);
-
-    void DrawTriangleTexture_direct(const Vertex2D& v0, const Vertex2D& v1, const Vertex2D& v2, MoonTexture* ptrTexture0, MoonMaterial* ptrMtl1);
 
     void DeferredRender_AmbientLight(AmbientLight& AL);
     void DeferredRender_ParallelLight(ParallelLight& PL);
     void DeferredRender_PointLight(PointLight& PL);
+
+    void DeferredRender_AllLight(LightsCollection& LC);
 
 
 };
@@ -111,11 +125,15 @@ protected:
 
 public:
     void RefreshGraphicContext(const Camera& Receive_camera, DepthBuffer& buffer, splitValue Buffer_spilit);
-    void DrawTriangleTexture(const Vertex2D& v0, const Vertex2D& v1, const Vertex2D& v2, MoonTexture* ptrTexture0, MoonMaterial* ptrMtl1);
+    //scan line
+    void DrawTriangle(const Vertex2D& v0, const Vertex2D& v1, const Vertex2D& v2, Texture_M* ptrTexture0, Material_M* ptrMtl1);
+    //box
+    void OptimizedDrawTriangle(const Vertex2D& v0, const Vertex2D& v1, const Vertex2D& v2, Texture_M* texture, Material_M* material);
 
     void DeferredRender_AmbientLight(AmbientLight& AL) = delete;
     void DeferredRender_ParallelLight(ParallelLight& PL) = delete;
     void DeferredRender_PointLight(PointLight& PL) = delete;
+    void DeferredRender_AllLight(LightsCollection& LC) = delete;
 };
 
 
@@ -124,10 +142,10 @@ class Load {
 public:
     Mesh LoadMesh(const std::string& filename);
 
-    MoonTexture LoadTextureImage(const std::string& filename);
+    Texture_M LoadTextureImage(const std::string& filename);
 
 };
 
 
-unsigned int Render(const Camera Receive_camera, BufferCollection& FrameBuffer, const int screen_in[2], const std::vector <MoonModel>& Models_list, LightsCollection & lightsList);
-unsigned int Render(const Camera Receive_camera, BufferCollection& FrameBuffer, const int screen_in[2], const std::vector <MoonModel>& Models_list);
+unsigned int Render(const Camera Receive_camera, BufferCollection& FrameBuffer, const int screen_in[2], const std::vector <Model_M>& Models_list, LightsCollection & lightsList);
+

@@ -30,6 +30,14 @@ struct Vec3 {
         return Vec3(x / num, y / num, z / num);
     }
 
+    inline bool operator==(const Vec3& other) const {
+        const double epsilon = 1e-6; // 定义一个较小的误差范围
+        return
+            std::abs(x - other.x) < epsilon &&
+            std::abs(y - other.y) < epsilon &&
+            std::abs(z - other.z) < epsilon;
+    }
+
     inline Vec3& operator+=(const Vec3& _vec_) {
         x += _vec_.x;
         y += _vec_.y;
@@ -78,12 +86,11 @@ struct Vec3 {
 //math
 
 double dot(const Vec3& vec1, const Vec3& vec2);
-double dot(const Vec3& vec1, const double vec2[3]);
+//double dot(const Vec3& vec1, const double vec2[3]);
 Vec3 cross(const Vec3& vec1, const Vec3& vec2);
 
 Vec3 rotate(const Vec3& p, const Vec3& k, const double angle);
 Vec3 rotate_all(const Vec3& j, Vec3 angle);
-
 
 
 struct Vec2 {
@@ -138,6 +145,7 @@ public:
     std::vector <Vertex2D> vertex2d;
     std::vector <Vec3> FaceNorVec;
 
+
     void put3DIndex(Vec3& in, unsigned int index);
     Vec3 get3D(unsigned int index);
 };
@@ -183,6 +191,8 @@ struct RGBa {
     }
 
 
+
+
     // 颜色除法运算符
     RGBa operator/(float scalar) const {
         return { R / scalar, G / scalar, B / scalar, a / scalar };
@@ -196,6 +206,15 @@ struct RGBa {
             B = other.B;
             a = other.a;
         }
+        return *this;
+    }
+
+    RGBa& operator+=(const RGBa& other) {
+        R += other.R;
+        G += other.G;
+        B += other.B;
+        a += other.a;
+
         return *this;
     }
 
@@ -220,7 +239,7 @@ public:
 
 
 //developing now
-class MoonTexture {
+class Texture_M {
 public:
     std::vector <RGBa> Pixels = {};
     unsigned int width = 0, height = 0;
@@ -231,35 +250,39 @@ public:
 };
 
 
-class MoonMaterial {
+class Material_M {
 public:
+    // 背面剔除
+    bool Culling = true;
+    // 光滑渲染
     bool SmoothShader = true;
+    // 无光照直接渲染
+    bool Unlit_Rendering = false;
+    
 
     // 材质环境光吸收
-    // 此属性用来调整环境光的吸收强度，而不是ka
+    // 此属性用来调整环境光的吸收强度，而不是代表ka
     RGBa ambientColor = { 1.0f, 1.0f, 1.0f };
 
     // 材质漫反射系数 (Kd)
     RGBa diffuseColor = { 0.7f, 0.7f, 0.7f };
-
     // 材质镜面反射系数 (Ks)
     RGBa specularColor = { 0.3f, 0.3f, 0.3f };
-
     // 材质镜面反射指数 (Ns)
-    double specularExponent = 4.0;
+    float specularExponent = 4.0f;
 
-    RGBa SelfColor = { 0.5, 0.5, 0.5 };
+    //RGBa SelfColor = { 0.5f, 0.5f, 0.5f };
 };
 
 
 
-class MoonModel {
+class Model_M {
 public:
     Mesh* ptrOriginalMesh = nullptr;
     Mesh WorldSpaceMesh;
 
-    MoonTexture* ptrTexture = nullptr;
-    MoonMaterial* ptrMaterial = nullptr;
+    Texture_M* ptrTexture = nullptr;
+    Material_M* ptrMaterial = nullptr;
 
     double size = 1.0;
     Vec3 Positon;
@@ -270,8 +293,8 @@ public:
              Z = { 0, 0, 1 };
 
     void LinkMesh(Mesh& m);
-    void linkMaterial(MoonMaterial& mtl);
-    void linkTexture(MoonTexture& tex);
+    void linkMaterial(Material_M& mtl);
+    void linkTexture(Texture_M& tex);
 
     void ZoomSize(double alpha);
     void SetMeshPos(Vec3 pos);
@@ -282,20 +305,12 @@ public:
 class Triangle {
 public:
     Vertex2D v0, v1, v2;
-    MoonTexture* ptrTexture = nullptr;
-    MoonMaterial* ptrMtl = nullptr;
+    Texture_M* ptrTexture = nullptr;
+    Material_M* ptrMtl = nullptr;
 };
 
 
-//old codes, dont use it
-//转换出来的三角形组
-struct TriangleList {
-    std::vector <Vertex2D> vertices = {};
 
-    std::vector<MoonTexture*> ptrTexture = {};
-    std::vector<MoonMaterial*> ptrMtl = {};
-
-};
 
 struct splitValue {
     double widthBegin = 0.0;
@@ -312,10 +327,21 @@ public:
     void SetBuffer(int width, int height);
     void CleanBuffer();
 
-    void PutDepth(const int x, const int y, double depthBuffersList);
+    void PutDepth(const int x, const int y, double MapsList);
     double GetDepth(const int x, const int y);
-    bool CompareDepth_Smaller(const int x, const int y, double depthBuffersList);
+    bool CompareDepth_Smaller(const int x, const int y, double MapsList);
 
+};
+
+
+class PixelData {
+public:
+    RGBa TextureColor = {0, 0, 0, 1.0};
+    double Depth = 1.0;
+    Vec3 Cam3DVertex = {0, 0, 0};
+    Vec3 NorVec = {0, 0, 0};
+    Material_M* ptrMaterial = nullptr;
+    RGBa FrameColor = { 0, 0, 0, 1.0 };
 };
 
 
@@ -324,33 +350,21 @@ public:
 
     int Buffer_size[2] = { 0, 0 };
 
-    std::vector<RGBa> TextureColor;
-    std::vector<double> Depth;
-    std::vector<Vec3> Cam3DVertex;
-    std::vector<Vec3> NorVec;
-    std::vector<MoonMaterial*> ptrMaterial;
-    std::vector<RGBa> Frame;
+    std::vector<PixelData> All_in;
 
     BufferCollection() = default;
     BufferCollection& operator=(const BufferCollection& other) {
         if (this != &other) {
             Buffer_size[0] = other.Buffer_size[0];
             Buffer_size[1] = other.Buffer_size[1];
-            TextureColor = other.TextureColor;
-            Depth = other.Depth;
-            Cam3DVertex = other.Cam3DVertex;
-            NorVec = other.NorVec;
-            ptrMaterial = other.ptrMaterial;
+            All_in = other.All_in;
         }
         return *this;
     }
     BufferCollection(BufferCollection&& other) noexcept :
         Buffer_size{ other.Buffer_size[0], other.Buffer_size[1] },
-        TextureColor(std::move(other.TextureColor)),
-        Depth(std::move(other.Depth)),
-        Cam3DVertex(std::move(other.Cam3DVertex)),
-        NorVec(std::move(other.NorVec)),
-        ptrMaterial(std::move(other.ptrMaterial))
+
+        All_in(std::move(other.All_in))
     {
     }
 
@@ -358,19 +372,25 @@ public:
     void SetBuffer(int width, int height);
     void CleanBuffer();
 
-    void PutPixelData(const int x, const int y, double depthBuffersList, RGBa c, Vec3& Cam3Dvertex, Vec3& NorVec, MoonMaterial* ptrmtl);
-    void AddFinalColor(const int x, const int y, RGBa Color);
-    void PutFinalColor(const int x, const int y, RGBa Color);
+    void PutPixelAll(const int x, const int y, double MapsList, RGBa c, Vec3& Cam3Dvertex, Vec3& NorVec, Material_M* ptrmtl);
+    void PutPixelAll(const int x, const int y, const PixelData& P);
+    PixelData GetPixelAll(const int x, const int y);
 
-    RGBa GetPixelTextureColor(const int x, const int y);
-    RGBa GetFramePixelColor(const int x, const int y);
-    MoonMaterial* GetPtrMtl(const int x, const int y);
+    void AddFrameColor(const int x, const int y, RGBa Color);
+    void PutFrameColor(const int x, const int y, RGBa Color);
+
+    RGBa GetTextureColor(const int x, const int y);
+    RGBa GetFrameColor(const int x, const int y);
+    Material_M* GetPtrMtl(const int x, const int y);
     Vec3 GetCam3Dvertex(const int x, const int y);
     Vec3 GetNorVec(const int x, const int y);
 
-    bool CompareDepth_Smaller(const int x, const int y, double depthBuffersList);
+
+
+    bool CompareDepth_Smaller(const int x, const int y, double MapsList);
     double GetDepth(const int x, const int y);
 
+    //dont use, because it is so slow
     void merge(const BufferCollection& Buffer_chunk);
 
 };

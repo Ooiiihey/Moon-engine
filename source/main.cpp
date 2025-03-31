@@ -13,14 +13,15 @@ int screen_3[] = { 640, 360 };
 int screen_4[] = { 2560, 1600 };
 int screen_5[] = { 192, 108 };
 int screen_6[] = { 1920, 1080};
+int screen_7[] = { 256, 160 };
+int screen_8[] = { 320, 180 };
 
 int* ptrScreen = screen_3;
-//long* ptrScreenTEST = screen_5;
 //初始化
 
 //创建相机
 Camera Camera_1;
-//Camera Camera_2;
+
 
 // 函数用于将鼠标移动到屏幕中央
 void MoveMouseToCenter() {
@@ -199,15 +200,15 @@ void Display_thread() {
      SDL_Color textColor = { 208, 208, 208, 255 };
     if (font == nullptr) ExitProcess(10);
     
-    std::vector <Mesh> mesh_list;
+
     //坐标轴模型
-    Mesh testMesh;
+    Mesh Axis_mesh;
     //                                            0                 1                   2                   3                       4                       5                       6                   7                           z8              y9                  x10
-    testMesh.vertices = { {0.1, -0.1 ,-0.1}, {-0.1, -0.1, -0.1},{-0.1, 0.1, -0.1}, { 0.1, 0.1 , -0.1 },   
+    Axis_mesh.vertices = { {0.1, -0.1 ,-0.1}, {-0.1, -0.1, -0.1},{-0.1, 0.1, -0.1}, { 0.1, 0.1 , -0.1 },   
                                         {0.1, -0.1 ,0.1}, {-0.1, -0.1, 0.1},{-0.1, 0.1, 0.1}, { 0.1, 0.1 ,0.1 },   
                                         {0, 0, 1024}, {0, 1024,0.05}, {1024, 0, 0.05} };
 
-    testMesh.facesIndex = { {7, 6, 9}, {2, 9, 6}, {3, 9, 2}, { 3, 7, 9 },    
+    Axis_mesh.facesIndex = { {7, 6, 9}, {2, 9, 6}, {3, 9, 2}, { 3, 7, 9 },    
                                     {3, 2, 1},  {3, 1, 0},  
                                     {2, 5, 1}, {2, 6, 5},    
                                     {5, 4, 1}, {1, 4, 0},
@@ -219,113 +220,116 @@ void Display_thread() {
     Face texIndexPlaceholder;
     Vec2 uvCoordPlaceholder;
 
-    testMesh.texIndex.resize( testMesh.facesIndex.size(), texIndexPlaceholder);
-    testMesh.UVCoords = { uvCoordPlaceholder };
+    Axis_mesh.texIndex.resize( Axis_mesh.facesIndex.size(), texIndexPlaceholder);
+    Axis_mesh.UVCoords = { uvCoordPlaceholder };
 
 
 
     // Load OBJ model
     Mesh LoadedMesh = LoadFunc.LoadMesh("resources/Model/niko.obj");
     Mesh Scene = LoadFunc.LoadMesh("resources/Model/SceneMain.obj");
-    Mesh Moon = LoadFunc.LoadMesh("resources/Model/Moon 2K.obj");
-    Mesh SkyBox = LoadFunc.LoadMesh("resources/Model/SkyBox.obj");
+    Mesh TestBall = LoadFunc.LoadMesh("resources/Model/testBall.obj");
+    //Mesh Moon = LoadFunc.LoadMesh("resources/Model/Moon 2K.obj");
+    Mesh SKYbox_mesh = LoadFunc.LoadMesh("resources/Model/SkyBox.obj");
 
 
-    MoonTexture defaultTex = LoadFunc.LoadTextureImage("resources/Texture/default_tex.png");
-    MoonTexture moon = LoadFunc.LoadTextureImage("resources/Texture/Diffuse_2K.png");
-    MoonTexture niko = LoadFunc.LoadTextureImage("resources/Texture/niko.png");
-    MoonTexture city = LoadFunc.LoadTextureImage("resources/Texture/city.png");
-    MoonTexture sky = LoadFunc.LoadTextureImage("resources/Texture/sky.png");
+    Texture_M defaultTex = LoadFunc.LoadTextureImage("resources/Texture/default_tex.png");
+    //MoonTexture moon = LoadFunc.LoadTextureImage("resources/Texture/Diffuse_2K.png");
+    Texture_M nikoTex = LoadFunc.LoadTextureImage("resources/Texture/niko.png");
+    Texture_M cityTex = LoadFunc.LoadTextureImage("resources/Texture/city.png");
+    Texture_M skyTex = LoadFunc.LoadTextureImage("resources/Texture/sky.png");
     
 
-    MoonMaterial mtl0, mtl1, mtltest, mtlscene;
+    Material_M mtl0, mtl1, mtlasix, mtlscene, mtlSKY, mtlNoCullingTest;
 
-    mtl0.SelfColor = { 0.5f, 0.5f, 0.5f };
+    mtlNoCullingTest.Culling = false;
+
     mtl0.diffuseColor = { 0.7f, 0.7f, 0.7f };
     mtl0.specularColor = { 0.4f, 0.4f, 0.4f };
-    //mtl0.ambientColor = { 0.5f, 0.5f, 0.5f };
     mtl0.specularExponent = 128;
 
-    mtl1.SelfColor = { 0.5f, 0.5f, 0.5f };
+
     mtl1.diffuseColor = { 1.0f, 1.0f, 1.0f };
     mtl1.specularColor = { 0.0f, 0.0f, 0.0f };
     mtl1.ambientColor = { 0.3f, 0.3f, 0.3f };
     mtl1.specularExponent = 2;
 
-    mtlscene.SelfColor = { 0.5f, 0.5f, 0.5f };
+    //render directly
+    mtlSKY.Unlit_Rendering = true;
+
+
     mtlscene.diffuseColor = { 0.7f, 0.7f, 0.7f };
-    mtlscene.specularColor = { 0.0f, 0.0f, 0.0f };
-    //mtlscene.ambientColor = { 0.5f, 0.5f, 0.5f };
-    mtlscene.specularExponent = 2;
+    mtlscene.specularColor = { 0.2f, 0.2f, 0.2f };
+    mtlscene.specularExponent = 64;
     mtlscene.SmoothShader = false;
 
 
-    mtltest.SelfColor = { 0.5f, 0.5f, 0.5f };
-    mtltest.diffuseColor = { 0.7f, 0.7f, 0.7f };
-    mtltest.specularColor = { 0.1f, 0.1f, 0.1f };
-    //mtltest.ambientColor = { 0.55f, 0.55f, 0.55f };
-    mtltest.specularExponent = 2;
-    mtltest.SelfColor = { 0.1f, 0.6f, 0.4f };
-    mtltest.SmoothShader = false;
+    mtlasix.diffuseColor = { 0.7f, 0.7f, 0.7f };
+    mtlasix.specularColor = { 0.1f, 0.1f, 0.1f };
+    mtlasix.specularExponent = 2;
+    mtlasix.SmoothShader = false;
 
-    MoonModel Mtest, Mniko, modelMoon, scene, Skybox;
+    Model_M MAxis, Mniko, /*modelMoon, */scene, SKYbox, TESTBall;
 
-    Mtest.LinkMesh(testMesh);
+    MAxis.LinkMesh(Axis_mesh);
     Mniko.LinkMesh(LoadedMesh);
-    modelMoon.LinkMesh(Moon);
-    Skybox.LinkMesh(SkyBox);
+    //modelMoon.LinkMesh(Moon);
+    SKYbox.LinkMesh(SKYbox_mesh);
     scene.LinkMesh(Scene);
+    TESTBall.LinkMesh(TestBall);
 
-    Mtest.linkMaterial(mtltest);
+    MAxis.linkMaterial(mtlasix);
     Mniko.linkMaterial(mtl0);
-    modelMoon.linkMaterial(mtl1);
-    scene.linkMaterial(mtl0);
-    Skybox.linkMaterial(mtl1);
+    //modelMoon.linkMaterial(mtl1);
+    scene.linkMaterial(mtlscene);
+    SKYbox.linkMaterial(mtlSKY);
+    TESTBall.linkMaterial(mtlNoCullingTest);
 
-    Mniko.linkTexture(niko);
-    modelMoon.linkTexture(moon);
-    Mtest.linkTexture(defaultTex);
-    scene.linkTexture(city);
-    Skybox.linkTexture(sky);
+    Mniko.linkTexture(nikoTex);
+    //modelMoon.linkTexture(moon);
+    MAxis.linkTexture(defaultTex);
+    scene.linkTexture(cityTex);
+    SKYbox.linkTexture(skyTex);
+    TESTBall.linkTexture(defaultTex);
 
     ParallelLight L;
-    L.Color = { 0.8f, 0.8f, 0.8f };
+    L.SetLight(Vec3(0.2, 0.3, 0.5), RGBa(0.5f, 0.35f, 0.3f));
 
     //环境光
     AmbientLight AL;
-    AL.Color = { 0.3f, 0.25f, 0.2f };
+    AL.SetLight(RGBa(0.35f, 0.25f, 0.2f));
 
 
+    //实时点光源
     PointLight PL;
-    //PL.Positon = { 10, 10, 1 };
-    PL.Color = { 0.2f, 0.2f, 0.9f };
-    PL.Constant = 0.1;
-    PL.Quadratic = 0.002;
-    PL.Linear = 0.01;
-    PL.Radius = 40;
 
-    //初始化shadowCaster里的
-    PL.ShadowCaster.reSetMap(256, Vec3(0, 0, 0), 20);
+    PL.SetLight(Vec3(0, 0, 0),
+                        RGBa(0.05f, 0.55f, 0.6f),
+                        0.1, 0.002, 0.001,
+                        40, 512);
 
+    SpotLight SL;
+    SL.SetLight(Vec3(0, 0, 0),
+                        Vec3(1, 1, 0),
+                        RGBa(0.65f, 0.55f, 0.8f),
+                        45 * PI / 180, 30 * PI / 180,
+                        0.1, 0.002, 0.005,
+                        40, 512);
 
     
     LightsCollection LightsList;
     LightsList.ParallelLights.emplace_back(L);
     LightsList.AmbientLights.emplace_back(AL);
-    LightsList.PointLights.emplace_back(PL);
+    //LightsList.PointLights.emplace_back(PL);
+    LightsList.SpotLights.emplace_back(SL);
 
 
-
-    //Mscene.RotateMesh(Vec3( -PI / 2, 0, 0));
-    //Mscene.ZoomSize(10);
     scene.UpdateMesh();
 
-    //M0.ZoomSize(0.005);
     Mniko.ZoomSize(8);
 
-    std::vector <MoonModel> ModelsRenderList;
-    std::vector <MoonModel> ModelsRenderList_2;
-    ModelsRenderList_2.emplace_back(Skybox);
+    std::vector <Model_M> RenderList;
+
 
     //帧缓存设置
     BufferCollection Framebuffer_1;
@@ -351,11 +355,11 @@ void Display_thread() {
 
         }
 
-        ModelsRenderList.clear();
+        RenderList.clear();
 
 
 
-        circle = std::fmod(circle + 0.01, 2 * PI);
+        circle = std::fmod(circle + 0.005, 2 * PI);
 
         Mniko.SetMeshPos(Vec3(sin(circle) * 6, cos(circle) * 8, sin(circle) * 3) + Vec3(20, 30, 10));
         Mniko.RotateMesh(Vec3(circle, circle, circle));
@@ -364,34 +368,47 @@ void Display_thread() {
         Mniko.UpdateMesh();
 
 
-        modelMoon.SetMeshPos(Vec3(cos(circle) * 18, sin(circle) * 32, cos(circle) * 3));
-        modelMoon.RotateMesh(Vec3( 0, circle, circle));
+        //modelMoon.SetMeshPos(Vec3(cos(circle) * 18, sin(circle) * 32, cos(circle) * 3));
+        //modelMoon.RotateMesh(Vec3( 0, circle, circle));
 
-        modelMoon.UpdateMesh();
+        //modelMoon.UpdateMesh();
+
+        /*
+        TESTBall.SetMeshPos(Vec3(0, cos(circle) * 20, 2) + Vec3(20, 30, 0));
+        TESTBall.RotateMesh(Vec3(-circle, circle, -circle));
+        TESTBall.ZoomSize(1.0 + sin(circle) / 2.0);
+        TESTBall.UpdateMesh();
+        */
 
 
+        RenderList.emplace_back(MAxis);
+        RenderList.emplace_back(scene);
+        RenderList.emplace_back(Mniko);
+        RenderList.emplace_back(SKYbox);
+        //RenderList.emplace_back(TESTBall);
 
-        ModelsRenderList.emplace_back(Mtest);
-        ModelsRenderList.emplace_back(scene);
-        ModelsRenderList.emplace_back(Mniko);
-        ModelsRenderList.emplace_back(modelMoon);
-
-        LightsList.PointLights[0].Positon = Vec3(0, cos(circle) * 20, 2) + Vec3(20, 30, 0);
-        LightsList.PointLights[0].ShadowCaster.SetPosition(LightsList.PointLights[0].Positon);
-        
         
         unsigned int FaceNumber = 0;
 
         auto start = std::chrono::high_resolution_clock::now();   //测帧
 
-        Framebuffer_1.CleanBuffer();
 
+
+        Framebuffer_1.CleanBuffer();
         Camera ctmp = Camera_1;
 
-        LightsList.PointLights[0].ShadowCaster.CaculateShadow(ModelsRenderList);
+        
+        LightsList.SpotLights[0].reFresh_LightAndShadow(Vec3(0, cos(circle) * 20, 0) + Vec3(20, 30, 2),
+                                                                                        Vec3(cos(circle), sin(circle), 0),
+                                                                                        45 * PI / 180,
+                                                                                        30 * PI / 180,
+                                                                                        RenderList);
 
-        FaceNumber += Render(ctmp, Framebuffer_1, ptrScreen, ModelsRenderList, LightsList);
-        FaceNumber += Render(ctmp, Framebuffer_1, ptrScreen, ModelsRenderList_2);
+        //LightsList.PointLights[0].reFresh_LightAndShadow(Vec3(0, cos(circle) * 20, 2) + Vec3(20, 30, 0), RenderList);
+
+        FaceNumber += Render(ctmp, Framebuffer_1, ptrScreen, RenderList, LightsList);
+
+
 
         auto tech_end = std::chrono::high_resolution_clock::now();
 
@@ -405,31 +422,15 @@ void Display_thread() {
         uint32_t* pixelData = static_cast<uint32_t*>(pixels);
         for (int y = 0; y < ptrScreen[1]; ++y) {
             for (int x = 0; x < ptrScreen[0]; ++x) {
-                RGBa p = Framebuffer_1.GetFramePixelColor(x, y);
+                RGBa p = Framebuffer_1.GetFrameColor(x, y);
                 uint8_t r =0, g =0, b=0, a=0;
-                //test codes
-                /*
-                if (p == RGBa{ 0, 0, 0, 0 }) {
-                    continue;
-
-                    r = static_cast<uint8_t>(p.R * 255.0);
-                    g = static_cast<uint8_t>(p.G * 255.0);
-                    b = static_cast<uint8_t>(p.B * 255.0);
-                    a = static_cast<uint8_t>(p.a * 255.0);
-                }
-                else {
-                    double D = 1 - Framebuffer_1.GetDepth(x, y);
-                    r = static_cast<uint8_t>(std::clamp( p.R * 255.0 *D*100, 0.0, 255.0));
-                    g = static_cast<uint8_t>(std::clamp(p.G * 255.0 * D * 100, 0.0, 255.0));
-                    b = static_cast<uint8_t>(std::clamp(p.B * 255.0 * D * 100, 0.0, 255.0));
-                    a = static_cast<uint8_t>(std::clamp(p.a * 255.0 * D * 100, 0.0, 255.0));
-                }
-                */
+                
                 r = static_cast<uint8_t>(p.R * 255.0);
                 g = static_cast<uint8_t>(p.G * 255.0);
                 b = static_cast<uint8_t>(p.B * 255.0);
                 a = static_cast<uint8_t>(p.a * 255.0);
                 
+
                 uint32_t pixel = (a << 24) | (r << 16) | (g << 8) | b;
                 int index = y * (pitch / sizeof(uint32_t)) + x ;
                 pixelData[index] = pixel;
@@ -448,6 +449,7 @@ void Display_thread() {
 
         auto end = std::chrono::high_resolution_clock::now();    //测帧
 
+        
         std::chrono::duration<double> elapsed_seconds = end - start; 
         std::chrono::duration<double> Theoretical__ = tech_end - start;
 
@@ -455,7 +457,7 @@ void Display_thread() {
         title_str.append("                      Compilation_Date:");
         title_str.append(__DATE__);
 
-        std::string info = std::to_string( 1 / elapsed_seconds.count() ) + " FPS      " + std::to_string(1 / Theoretical__.count()) + " FPS(theoretical)" +"     Faces: " + std::to_string(FaceNumber);
+        std::string info = std::to_string( 1.0 / elapsed_seconds.count() ) + " FPS      " + std::to_string(1.0 / Theoretical__.count()) + " FPS(theoretical)" +"     Faces: " + std::to_string(FaceNumber);
 
         std::string pos = "Pos  " + std::to_string(Camera_1.Pos.x) + ", " + std::to_string(Camera_1.Pos.y) + ", " + std::to_string(Camera_1.Pos.z);
         const char* pos_char = pos.c_str();
@@ -471,6 +473,7 @@ void Display_thread() {
         EasyRenderText(renderer, font, pos_char, textColor, 4, 36);
         EasyRenderText(renderer, font, Sign, textColor, 4, 68);
         EasyRenderText(renderer, font, Sign_2, textColor, 4, 84);
+
 
         // 刷新渲染器
         SDL_RenderPresent(renderer);
@@ -517,11 +520,11 @@ void control_thread()
         int deltaX = currentPos.x - centerPos.x;
         int deltaY = currentPos.y - centerPos.y;
 
-        angleCurrent[0] = std::fmod(angleCurrent[0] + deltaX * 0.4 /Camera_1.F, 360.0);
+        angleCurrent[0] = std::fmod(angleCurrent[0] + deltaX * 0.3 /Camera_1.F, 360.0);
         if (angleCurrent[0] < 0) {
             angleCurrent[0] += 360.0;
         }
-        angleCurrent[1] = std::clamp(angleCurrent[1] - deltaY * 0.4 /Camera_1.F, -90.0, 90.0);
+        angleCurrent[1] = std::clamp(angleCurrent[1] - deltaY * 0.3 /Camera_1.F, -90.0, 90.0);
         //标准化数据
 
 
@@ -589,7 +592,7 @@ void control_thread()
         Camera_1.Move_ForwardBack(Control[3]);
         Camera_1.Move_LeftRight(Control[4]);
         Camera_1.Move_UpDown(Control[5]);
-        Camera_1.Set_Direction(Control[1], Control[2], Control[0]);
+        Camera_1.Set_AngleDirection(Control[1], Control[2], Control[0]);
 
 
 

@@ -1,6 +1,6 @@
 ﻿#include "Moon.h"
 
-
+//初始DepthBuffer
 void DepthBuffer::SetBuffer(int width, int height) {
 	if (width <= 0 || height <= 0) throw std::runtime_error("Unexpected Buffer size!");
 
@@ -14,14 +14,16 @@ void DepthBuffer::SetBuffer(int width, int height) {
 
 }
 
+
 void DepthBuffer::CleanBuffer() {
 	long total = Buffer_size[0] * Buffer_size[1];
-	Depth.assign(total, 1.0);  //初始DepthBuffer
+	Depth.assign(total, 1.0);
 
 };
 
 bool DepthBuffer::CompareDepth_Smaller(const int x, const int y, double depth_in) {
 	if (x < 0 || x >= Buffer_size[0] || y < 0 || y >= Buffer_size[1]) {
+		//return true;
 		throw std::runtime_error("DepthBuffer Unexpected comparision : out of buffer!");
 	}
 	if (Depth[y * Buffer_size[0] + x] > depth_in) {
@@ -39,12 +41,12 @@ double DepthBuffer::GetDepth(const int x, const int y) {
 
 };
 
-void DepthBuffer::PutDepth(const int x, const int y, double depthBuffersList) {
+void DepthBuffer::PutDepth(const int x, const int y, double MapsList) {
 	if (x < 0 || x >= Buffer_size[0] || y < 0 || y >= Buffer_size[1]) {
 		return;
 	}
 	long total = y * Buffer_size[0] + x;
-	Depth[total] = depthBuffersList;
+	Depth[total] = MapsList;
 
 }
 
@@ -53,7 +55,7 @@ void DepthBuffer::PutDepth(const int x, const int y, double depthBuffersList) {
 
 //collection
 
-
+//初始化
 void BufferCollection::SetBuffer(int width, int height) {
 	if (width <= 0 || height <= 0) throw std::runtime_error("Unexpected Buffer size!");
 
@@ -61,100 +63,105 @@ void BufferCollection::SetBuffer(int width, int height) {
 	Buffer_size[1] = height;
 	const size_t size = width * height;
 
-	TextureColor.clear();
-	Depth.clear();
-	Cam3DVertex.clear();
-	NorVec.clear();
-	ptrMaterial.clear();
-	Frame.clear();
-
-
-	TextureColor.resize(size, RGBa());
-	Depth.resize(size, 1.0);
-	Cam3DVertex.resize(size, Vec3());
-	NorVec.resize(size, Vec3());
-	ptrMaterial.resize(size, nullptr);
-	Frame.resize(size, RGBa());
-
+	All_in.clear();
+	All_in.resize(size, PixelData());
 }
 
 void BufferCollection::CleanBuffer() {
 	long total = Buffer_size[0] * Buffer_size[1];
-	TextureColor.assign(total, RGBa());
-	Depth.assign(total, 1.0);  //初始DepthBuffer
-	Cam3DVertex.assign(total, Vec3());
-	NorVec.assign(total, Vec3());
-	ptrMaterial.assign(total, nullptr);
-	Frame.assign(total, RGBa());
+
+	All_in.assign(total, PixelData());
+
 };
 
 
-
-void BufferCollection::PutPixelData(const int x, const int y, double depthBuffersList, RGBa c, Vec3& Cam3Dvertex, Vec3& NorVec_in, MoonMaterial* ptrmtl) {
+// 放入所有数据
+void BufferCollection::PutPixelAll(const int x, const int y, double depth, RGBa c, Vec3& Cam3Dvertex, Vec3& NorVec_in, Material_M* ptrmtl) {
 	if (x < 0 || x >= Buffer_size[0] || y < 0 || y >= Buffer_size[1] ) {
 		return;
 	}
 	else {
 		long total = y * Buffer_size[0] + x;
-		TextureColor[total] = c;
-		Depth[total] = depthBuffersList;
-		Cam3DVertex[total] = Cam3Dvertex;
-		NorVec[total] = NorVec_in;
-		ptrMaterial[total] = ptrmtl;
+
+		All_in[total] = {
+			c,
+			depth,
+			Cam3Dvertex,
+			NorVec_in,
+			ptrmtl,
+			RGBa()
+		};
 	}
 }
 
-void BufferCollection::AddFinalColor(const int x, const int y, RGBa Color) {
+void BufferCollection::PutPixelAll(const int x, const int y, const PixelData& P) {
+	if (x < 0 || x >= Buffer_size[0] || y < 0 || y >= Buffer_size[1]) {
+		return;
+	}
+	else {
+		long total = y * Buffer_size[0] + x;
+
+		All_in[total] = P;
+	}
+};
+
+PixelData BufferCollection::GetPixelAll(const int x, const int y)
+{
+	if (x < 0 || x > Buffer_size[0] - 1 || y < 0 || y > Buffer_size[1] - 1) {
+		return PixelData();
+	}
+	long total = y * Buffer_size[0] + x;
+	return All_in[total];
+
+};
+
+
+
+void BufferCollection::AddFrameColor(const int x, const int y, RGBa Color) {
 	if (x < 0 || x >= Buffer_size[0] || y < 0 || y >= Buffer_size[1]) {
 		return;
 	}
 	long total = y * Buffer_size[0] + x;
-
-	Frame[total] = Frame[total] + Color;
+	All_in[total].FrameColor += Color;
 
 
 };
 
-void BufferCollection::PutFinalColor(const int x, const int y, RGBa Color) {
+void BufferCollection::PutFrameColor(const int x, const int y, RGBa Color) {
 	if (x < 0 || x >= Buffer_size[0] || y < 0 || y >= Buffer_size[1]) {
 		return;
 	}
 	long total = y * Buffer_size[0] + x;
-
-	Frame[total] = Color;
-
+	All_in[total].FrameColor = Color;
 
 }
 
 
 
-RGBa BufferCollection::GetPixelTextureColor(const int x, const int y) {
+RGBa BufferCollection::GetTextureColor(const int x, const int y) {
 	if (x < 0 || x > Buffer_size[0] - 1 || y < 0 || y > Buffer_size[1] - 1) {
 		return RGBa();
 	}
 	long total = y * Buffer_size[0] + x;
-	return TextureColor[total];
+	return All_in[total].TextureColor;
 
 };
 
-RGBa BufferCollection::GetFramePixelColor(const int x, const int y) {
+RGBa BufferCollection::GetFrameColor(const int x, const int y) {
 	if (x < 0 || x > Buffer_size[0] - 1 || y < 0 || y > Buffer_size[1] - 1) {
 		return RGBa();
 	}
 	long total = y * Buffer_size[0] + x;
-	return RGBa(
-		std::clamp(Frame[total].R, 0.0f, 1.0f),
-		std::clamp(Frame[total].G, 0.0f, 1.0f),
-		std::clamp(Frame[total].B, 0.0f, 1.0f));
+	return All_in[total].FrameColor;
 
 };
 
-MoonMaterial* BufferCollection::GetPtrMtl(const int x, const int y) {
+Material_M* BufferCollection::GetPtrMtl(const int x, const int y) {
 	if (x < 0 || x > Buffer_size[0] - 1 || y < 0 || y > Buffer_size[1] - 1) {
 		return nullptr;
 	}
 	long total = y * Buffer_size[0] + x;
-	return ptrMaterial[total];
+	return All_in[total].ptrMaterial;
 
 }
 
@@ -163,7 +170,7 @@ Vec3 BufferCollection::GetCam3Dvertex(const int x, const int y) {
 		return Vec3();
 	}
 	long total = y * Buffer_size[0] + x;
-	return Cam3DVertex[total];
+	return All_in[total].Cam3DVertex;
 
 }
 
@@ -172,28 +179,30 @@ Vec3 BufferCollection::GetNorVec(const int x, const int y) {
 		return Vec3();
 	}
 	long total = y * Buffer_size[0] + x;
-	return NorVec[total];
+	return All_in[total].NorVec;
 
 
 }
+
+
 
 
 bool BufferCollection::CompareDepth_Smaller(const int x, const int y, double depth_in) {
 	if (x < 0 || x >= Buffer_size[0] || y < 0 || y >= Buffer_size[1]) {
 		throw std::runtime_error("DepthBuffer Unexpected comparision : out of buffer!");
 	}
-	if (Depth[y * Buffer_size[0] + x] > depth_in) {
+
+	if (All_in[y * Buffer_size[0] + x].Depth > depth_in) {
 		return true;
 	}
 	return false;
-	
 }
 
 double BufferCollection::GetDepth(const int x, const int y) {
 	if (x < 0 || x >= Buffer_size[0] || y < 0 || y >= Buffer_size[1]) {
 		return 1.0;
 	}
-	return Depth[y * Buffer_size[0] + x];
+	return All_in[y * Buffer_size[0] + x].Depth;
 
 
 };
@@ -210,14 +219,8 @@ void BufferCollection::merge(const BufferCollection& Buffer_chunk) {
 
 	// 合并缓冲区
 	for (long e = 0; e < size; ++e) {
-		if (Buffer_chunk.Depth[e] < Depth[e]) {
-
-			TextureColor[e] = Buffer_chunk.TextureColor[e];
-			Depth[e] = Buffer_chunk.Depth[e];
-			Cam3DVertex[e] = Buffer_chunk.Cam3DVertex[e];
-			NorVec[e] = Buffer_chunk.NorVec[e];
-			ptrMaterial[e] = Buffer_chunk.ptrMaterial[e];
-			Frame[e] = Buffer_chunk.Frame[e];
+		if (Buffer_chunk.All_in[e].Depth < All_in[e].Depth) {
+			All_in[e] = Buffer_chunk.All_in[e];
 
 		}
 	}

@@ -10,7 +10,7 @@ inline Vec3 BaseVertexShader::ToCameraSpace(const Vec3& Vertex_WorldSpace) {
 
 
 
-//计算3D线在近平面的交点坐标
+//计算3D_line在近平面的交点坐标
 Vertex2D BaseVertexShader::Clip(const Vertex2D& origin_1, const Vertex2D& origin_2) {
      double alpha = (Context.Receive_camera->NearPlane - origin_1.v3D.x) / (origin_2.v3D.x - origin_1.v3D.x);
 
@@ -31,7 +31,7 @@ Vertex2D BaseVertexShader::Clip(const Vertex2D& origin_1, const Vertex2D& origin
 
 
 
- //camera space下
+// camera space下
 // 计算面的法向量
 inline void BaseVertexShader::Get_FaceNorVector(VertexBufferObject& list) {
     Vec3 normal_vectors, veca, vecb;
@@ -67,6 +67,7 @@ inline Vertex2D BaseVertexShader::CameraSpace_To_ScreenSpace(const Vec3& vertex_
 
 }
 
+
 inline void BaseVertexShader::Perspective(unsigned begin, unsigned end) {
     double b = (Context.Receive_camera->F * (Context.screen_in[0] >> 1)) / (tan(Context.Receive_camera->FOV) * Context.Receive_camera->NearPlane);
     for (; begin < end; ++begin) {
@@ -74,10 +75,10 @@ inline void BaseVertexShader::Perspective(unsigned begin, unsigned end) {
         Vec3 CameraSpace_P = ToCameraSpace(Context.Original_Mesh->vertices[begin]);//转换到camera space
 
         if (CameraSpace_P.x >= Context.Receive_camera->NearPlane) {
+
             (*Context.Vertices_info)[begin] = true;
             Vec3 VecPlane = CameraSpace_P * (Context.Receive_camera->NearPlane / CameraSpace_P.x);
 
-            
             Transformed_P = { (Context.screen_in[0] >> 1) - (b * VecPlane.y),
                                         (Context.screen_in[1] >> 1) - (b * VecPlane.z),
                                         CameraSpace_P,
@@ -93,16 +94,25 @@ inline void BaseVertexShader::Perspective(unsigned begin, unsigned end) {
 }
 
 
+
 //只变换一个vertex的
 Vertex2D BaseVertexShader::PerspectiveOneVertex(const Camera& Receive_camera, int screen_in[2], const Vec3& target) {
     double b = (Receive_camera.F * (screen_in[0] >> 1)) / (tan(Receive_camera.FOV) * Receive_camera.NearPlane);
 
     Vertex2D Transformed_P;
+    //转换到camera space
     Vec3 vec_P = target - Receive_camera.Pos;
     Vec3 CameraSpace_P = Vec3(dot(vec_P, Receive_camera.Forward_vec),
                                                     dot(vec_P, Receive_camera.Y_vec),
-                                                    dot(vec_P, Receive_camera.Z_vec));//转换到camera space
+                                                    dot(vec_P, Receive_camera.Z_vec));
 
+    Vec3 VecPlane = CameraSpace_P * (Receive_camera.NearPlane / CameraSpace_P.x);
+
+    Transformed_P = { (screen_in[0] >> 1) - (b * VecPlane.y),
+                                (screen_in[1] >> 1) - (b * VecPlane.z),
+                                CameraSpace_P,
+                                Vec2(0, 0) };
+    /*
     if (CameraSpace_P.x >= Receive_camera.NearPlane) {
         Vec3 VecPlane = CameraSpace_P * (Receive_camera.NearPlane / CameraSpace_P.x);
 
@@ -116,6 +126,7 @@ Vertex2D BaseVertexShader::PerspectiveOneVertex(const Camera& Receive_camera, in
         //不可见情况
         Transformed_P.v3D = CameraSpace_P;
     }
+    */
     return Transformed_P;
 
 }
@@ -136,7 +147,7 @@ inline bool BaseVertexShader::TestScreenOutside(Vertex2D& v0, Vertex2D& v1, Vert
 
 
 //透视转换  + face组装                                            摄像机                           分辨率                     model                               输出
-void BaseVertexShader::Transform(const Camera& Receive_camera, const int screen_in[2], const MoonModel &MDL, std::vector <Triangle>& List) {
+void BaseVertexShader::Transform(const Camera& Receive_camera, const int screen_in[2], const Model_M &MDL, std::vector <Triangle>& List, bool inverse_culling) {
 
     unsigned int vertexNUM = (unsigned int)MDL.WorldSpaceMesh.vertices.size();
     unsigned int faceNUM = (unsigned int)MDL.WorldSpaceMesh.facesIndex.size();
@@ -199,9 +210,11 @@ void BaseVertexShader::Transform(const Camera& Receive_camera, const int screen_
         unsigned int idx2 = ptrFace->index[2];
 
         int num = (!Vertices_info[idx0]) + (!Vertices_info[idx1]) + (!Vertices_info[idx2]);
+        if ( num == 3) continue;
 
-        //正面检查 || 近平面后不可见vertex检查
-        if (dot(VBO.vertex2d[idx0].v3D, VBO.FaceNorVec[i]) >= 0 || num == 3) continue;
+        //正面检查 && 近平面后不可见vertex检查
+        
+        if (MDL.ptrMaterial->Culling and (dot(VBO.vertex2d[idx0].v3D, VBO.FaceNorVec[i]) >= 0) ^ inverse_culling ) continue;
 
         //临时分配uv 每个面的vertex会重新进行一次uv分配
         VBO.vertex2d[idx0].UVCoords = MDL.WorldSpaceMesh.UVCoords[FaceTexIndex->index[0]];

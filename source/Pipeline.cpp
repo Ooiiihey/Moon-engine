@@ -1,6 +1,6 @@
 ﻿#include "Moon.h"
 
-BS::thread_pool Draw_pool(64);
+
 
 
 std::vector <splitValue> s_list = {
@@ -148,80 +148,48 @@ std::vector<splitValue> s_list_64 = {
     {0.875,    1.0,    0.875,  1.0}
 };
 
-  //temporary Rasterize
+BS::thread_pool Render_pool(64);
+
+//Rasterize
 void Rasterize_thread(const Camera& Receive_camera, BufferCollection& FrameBuffer, splitValue s, const std::vector <Triangle>& List, LightsCollection& lightsList) {
     BaseGraphics GraphicalFunc;
     GraphicalFunc.RefreshGraphicContext(Receive_camera, FrameBuffer, s);
     unsigned int size = (unsigned int)List.size();
 
     for (unsigned int k = 0; k < size; ++k) {
-        GraphicalFunc.DrawTriangleTexture(List[k].v0, List[k].v1, List[k].v2, List[k].ptrTexture, List[k].ptrMtl);
+        GraphicalFunc.OptimizedDrawTriangle(List[k].v0, List[k].v1, List[k].v2, List[k].ptrTexture, List[k].ptrMtl);
 
     }
 
-
-    
-    for (AmbientLight& each : lightsList.AmbientLights) {
-       GraphicalFunc.DeferredRender_AmbientLight(each);
-    }
-    for (ParallelLight& each : lightsList.ParallelLights) {
-       GraphicalFunc.DeferredRender_ParallelLight(each);
-    }
-    for (PointLight& each : lightsList.PointLights) {
-        GraphicalFunc.DeferredRender_PointLight(each);
-    }
-
-}
-
-void Rasterize_thread_withoutLight(const Camera& Receive_camera, BufferCollection& FrameBuffer, splitValue s, const std::vector <Triangle>& List) {
-    BaseGraphics GraphicalFunc;
-    GraphicalFunc.RefreshGraphicContext(Receive_camera, FrameBuffer, s);
-    unsigned int size = (unsigned int)List.size();
-
-    for (unsigned int k = 0; k < size; ++k) {
-        GraphicalFunc.DrawTriangleTexture_direct(List[k].v0, List[k].v1, List[k].v2, List[k].ptrTexture, List[k].ptrMtl);
-
-    }
-
+    GraphicalFunc.DeferredRender_AllLight(lightsList);
 }
 
 
-unsigned int Render(const Camera Receive_camera, BufferCollection &FrameBuffer, const int screen_in[2], const std::vector <MoonModel>& Models_list, LightsCollection & lightsList) {
+
+unsigned int Render(const Camera Receive_camera, BufferCollection &FrameBuffer, const int screen_in[2], const std::vector <Model_M>& Models_list, LightsCollection & lightsList) {
     BaseVertexShader Transform_func;
     std::vector <Triangle> List;
 
-    for (const MoonModel &each_Model : Models_list) {
-        Transform_func.Transform(Receive_camera, screen_in, each_Model, List);
+    for (const Model_M &each_Model : Models_list) {
+        Transform_func.Transform(Receive_camera, screen_in, each_Model, List, false);
     }
+
+    std::sort(List.begin(), List.end(), [](const Triangle& a, const Triangle& b) {
+        // 分别计算两个三角形的三顶点深度之和
+        const double sum_a = a.v0.v3D.x + a.v1.v3D.x + a.v2.v3D.x;
+        const double sum_b = b.v0.v3D.x + b.v1.v3D.x + b.v2.v3D.x;
+
+        return sum_a < sum_b;
+     });
     
     for (splitValue each_chunk : s_list_64) {
-        Draw_pool.submit_task([&, chunk = std::move(each_chunk)]() {
+        Render_pool.submit_task([&, chunk = std::move(each_chunk)]() {
 
             Rasterize_thread(Receive_camera, FrameBuffer, chunk, List, lightsList);
             });
     }
-    Draw_pool.wait();
+    Render_pool.wait();
 
     return static_cast<unsigned int> (List.size());
     
-}
-
-unsigned int Render(const Camera Receive_camera, BufferCollection& FrameBuffer, const int screen_in[2], const std::vector <MoonModel>& Models_list) {
-    BaseVertexShader Transform_func;
-    std::vector <Triangle> List;
-
-    for (const MoonModel& each_Model : Models_list) {
-        Transform_func.Transform(Receive_camera, screen_in, each_Model, List);
-    }
-
-    for (splitValue each_chunk : s_list_24) {
-        Draw_pool.submit_task([&, chunk = std::move(each_chunk)]() {
-
-            Rasterize_thread_withoutLight(Receive_camera, FrameBuffer, chunk, List);
-            });
-    }
-    Draw_pool.wait();
-
-    return static_cast<unsigned int> (List.size());
-
 }

@@ -8,7 +8,7 @@ public:
     double NearPlane = 0.04;
     double FarPlane = 4000;
     double FOV = 45.0 * PI / 180.0;
-    double F = 1;    //f焦距
+    double F = 1;    //f等价焦距
     Vec3 Pos = { 0, 0, 0 };
 
     // 初始化方向向量为默认坐标系
@@ -16,7 +16,7 @@ public:
         Y = { 0, 1, 0 },
         Z = { 0, 0, 1 },
         move = { 0, -1, 0 };  //移动辅助点(固定值)
-    //以camera为参照的初始相机方向坐标（不可更改！）
+    //以camera为参照的初始axis（不可更改！）
 
     Vec3 Forward_vec = { 1, 0, 0 },
         Y_vec = { 0, 1, 0 },
@@ -29,7 +29,11 @@ public:
     void Move_LeftRight(const double step);
     void Move_UpDown(const double step);
 
-    void Set_Direction(const double a, const double b, const double c);
-    void Set_Direction(Vec3 direction);
+    //set direction Camera according to a vector
+    void Set_VectorDirection(Vec3 new_forward);
+
+    //set direction Camera according to an angle
+    void Set_AngleDirection(const double a, const double b, const double c);
+    void Set_AngleDirection(Vec3 Direction);
 
 };

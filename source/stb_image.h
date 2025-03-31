@@ -4631,7 +4631,7 @@ typedef struct
 {
    stbi__context *s;
    stbi_uc *idata, *expanded, *out;
-   int depthBuffersList;
+   int MapsList;
 } stbi__png;
 
 
@@ -4693,9 +4693,9 @@ static void stbi__create_png_alpha_expand8(stbi_uc *dest, stbi_uc *src, stbi__ui
 }
 
 // create the png data from post-deflated data
-static int stbi__create_png_image_raw(stbi__png *a, stbi_uc *raw, stbi__uint32 raw_len, int out_n, stbi__uint32 x, stbi__uint32 y, int depthBuffersList, int color)
+static int stbi__create_png_image_raw(stbi__png *a, stbi_uc *raw, stbi__uint32 raw_len, int out_n, stbi__uint32 x, stbi__uint32 y, int MapsList, int color)
 {
-   int bytes = (depthBuffersList == 16 ? 2 : 1);
+   int bytes = (MapsList == 16 ? 2 : 1);
    stbi__context *s = a->s;
    stbi__uint32 i,j,stride = x*out_n*bytes;
    stbi__uint32 img_len, img_width_bytes;
@@ -4714,8 +4714,8 @@ static int stbi__create_png_image_raw(stbi__png *a, stbi_uc *raw, stbi__uint32 r
 
    // note: error exits here don't need to clean up a->out individually,
    // stbi__do_png always does on error.
-   if (!stbi__mad3sizes_valid(img_n, x, depthBuffersList, 7)) return stbi__err("too large", "Corrupt PNG");
-   img_width_bytes = (((img_n * x * depthBuffersList) + 7) >> 3);
+   if (!stbi__mad3sizes_valid(img_n, x, MapsList, 7)) return stbi__err("too large", "Corrupt PNG");
+   img_width_bytes = (((img_n * x * MapsList) + 7) >> 3);
    if (!stbi__mad2sizes_valid(img_width_bytes, y, img_width_bytes)) return stbi__err("too large", "Corrupt PNG");
    img_len = (img_width_bytes + 1) * y;
 
@@ -4729,7 +4729,7 @@ static int stbi__create_png_image_raw(stbi__png *a, stbi_uc *raw, stbi__uint32 r
    if (!filter_buf) return stbi__err("outofmem", "Out of memory");
 
    // Filtering for low-bit-depth images
-   if (depthBuffersList < 8) {
+   if (MapsList < 8) {
       filter_bytes = 1;
       width = img_width_bytes;
    }
@@ -4787,28 +4787,28 @@ static int stbi__create_png_image_raw(stbi__png *a, stbi_uc *raw, stbi__uint32 r
       raw += nk;
 
       // expand decoded bits in cur to dest, also adding an extra alpha channel if desired
-      if (depthBuffersList < 8) {
-         stbi_uc scale = (color == 0) ? stbi__depth_scale_table[depthBuffersList] : 1; // scale grayscale values to 0..255 range
+      if (MapsList < 8) {
+         stbi_uc scale = (color == 0) ? stbi__depth_scale_table[MapsList] : 1; // scale grayscale values to 0..255 range
          stbi_uc *in = cur;
          stbi_uc *out = dest;
          stbi_uc inb = 0;
          stbi__uint32 nsmp = x*img_n;
 
          // expand bits to bytes first
-         if (depthBuffersList == 4) {
+         if (MapsList == 4) {
             for (i=0; i < nsmp; ++i) {
                if ((i & 1) == 0) inb = *in++;
                *out++ = scale * (inb >> 4);
                inb <<= 4;
             }
-         } else if (depthBuffersList == 2) {
+         } else if (MapsList == 2) {
             for (i=0; i < nsmp; ++i) {
                if ((i & 3) == 0) inb = *in++;
                *out++ = scale * (inb >> 6);
                inb <<= 2;
             }
          } else {
-            STBI_ASSERT(depthBuffersList == 1);
+            STBI_ASSERT(MapsList == 1);
             for (i=0; i < nsmp; ++i) {
                if ((i & 7) == 0) inb = *in++;
                *out++ = scale * (inb >> 7);
@@ -4819,12 +4819,12 @@ static int stbi__create_png_image_raw(stbi__png *a, stbi_uc *raw, stbi__uint32 r
          // insert alpha=255 values if desired
          if (img_n != out_n)
             stbi__create_png_alpha_expand8(dest, dest, x, img_n);
-      } else if (depthBuffersList == 8) {
+      } else if (MapsList == 8) {
          if (img_n == out_n)
             memcpy(dest, cur, x*img_n);
          else
             stbi__create_png_alpha_expand8(dest, cur, x, img_n);
-      } else if (depthBuffersList == 16) {
+      } else if (MapsList == 16) {
          // convert the image data from big-endian to platform-native
          stbi__uint16 *dest16 = (stbi__uint16*)dest;
          stbi__uint32 nsmp = x*img_n;
@@ -4858,14 +4858,14 @@ static int stbi__create_png_image_raw(stbi__png *a, stbi_uc *raw, stbi__uint32 r
    return 1;
 }
 
-static int stbi__create_png_image(stbi__png *a, stbi_uc *image_data, stbi__uint32 image_data_len, int out_n, int depthBuffersList, int color, int interlaced)
+static int stbi__create_png_image(stbi__png *a, stbi_uc *image_data, stbi__uint32 image_data_len, int out_n, int MapsList, int color, int interlaced)
 {
-   int bytes = (depthBuffersList == 16 ? 2 : 1);
+   int bytes = (MapsList == 16 ? 2 : 1);
    int out_bytes = out_n * bytes;
    stbi_uc *final;
    int p;
    if (!interlaced)
-      return stbi__create_png_image_raw(a, image_data, image_data_len, out_n, a->s->img_x, a->s->img_y, depthBuffersList, color);
+      return stbi__create_png_image_raw(a, image_data, image_data_len, out_n, a->s->img_x, a->s->img_y, MapsList, color);
 
    // de-interlacing
    final = (stbi_uc *) stbi__malloc_mad3(a->s->img_x, a->s->img_y, out_bytes, 0);
@@ -4880,8 +4880,8 @@ static int stbi__create_png_image(stbi__png *a, stbi_uc *image_data, stbi__uint3
       x = (a->s->img_x - xorig[p] + xspc[p]-1) / xspc[p];
       y = (a->s->img_y - yorig[p] + yspc[p]-1) / yspc[p];
       if (x && y) {
-         stbi__uint32 img_len = ((((a->s->img_n * x * depthBuffersList) + 7) >> 3) + 1) * y;
-         if (!stbi__create_png_image_raw(a, image_data, image_data_len, out_n, x, y, depthBuffersList, color)) {
+         stbi__uint32 img_len = ((((a->s->img_n * x * MapsList) + 7) >> 3) + 1) * y;
+         if (!stbi__create_png_image_raw(a, image_data, image_data_len, out_n, x, y, MapsList, color)) {
             STBI_FREE(final);
             return 0;
          }
@@ -5108,9 +5108,9 @@ static int stbi__parse_png_file(stbi__png *z, int scan, int req_comp)
             s->img_y = stbi__get32be(s);
             if (s->img_y > STBI_MAX_DIMENSIONS) return stbi__err("too large","Very large image (corrupt?)");
             if (s->img_x > STBI_MAX_DIMENSIONS) return stbi__err("too large","Very large image (corrupt?)");
-            z->depthBuffersList = stbi__get8(s);  if (z->depthBuffersList != 1 && z->depthBuffersList != 2 && z->depthBuffersList != 4 && z->depthBuffersList != 8 && z->depthBuffersList != 16)  return stbi__err("1/2/4/8/16-bit only","PNG not supported: 1/2/4/8/16-bit only");
+            z->MapsList = stbi__get8(s);  if (z->MapsList != 1 && z->MapsList != 2 && z->MapsList != 4 && z->MapsList != 8 && z->MapsList != 16)  return stbi__err("1/2/4/8/16-bit only","PNG not supported: 1/2/4/8/16-bit only");
             color = stbi__get8(s);  if (color > 6)         return stbi__err("bad ctype","Corrupt PNG");
-            if (color == 3 && z->depthBuffersList == 16)                  return stbi__err("bad ctype","Corrupt PNG");
+            if (color == 3 && z->MapsList == 16)                  return stbi__err("bad ctype","Corrupt PNG");
             if (color == 3) pal_img_n = 3; else if (color & 1) return stbi__err("bad ctype","Corrupt PNG");
             comp  = stbi__get8(s);  if (comp) return stbi__err("bad comp method","Corrupt PNG");
             filter= stbi__get8(s);  if (filter) return stbi__err("bad filter method","Corrupt PNG");
@@ -5159,12 +5159,12 @@ static int stbi__parse_png_file(stbi__png *z, int scan, int req_comp)
                has_trans = 1;
                // non-paletted with tRNS = constant alpha. if header-scanning, we can stop now.
                if (scan == STBI__SCAN_header) { ++s->img_n; return 1; }
-               if (z->depthBuffersList == 16) {
+               if (z->MapsList == 16) {
                   for (k = 0; k < s->img_n && k < 3; ++k) // extra loop test to suppress false GCC warning
                      tc16[k] = (stbi__uint16)stbi__get16be(s); // copy the values as-is
                } else {
                   for (k = 0; k < s->img_n && k < 3; ++k)
-                     tc[k] = (stbi_uc)(stbi__get16be(s) & 255) * stbi__depth_scale_table[z->depthBuffersList]; // non 8-bit images will be larger
+                     tc[k] = (stbi_uc)(stbi__get16be(s) & 255) * stbi__depth_scale_table[z->MapsList]; // non 8-bit images will be larger
                }
             }
             break;
@@ -5202,7 +5202,7 @@ static int stbi__parse_png_file(stbi__png *z, int scan, int req_comp)
             if (scan != STBI__SCAN_load) return 1;
             if (z->idata == NULL) return stbi__err("no IDAT","Corrupt PNG");
             // initial guess for decoded data size to avoid unnecessary reallocs
-            bpl = (s->img_x * z->depthBuffersList + 7) / 8; // bytes per line, per component
+            bpl = (s->img_x * z->MapsList + 7) / 8; // bytes per line, per component
             raw_len = bpl * s->img_y * s->img_n /* pixels */ + s->img_y /* filter mode per row */;
             z->expanded = (stbi_uc *) stbi_zlib_decode_malloc_guesssize_headerflag((char *) z->idata, ioff, raw_len, (int *) &raw_len, !is_iphone);
             if (z->expanded == NULL) return 0; // zlib should set error
@@ -5211,9 +5211,9 @@ static int stbi__parse_png_file(stbi__png *z, int scan, int req_comp)
                s->img_out_n = s->img_n+1;
             else
                s->img_out_n = s->img_n;
-            if (!stbi__create_png_image(z, z->expanded, raw_len, s->img_out_n, z->depthBuffersList, color, interlace)) return 0;
+            if (!stbi__create_png_image(z, z->expanded, raw_len, s->img_out_n, z->MapsList, color, interlace)) return 0;
             if (has_trans) {
-               if (z->depthBuffersList == 16) {
+               if (z->MapsList == 16) {
                   if (!stbi__compute_transparency16(z, tc16, s->img_out_n)) return 0;
                } else {
                   if (!stbi__compute_transparency(z, tc, s->img_out_n)) return 0;
@@ -5265,9 +5265,9 @@ static void *stbi__do_png(stbi__png *p, int *x, int *y, int *n, int req_comp, st
    void *result=NULL;
    if (req_comp < 0 || req_comp > 4) return stbi__errpuc("bad req_comp", "Internal error");
    if (stbi__parse_png_file(p, STBI__SCAN_load, req_comp)) {
-      if (p->depthBuffersList <= 8)
+      if (p->MapsList <= 8)
          ri->bits_per_channel = 8;
-      else if (p->depthBuffersList == 16)
+      else if (p->MapsList == 16)
          ri->bits_per_channel = 16;
       else
          return stbi__errpuc("bad bits_per_channel", "PNG not supported: unsupported color depth");
@@ -5332,7 +5332,7 @@ static int stbi__png_is16(stbi__context *s)
    p.s = s;
    if (!stbi__png_info_raw(&p, NULL, NULL, NULL))
 	   return 0;
-   if (p.depthBuffersList != 16) {
+   if (p.MapsList != 16) {
       stbi__rewind(p.s);
       return 0;
    }
@@ -7358,7 +7358,7 @@ static int stbi__bmp_info(stbi__context *s, int *x, int *y, int *comp)
 #ifndef STBI_NO_PSD
 static int stbi__psd_info(stbi__context *s, int *x, int *y, int *comp)
 {
-   int channelCount, dummy, depthBuffersList;
+   int channelCount, dummy, MapsList;
    if (!x) x = &dummy;
    if (!y) y = &dummy;
    if (!comp) comp = &dummy;
@@ -7378,8 +7378,8 @@ static int stbi__psd_info(stbi__context *s, int *x, int *y, int *comp)
    }
    *y = stbi__get32be(s);
    *x = stbi__get32be(s);
-   depthBuffersList = stbi__get16be(s);
-   if (depthBuffersList != 8 && depthBuffersList != 16) {
+   MapsList = stbi__get16be(s);
+   if (MapsList != 8 && MapsList != 16) {
        stbi__rewind( s );
        return 0;
    }
@@ -7393,7 +7393,7 @@ static int stbi__psd_info(stbi__context *s, int *x, int *y, int *comp)
 
 static int stbi__psd_is16(stbi__context *s)
 {
-   int channelCount, depthBuffersList;
+   int channelCount, MapsList;
    if (stbi__get32be(s) != 0x38425053) {
        stbi__rewind( s );
        return 0;
@@ -7410,8 +7410,8 @@ static int stbi__psd_is16(stbi__context *s)
    }
    STBI_NOTUSED(stbi__get32be(s));
    STBI_NOTUSED(stbi__get32be(s));
-   depthBuffersList = stbi__get16be(s);
-   if (depthBuffersList != 16) {
+   MapsList = stbi__get16be(s);
+   if (MapsList != 16) {
        stbi__rewind( s );
        return 0;
    }

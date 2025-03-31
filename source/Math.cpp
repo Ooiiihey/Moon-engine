@@ -14,19 +14,20 @@ double KQsqrt(double number) {
     y = y * (threehalfs - (x2 * y * y));   // 1st iteration
     y = y * (threehalfs - (x2 * y * y));   // 2nd iteration
 
-    return 1 / y;
+    return 1.0 / y;
 }
 
 
-double dot(const Vec3& vec1, const Vec3& vec2) {
+inline double dot(const Vec3& vec1, const Vec3& vec2) {
     return (vec1.x * vec2.x + vec1.y * vec2.y + vec1.z * vec2.z);
 };
 
+/*
 double dot(const Vec3& vec1, const double vec2[3]) {
     return (vec1.x * vec2[0] + vec1.y * vec2[1] + vec1.z * vec2[2]);
 };
-
-Vec3 cross(const Vec3& vec1, const Vec3& vec2) {
+*/
+inline Vec3 cross(const Vec3& vec1, const Vec3& vec2) {
     return Vec3 ( (vec2.y * vec1.z - vec2.z * vec1.y), (vec2.z * vec1.x - vec2.x * vec1.z), (vec2.x * vec1.y - vec2.y * vec1.x) );
 };
 
@@ -54,6 +55,8 @@ Vec3 rotate(const Vec3& p, const Vec3& k , const double angle) {
     return Vec3(p * cos(angle) + cross(k, p) * sin(angle) + k * dot(k, p) * (1 - cos(angle)));
 }
 
+
+
 Vec3 rotate_all(const Vec3 &j, Vec3 angle) {
 
     Vec3 X = { 1, 0, 0 };
@@ -68,3 +71,4 @@ Vec3 rotate_all(const Vec3 &j, Vec3 angle) {
     return tmpj;
 
 }
+

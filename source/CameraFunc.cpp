@@ -39,7 +39,7 @@ void Camera::Move_UpDown(const double step) {
 
 
 //											    		横向				纵向		    	倾斜					
-void Camera::Set_Direction(double yaw, double pitch, double roll) {
+void Camera::Set_AngleDirection(double yaw, double pitch, double roll) {
 
     Vec3 new_forward = rotate(Forward, Z, yaw);
     Vec3 new_left = rotate(Y, Z, yaw);
@@ -63,23 +63,35 @@ void Camera::Set_Direction(double yaw, double pitch, double roll) {
     Z_vec = new_up;
 }
 
+void Camera::Set_VectorDirection(Vec3 new_forward) {
+    new_forward.normalize();
+    if (new_forward == Forward_vec) return;
 
-void Camera::Set_Direction(Vec3 direction) {
+    // 计算旋转轴（输入方向向量与当前Forward向量的叉乘）
+    Vec3 rotation_axis = cross(Forward, new_forward).normalize();
+    double rotation_angle = acos(dot(Forward, new_forward));
 
-    Vec3 new_forward = rotate(Forward, Z, direction.x);
-    Vec3 new_left = rotate(Y, Z, direction.x);
+    Y_vec = rotate(Y, rotation_axis, rotation_angle);
+    Z_vec = rotate(Z, rotation_axis, rotation_angle);
+    Forward_vec = new_forward;
+}
 
-    move_vec.y = move.y * cos(-direction.x) + move.x * sin(-direction.x);
-    move_vec.x = move.x * cos(-direction.x) - move.y * sin(-direction.x);
+void Camera::Set_AngleDirection(Vec3 Direction) {
+
+    Vec3 new_forward = rotate(Forward, Z, Direction.x);
+    Vec3 new_left = rotate(Y, Z, Direction.x);
+
+    move_vec.y = move.y * cos(-Direction.x) + move.x * sin(-Direction.x);
+    move_vec.x = move.x * cos(-Direction.x) - move.y * sin(-Direction.x);
     move_vec.x = move_vec.x + Pos.x;
     move_vec.y = move_vec.y + Pos.y;
 
-    new_forward = rotate(new_forward, new_left, direction.y);
-    Vec3 new_up = rotate(Z, new_left, direction.y);
+    new_forward = rotate(new_forward, new_left, Direction.y);
+    Vec3 new_up = rotate(Z, new_left, Direction.y);
 
 
-    new_left = rotate(new_left, new_forward, -direction.z);
-    new_up = rotate(new_up, new_forward, -direction.z);
+    new_left = rotate(new_left, new_forward, -Direction.z);
+    new_up = rotate(new_up, new_forward, -Direction.z);
 
 
     //updata
