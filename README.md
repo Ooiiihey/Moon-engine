@@ -5,7 +5,7 @@ When you want to quit this program, press ESC to pause it!!!!
 
 v0.0.0--->0.5.0  I didn't release it beacuse of the Incompleteness of this engine.
 
-v0.5.2---added depthBuffer/zBuffer, now it is a basic engine.
+v0.5.2---added depthBuffer, now it is a basic engine.
 
 v0.5.3---fixed bug and support multiple cameras.
 
