@@ -74,6 +74,14 @@ void BufferCollection::CleanBuffer() {
 
 };
 
+void BufferCollection::CleanDepthBuffer() {
+	for (PixelData& each : All_in) {
+		each.Depth = 1.0;
+	}
+
+
+};
+
 
 // 放入所有数据
 void BufferCollection::PutPixelAll(const int x, const int y, double depth, RGBa c, Vec3& Cam3Dvertex, Vec3& NorVec_in, Material_M* ptrmtl) {

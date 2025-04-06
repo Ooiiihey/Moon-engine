@@ -87,6 +87,7 @@ Mesh Load::LoadMesh(const std::string& filename) {
         exit(12);
     }
 
+
     return std::move(mesh);
 }
 

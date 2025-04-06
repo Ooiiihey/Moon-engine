@@ -63,7 +63,7 @@ void Camera::Set_AngleDirection(double yaw, double pitch, double roll) {
     Z_vec = new_up;
 }
 
-void Camera::Set_VectorDirection(Vec3 new_forward) {
+void Camera::Set_VectorDirection(Vec3 new_forward, const double c) {
     new_forward.normalize();
     if (new_forward == Forward_vec) return;
 
@@ -74,7 +74,10 @@ void Camera::Set_VectorDirection(Vec3 new_forward) {
     Y_vec = rotate(Y, rotation_axis, rotation_angle);
     Z_vec = rotate(Z, rotation_axis, rotation_angle);
     Forward_vec = new_forward;
-}
+
+    Y_vec = rotate(Y_vec, Forward_vec, c);
+    Z_vec = rotate(Z_vec, Forward_vec, c);
+};
 
 void Camera::Set_AngleDirection(Vec3 Direction) {
 

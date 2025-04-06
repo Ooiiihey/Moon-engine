@@ -73,7 +73,7 @@ RGBa Texture_M::getPixel(double u, double v) {
 }
 
 
-
+/*
 void VertexBufferObject::put3DIndex(Vec3& in, unsigned int index){
 	vertex2d[index].v3D = in;
 }
@@ -81,4 +81,4 @@ void VertexBufferObject::put3DIndex(Vec3& in, unsigned int index){
 Vec3 VertexBufferObject::get3D(unsigned int index){
 	return vertex2d[index].v3D;
 }
-
+*/

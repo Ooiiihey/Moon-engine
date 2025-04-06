@@ -2,7 +2,6 @@
 
 #include <string>
 #include <windows.h>
-#include <shared_mutex>
 
 //moon-engine
 
@@ -21,6 +20,11 @@ int* ptrScreen = screen_3;
 
 //创建相机
 Camera Camera_1;
+
+//under development
+bool running = true;
+bool Pause_all = false;
+
 
 
 // 函数用于将鼠标移动到屏幕中央
@@ -180,7 +184,8 @@ void EasyRenderText(SDL_Renderer* renderer, TTF_Font* font, const char* text, SD
 
 
 
-//under development
+
+
 
 Load LoadFunc;
 
@@ -197,9 +202,16 @@ void Display_thread() {
     SDL_Texture* texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, ptrScreen[0], ptrScreen[1]);
     
      TTF_Font* font = TTF_OpenFont("resources/minecraft.ttf", 12);
+     TTF_Font* font_bigger = TTF_OpenFont("resources/minecraft.ttf", 24);
      SDL_Color textColor = { 208, 208, 208, 255 };
     if (font == nullptr) ExitProcess(10);
     
+
+    const char* loadingSign = "Loading...";
+    EasyRenderText(renderer, font_bigger, loadingSign, textColor, 4, 4);
+    SDL_RenderPresent(renderer);
+
+    Camera_1.Set_CameraPos(Vec3(4, 24, 2));
 
     //坐标轴模型
     Mesh Axis_mesh;
@@ -226,18 +238,22 @@ void Display_thread() {
 
 
     // Load OBJ model
-    Mesh LoadedMesh = LoadFunc.LoadMesh("resources/Model/niko.obj");
-    Mesh Scene = LoadFunc.LoadMesh("resources/Model/SceneMain.obj");
-    Mesh TestBall = LoadFunc.LoadMesh("resources/Model/testBall.obj");
-    //Mesh Moon = LoadFunc.LoadMesh("resources/Model/Moon 2K.obj");
+    //Mesh LoadedMesh = LoadFunc.LoadMesh("resources/Model/niko.obj");
     Mesh SKYbox_mesh = LoadFunc.LoadMesh("resources/Model/SkyBox.obj");
+    Mesh Scene = LoadFunc.LoadMesh("resources/Model/SceneMain.obj");
+    //Mesh TestBall = LoadFunc.LoadMesh("resources/Model/testBall.obj");
+    //Mesh Moon = LoadFunc.LoadMesh("resources/Model/Moon 2K.obj");
+    Mesh Oiiaio_cat_mesh = LoadFunc.LoadMesh("resources/Model/oiiaio.obj");
+
+    
 
 
     Texture_M defaultTex = LoadFunc.LoadTextureImage("resources/Texture/default_tex.png");
     //MoonTexture moon = LoadFunc.LoadTextureImage("resources/Texture/Diffuse_2K.png");
-    Texture_M nikoTex = LoadFunc.LoadTextureImage("resources/Texture/niko.png");
+    //Texture_M nikoTex = LoadFunc.LoadTextureImage("resources/Texture/niko.png");
     Texture_M cityTex = LoadFunc.LoadTextureImage("resources/Texture/city.png");
     Texture_M skyTex = LoadFunc.LoadTextureImage("resources/Texture/sky.png");
+    Texture_M Oiiaio_cat_Tex = LoadFunc.LoadTextureImage("resources/Texture/Muchkin2_BaseColor.png");
     
 
     Material_M mtl0, mtl1, mtlasix, mtlscene, mtlSKY, mtlNoCullingTest;
@@ -249,9 +265,9 @@ void Display_thread() {
     mtl0.specularExponent = 128;
 
 
-    mtl1.diffuseColor = { 1.0f, 1.0f, 1.0f };
+    mtl1.diffuseColor = { 0.7f, 0.7f, 0.7f };
     mtl1.specularColor = { 0.0f, 0.0f, 0.0f };
-    mtl1.ambientColor = { 0.3f, 0.3f, 0.3f };
+    //mtl1.ambientColor = { 0.3f, 0.3f, 0.3f };
     mtl1.specularExponent = 2;
 
     //render directly
@@ -269,49 +285,50 @@ void Display_thread() {
     mtlasix.specularExponent = 2;
     mtlasix.SmoothShader = false;
 
-    Model_M MAxis, Mniko, /*modelMoon, */scene, SKYbox, TESTBall;
+    Model_M MAxis, /*Mniko, modelMoon, */scene, SKYbox/*, TESTBall*/, Oiiaio_cat;
 
     MAxis.LinkMesh(Axis_mesh);
-    Mniko.LinkMesh(LoadedMesh);
-    //modelMoon.LinkMesh(Moon);
+    //Mniko.LinkMesh(LoadedMesh);
     SKYbox.LinkMesh(SKYbox_mesh);
     scene.LinkMesh(Scene);
-    TESTBall.LinkMesh(TestBall);
+    Oiiaio_cat.LinkMesh(Oiiaio_cat_mesh);
+
 
     MAxis.linkMaterial(mtlasix);
-    Mniko.linkMaterial(mtl0);
-    //modelMoon.linkMaterial(mtl1);
+    //Mniko.linkMaterial(mtl0);
     scene.linkMaterial(mtlscene);
     SKYbox.linkMaterial(mtlSKY);
-    TESTBall.linkMaterial(mtlNoCullingTest);
+    Oiiaio_cat.linkMaterial(mtl1);
 
-    Mniko.linkTexture(nikoTex);
-    //modelMoon.linkTexture(moon);
+
+    //Mniko.linkTexture(nikoTex);
     MAxis.linkTexture(defaultTex);
     scene.linkTexture(cityTex);
     SKYbox.linkTexture(skyTex);
-    TESTBall.linkTexture(defaultTex);
+    Oiiaio_cat.linkTexture(Oiiaio_cat_Tex);
 
     ParallelLight L;
     L.SetLight(Vec3(0.2, 0.3, 0.5), RGBa(0.5f, 0.35f, 0.3f));
 
     //环境光
     AmbientLight AL;
-    AL.SetLight(RGBa(0.35f, 0.25f, 0.2f));
+    AL.SetLight(RGBa(0.45f, 0.35f, 0.3f));
 
 
-    //实时点光源
+    //点光源
+    /*
     PointLight PL;
-
     PL.SetLight(Vec3(0, 0, 0),
                         RGBa(0.05f, 0.55f, 0.6f),
-                        0.1, 0.002, 0.001,
-                        40, 512);
+                        0.1, 0.002, 0.005,
+                        40, 256);
+    */
 
+    //聚光光源
     SpotLight SL;
     SL.SetLight(Vec3(0, 0, 0),
                         Vec3(1, 1, 0),
-                        RGBa(0.65f, 0.55f, 0.8f),
+                        RGBa(0.65f, 0.55f, 0.9f),
                         45 * PI / 180, 30 * PI / 180,
                         0.1, 0.002, 0.005,
                         40, 512);
@@ -326,7 +343,7 @@ void Display_thread() {
 
     scene.UpdateMesh();
 
-    Mniko.ZoomSize(8);
+    //Mniko.ZoomSize(8);
 
     std::vector <Model_M> RenderList;
 
@@ -336,6 +353,7 @@ void Display_thread() {
     Framebuffer_1.SetBuffer(ptrScreen[0], ptrScreen[1]);
 
     double circle = 0;
+
 
     while (true) {
         SDL_Event event{};
@@ -352,21 +370,27 @@ void Display_thread() {
                 return;
             }
             break;
-
         }
+
 
         RenderList.clear();
 
 
+        circle = std::fmod(circle + 0.15, 2 * PI);
 
-        circle = std::fmod(circle + 0.005, 2 * PI);
-
+        /*
         Mniko.SetMeshPos(Vec3(sin(circle) * 6, cos(circle) * 8, sin(circle) * 3) + Vec3(20, 30, 10));
         Mniko.RotateMesh(Vec3(circle, circle, circle));
 
 
         Mniko.UpdateMesh();
+        */
 
+        Oiiaio_cat.SetMeshPos(Vec3(18.5, 25, 0.1) + Vec3(0, 0, cos(circle) * 0.2));
+        Oiiaio_cat.RotateMesh(Vec3(0, 0, circle));
+        Oiiaio_cat.ZoomSize(4);
+
+        Oiiaio_cat.UpdateMesh();
 
         //modelMoon.SetMeshPos(Vec3(cos(circle) * 18, sin(circle) * 32, cos(circle) * 3));
         //modelMoon.RotateMesh(Vec3( 0, circle, circle));
@@ -383,29 +407,32 @@ void Display_thread() {
 
         RenderList.emplace_back(MAxis);
         RenderList.emplace_back(scene);
-        RenderList.emplace_back(Mniko);
+        //RenderList.emplace_back(Mniko);
         RenderList.emplace_back(SKYbox);
-        //RenderList.emplace_back(TESTBall);
+        RenderList.emplace_back(Oiiaio_cat);
 
-        
+
+
         unsigned int FaceNumber = 0;
 
         auto start = std::chrono::high_resolution_clock::now();   //测帧
 
 
 
-        Framebuffer_1.CleanBuffer();
+        Framebuffer_1.CleanDepthBuffer();
         Camera ctmp = Camera_1;
 
+        //spot light test
+        LightsList.SpotLights[0].reFresh_LightAndShadow(Vec3(22, 30, 2),
+            /*Vec3(cos(circle), sin(circle), 0)*/Vec3(-0.6, -1, -0.8),
+            45 * PI / 180,
+            30 * PI / 180,
+            RenderList);
         
-        LightsList.SpotLights[0].reFresh_LightAndShadow(Vec3(0, cos(circle) * 20, 0) + Vec3(20, 30, 2),
-                                                                                        Vec3(cos(circle), sin(circle), 0),
-                                                                                        45 * PI / 180,
-                                                                                        30 * PI / 180,
-                                                                                        RenderList);
-
+        //point light test
         //LightsList.PointLights[0].reFresh_LightAndShadow(Vec3(0, cos(circle) * 20, 2) + Vec3(20, 30, 0), RenderList);
 
+        //render
         FaceNumber += Render(ctmp, Framebuffer_1, ptrScreen, RenderList, LightsList);
 
 
@@ -422,42 +449,48 @@ void Display_thread() {
         uint32_t* pixelData = static_cast<uint32_t*>(pixels);
         for (int y = 0; y < ptrScreen[1]; ++y) {
             for (int x = 0; x < ptrScreen[0]; ++x) {
+                //double depth = LightsList.SpotLights[0].ShadowCaster.Map.GetDepth(x, y);
                 RGBa p = Framebuffer_1.GetFrameColor(x, y);
-                uint8_t r =0, g =0, b=0, a=0;
+                uint8_t r = 0, g = 0, b = 0, a = 0;
+
                 
                 r = static_cast<uint8_t>(p.R * 255.0);
                 g = static_cast<uint8_t>(p.G * 255.0);
                 b = static_cast<uint8_t>(p.B * 255.0);
                 a = static_cast<uint8_t>(p.a * 255.0);
-                
-
+                /*
+                r = static_cast<uint8_t>(depth * 255.0);
+                g = static_cast<uint8_t>(depth * 255.0);
+                b = static_cast<uint8_t>(depth * 255.0);
+                a = static_cast<uint8_t>(255.0);
+                */
                 uint32_t pixel = (a << 24) | (r << 16) | (g << 8) | b;
-                int index = y * (pitch / sizeof(uint32_t)) + x ;
+                int index = y * (pitch / sizeof(uint32_t)) + x;
                 pixelData[index] = pixel;
             }
         }
-        
+
 
         SDL_UnlockTexture(texture);
 
 
         // 将纹理渲染到屏幕上
-        
+
         SDL_RenderCopy(renderer, texture, nullptr, nullptr);
-        
+
 
 
         auto end = std::chrono::high_resolution_clock::now();    //测帧
 
-        
-        std::chrono::duration<double> elapsed_seconds = end - start; 
+
+        std::chrono::duration<double> elapsed_seconds = end - start;
         std::chrono::duration<double> Theoretical__ = tech_end - start;
 
         std::string title_str = ENGINE_NAME;
         title_str.append("                      Compilation_Date:");
         title_str.append(__DATE__);
 
-        std::string info = std::to_string( 1.0 / elapsed_seconds.count() ) + " FPS      " + std::to_string(1.0 / Theoretical__.count()) + " FPS(theoretical)" +"     Faces: " + std::to_string(FaceNumber);
+        std::string info = std::to_string(1.0 / elapsed_seconds.count()) + " FPS      " + std::to_string(1.0 / Theoretical__.count()) + " FPS(theoretical)" + "     Faces: " + std::to_string(FaceNumber);
 
         std::string pos = "Pos  " + std::to_string(Camera_1.Pos.x) + ", " + std::to_string(Camera_1.Pos.y) + ", " + std::to_string(Camera_1.Pos.z);
         const char* pos_char = pos.c_str();
@@ -474,17 +507,95 @@ void Display_thread() {
         EasyRenderText(renderer, font, Sign, textColor, 4, 68);
         EasyRenderText(renderer, font, Sign_2, textColor, 4, 84);
 
+        if (Pause_all) {
+            int width, height;
+            SDL_GetWindowSize(window, &width, &height);
+
+            const char* sign = "PAUSE";
+            EasyRenderText(renderer, font_bigger, sign, textColor, width - 100, 4);
+
+        }
 
         // 刷新渲染器
         SDL_RenderPresent(renderer);
 
-        
+
 
         
     }
 
 }
 
+
+#if 0
+void control_2() {
+    SDL_Init(SDL_INIT_EVENTS);
+    double XangleCurrent = 0.1,
+                YangleCurrent = 0.1;
+    
+
+    while (true) {
+        if (!running) {
+            return;
+        }
+        SDL_Event event{};
+        if (SDL_PollEvent(&event) != 0) {
+            if (event.type == SDL_KEYDOWN) {
+                if (event.key.keysym.sym == SDLK_ESCAPE) Pause_all = !Pause_all;
+                switch (event.key.keysym.sym) {
+                case SDLK_ESCAPE:
+                    Pause_all = !Pause_all;
+                    break;
+                case SDLK_w:
+                    Camera_1.Move_ForwardBack(1); // 前进
+                    break;
+                case SDLK_s:
+                    Camera_1.Move_ForwardBack(-1); // 后退
+                    break;
+                case SDLK_a:
+                    Camera_1.Move_LeftRight(-1); // 左移
+                    break;
+                case SDLK_d:
+                    Camera_1.Move_LeftRight(1); // 右移
+                    break;
+                case SDLK_SPACE:
+                    Camera_1.Move_UpDown(1); // 上移
+                    break;
+                case SDLK_LSHIFT:
+                    Camera_1.Move_UpDown(-1); // 下移
+                    break;
+                }
+            }
+
+            // 鼠标输入处理
+            if (event.type == SDL_MOUSEMOTION) {
+                if (Pause_all) continue;
+
+                float xoffset = event.motion.xrel;
+                float yoffset = event.motion.yrel;
+                
+                XangleCurrent = std::fmod(XangleCurrent + xoffset * 0.3 / Camera_1.F, 360.0);
+                if (XangleCurrent < 0) {
+                    XangleCurrent += 360.0;
+                }
+                YangleCurrent = std::clamp(YangleCurrent - yoffset * 0.3 / Camera_1.F, -90.0, 90.0);
+                //标准化数据
+
+                // 更新相机角度
+                
+            }
+        }
+
+
+        Camera_1.Set_AngleDirection(XangleCurrent * PI / 180, YangleCurrent * PI / 180, 0.0);
+
+
+
+
+    }
+}
+
+#endif
 
 //camera控制线程
 void control_thread()
@@ -495,15 +606,14 @@ void control_thread()
     double Control[] = {0,0,0,0,0,0};
     double speed = 0.03;
 
-    bool Puase = false;
     MoveMouseToCenter();
     while (true) {
         while (true) {
             if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) {
-                Puase = Puase ? false : true;
+                Pause_all = Pause_all ? false : true;
                 Sleep(200);
             }
-            if (Puase) { 
+            if (Pause_all) { 
                 Sleep(2);
                 continue;
             }else {

@@ -371,6 +371,7 @@ public:
 
     void SetBuffer(int width, int height);
     void CleanBuffer();
+    void CleanDepthBuffer();
 
     void PutPixelAll(const int x, const int y, double MapsList, RGBa c, Vec3& Cam3Dvertex, Vec3& NorVec, Material_M* ptrmtl);
     void PutPixelAll(const int x, const int y, const PixelData& P);

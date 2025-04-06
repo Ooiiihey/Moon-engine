@@ -28,9 +28,9 @@ void ShadowCaster_SpotLight::SetCaster(int size_in, Vec3 pos, Vec3 Dir,  double 
 
 	VirtualCam.Set_CameraPos(pos);
 
-	VirtualCam.Set_VectorDirection(Dir);
+	VirtualCam.Set_VectorDirection(Dir, 0);
 	VirtualCam.FarPlane = far;
-	VirtualCam.NearPlane = 0.1;
+	VirtualCam.NearPlane = 0.01;
 
 	VirtualCam.FOV = fovAngle;
 	VirtualCam.F = 1.0;
@@ -40,7 +40,7 @@ void ShadowCaster_SpotLight::SetCaster(int size_in, Vec3 pos, Vec3 Dir,  double 
 void ShadowCaster_SpotLight::SetVirtualCam(Vec3 Pos, Vec3 Dir, double fovAngle)
 {
 	VirtualCam.Set_CameraPos(Pos);
-	VirtualCam.Set_VectorDirection(Dir);
+	VirtualCam.Set_VectorDirection(Dir, 0);
 	VirtualCam.FOV = fovAngle;
 }
 
@@ -134,7 +134,7 @@ void ShadowCaster_PointLight::CaculateShadow(const std::vector<Model_M>& Models_
 			MapsList[i].CleanBuffer();
 
 			Camera tmp = VirtualCam;
-			tmp.Set_AngleDirection(directionList[i]);
+			tmp.Set_VectorDirection(directionsVecList[i], 0);
 
 			for (const Model_M& each_Model : Models_list) {
 				TransformFunc.Transform(tmp, screen, each_Model, TrangleList, true);
@@ -197,7 +197,7 @@ bool ShadowCaster_PointLight::isInShadow(const Vec3& WorldSpaceVertex)
 
 	for (int i = 0; i < 6; ++i) {
 
-		tmp.Set_AngleDirection(directionList[i]);
+		tmp.Set_VectorDirection(directionsVecList[i], 0);
 
 		Vertex2D TestVertex =TransformFunc.PerspectiveOneVertex(tmp, screen, WorldSpaceVertex);
 

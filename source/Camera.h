@@ -30,7 +30,7 @@ public:
     void Move_UpDown(const double step);
 
     //set direction Camera according to a vector
-    void Set_VectorDirection(Vec3 new_forward);
+    void Set_VectorDirection(Vec3 new_forward, const double c);
 
     //set direction Camera according to an angle
     void Set_AngleDirection(const double a, const double b, const double c);

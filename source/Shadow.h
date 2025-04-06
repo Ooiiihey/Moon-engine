@@ -23,16 +23,16 @@ public:
 class ShadowCaster_PointLight : public ShadowCasterBase{
 protected:
 
-	Vec3 directionList[6] = {
-	//front, back
-	Vec3(0, 0, 0),
-	Vec3(PI, 0, 0),
-	//left, right
-	Vec3(PI / 2.0, 0, 0),
-	Vec3(-PI / 2.0, 0, 0),
-	//up, down
-	Vec3(0, PI / 2.0, 0),
-	Vec3(0, -PI / 2.0, 0),
+	Vec3 directionsVecList[6] = {
+		//front, back
+		Vec3(1, 0, 0),
+		Vec3(-1, 0, 0),
+		//left, right
+		Vec3(0, 1, 0),
+		Vec3(0, -1, 0),
+		//up, down
+		Vec3(0, 0, 1),
+		Vec3(0, 0, -1)
 	};
 
 	DepthBuffer MapsList[6];
